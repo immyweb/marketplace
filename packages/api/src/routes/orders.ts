@@ -65,6 +65,11 @@ router.post('/', async (req, res, next) => {
     const pm = paymentIntent.payment_method;
 
     if (!pm || typeof pm !== 'object' || pm.type !== 'card' || !pm.card?.last4) {
+      console.error(
+        '[POST /order] ALERT: Stripe PaymentIntent succeeded but card last4 is unreadable. ' +
+        `paymentIntentId=${paymentIntentId} cartId=${cartId} pm_type=${typeof pm === 'object' && pm !== null ? (pm as Stripe.PaymentMethod).type : typeof pm}. ` +
+        'Customer has been charged but no order was created. Manual reconciliation required.'
+      );
       res.status(500).json({ error: 'Could not read card details from payment', code: 'PAYMENT_FAILED' });
       return;
     }

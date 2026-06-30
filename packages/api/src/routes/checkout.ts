@@ -17,6 +17,11 @@ router.post('/payment-intent', async (req, res, next) => {
       return;
     }
 
+    if (cartId !== req.session.cartId) {
+      res.status(403).json({ error: 'Cart does not belong to this session', code: 'FORBIDDEN' });
+      return;
+    }
+
     const cart = await prisma.cart.findUnique({
       where: { id: cartId },
       include: { items: { include: { product: true } } }

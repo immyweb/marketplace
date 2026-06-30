@@ -105,6 +105,27 @@ describe('POST /order', () => {
 
     expect(res.body).toMatchObject({ error: expect.any(String) });
   });
+
+  it('returns 403 when cartId does not belong to the session', async () => {
+    // Session A creates a cart
+    const agentA = agent(app);
+    await agentA.post('/cart/products').send({ productId, quantity: 1 });
+    const cartRes = await agentA.get('/cart');
+    const cartId = cartRes.body.id;
+
+    // Session B tries to place an order on session A's cart
+    const agentB = agent(app);
+    const res = await agentB
+      .post('/order')
+      .send({
+        cartId,
+        paymentIntentId: 'pi_test',
+        address_details: { name: 'X', street: 'Y', city: 'Z', postcode: 'ZZ1 1ZZ' }
+      })
+      .expect(403);
+
+    expect(res.body).toMatchObject({ error: expect.any(String) });
+  });
 });
 
 describe('POST /checkout/payment-intent', () => {
@@ -124,9 +145,34 @@ describe('POST /checkout/payment-intent', () => {
   });
 
   it('returns 404 when cart is empty or does not exist', async () => {
-    await agent(app)
+    // Create a cart and register it in the session, then empty it so the
+    // ownership check passes but the "not found or empty" guard fires.
+    const ag = agent(app);
+    await ag.post('/cart/products').send({ productId, quantity: 1 });
+    const cartRes = await ag.get('/cart');
+    const cartId = cartRes.body.id;
+    await prisma.cartItem.deleteMany({ where: { cart_id: cartId } });
+
+    await ag
       .post('/checkout/payment-intent')
-      .send({ cartId: 999999 })
+      .send({ cartId })
       .expect(404);
+  });
+
+  it('returns 403 when cartId does not belong to the session', async () => {
+    // Session A creates a cart
+    const agentA = agent(app);
+    await agentA.post('/cart/products').send({ productId, quantity: 1 });
+    const cartRes = await agentA.get('/cart');
+    const cartId = cartRes.body.id;
+
+    // Session B tries to create a payment intent for session A's cart
+    const agentB = agent(app);
+    const res = await agentB
+      .post('/checkout/payment-intent')
+      .send({ cartId })
+      .expect(403);
+
+    expect(res.body).toMatchObject({ error: expect.any(String) });
   });
 });
