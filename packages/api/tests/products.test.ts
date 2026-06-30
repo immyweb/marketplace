@@ -47,3 +47,23 @@ describe('GET /products', () => {
     expect(res.body.results[0]).not.toHaveProperty('image_urls');
   });
 });
+
+describe('GET /products/:id', () => {
+  it('returns full product details', async () => {
+    const res = await request(app).get(`/products/${productId}`).expect(200);
+    expect(res.body).toMatchObject({
+      id: productId,
+      name: 'Test T-Shirt',
+      description: 'A test product',
+      primary_image: 'https://example.com/img.jpg',
+      image_urls: ['https://example.com/img.jpg'],
+      unit_price: 12.99,
+      currency: 'GBP'
+    });
+  });
+
+  it('returns 404 for a non-existent product', async () => {
+    const res = await request(app).get('/products/999999').expect(404);
+    expect(res.body).toMatchObject({ error: expect.any(String) });
+  });
+});
