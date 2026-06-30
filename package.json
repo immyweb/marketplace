@@ -1,0 +1,11 @@
+{
+  "name": "marketplace",
+  "private": true,
+  "workspaces": ["core", "api", "web"],
+  "scripts": {
+    "dev:api": "npm run dev -w api",
+    "dev:web": "npm run dev -w web",
+    "test:api": "npm run test -w api",
+    "test:e2e": "npm run test:e2e -w web"
+  }
+}

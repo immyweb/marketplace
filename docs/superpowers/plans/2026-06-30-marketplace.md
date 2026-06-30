@@ -103,13 +103,15 @@ marketplace/
 ### Task 1: Docker + PostgreSQL
 
 **Files:**
+
 - Create: `docker-compose.yml`
 - Create: `package.json` (workspace root)
 
 **Interfaces:**
-- Produces: PostgreSQL running on `localhost:5432`, databases `marketplace` and `marketplace_test`
 
-- [ ] **Step 1: Create `docker-compose.yml`**
+- Produces: PostgreSQL running on `localhost:5433`, databases `marketplace` and `marketplace_test`
+
+- [x] **Step 1: Create `docker-compose.yml`**
 
 ```yaml
 services:
@@ -120,7 +122,7 @@ services:
       POSTGRES_PASSWORD: marketplace
       POSTGRES_DB: marketplace
     ports:
-      - '5432:5432'
+      - '5433:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -129,14 +131,14 @@ volumes:
   pgdata:
 ```
 
-- [ ] **Step 2: Create `docker/init.sql`** (creates the test database)
+- [x] **Step 2: Create `docker/init.sql`** (creates the test database)
 
 ```sql
 CREATE DATABASE marketplace_test;
 GRANT ALL PRIVILEGES ON DATABASE marketplace_test TO marketplace;
 ```
 
-- [ ] **Step 3: Create workspace root `package.json`**
+- [x] **Step 3: Create workspace root `package.json`**
 
 ```json
 {
@@ -152,16 +154,16 @@ GRANT ALL PRIVILEGES ON DATABASE marketplace_test TO marketplace;
 }
 ```
 
-- [ ] **Step 4: Start PostgreSQL and verify**
+- [x] **Step 4: Start PostgreSQL and verify**
 
 ```bash
 docker compose up -d
 docker compose ps
 ```
 
-Expected: `db` container status `running`, listening on `0.0.0.0:5432`
+Expected: `db` container status `running`, listening on `0.0.0.0:5433`
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add docker-compose.yml docker/init.sql package.json
@@ -173,6 +175,7 @@ git commit -m "chore: add Docker Compose with PostgreSQL and test database"
 ### Task 2: API Project Scaffold
 
 **Files:**
+
 - Create: `api/package.json`
 - Create: `api/tsconfig.json`
 - Create: `api/vitest.config.ts`
@@ -181,9 +184,10 @@ git commit -m "chore: add Docker Compose with PostgreSQL and test database"
 - Create: `.gitignore`
 
 **Interfaces:**
+
 - Produces: `npm run dev -w api` starts the API; `npm run test -w api` runs Vitest
 
-- [ ] **Step 1: Create `api/package.json`**
+- [x] **Step 1: Create `api/package.json`**
 
 ```json
 {
@@ -224,7 +228,7 @@ git commit -m "chore: add Docker Compose with PostgreSQL and test database"
 }
 ```
 
-- [ ] **Step 2: Create `api/tsconfig.json`**
+- [x] **Step 2: Create `api/tsconfig.json`**
 
 ```json
 {
@@ -247,10 +251,10 @@ git commit -m "chore: add Docker Compose with PostgreSQL and test database"
 }
 ```
 
-- [ ] **Step 3: Create `api/vitest.config.ts`**
+- [x] **Step 3: Create `api/vitest.config.ts`**
 
 ```typescript
-import { defineConfig } from 'vitest/config'
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
@@ -258,30 +262,30 @@ export default defineConfig({
     environment: 'node',
     setupFiles: ['./tests/setup.ts'],
     pool: 'forks',
-    poolOptions: { forks: { singleFork: true } },
-  },
-})
+    poolOptions: { forks: { singleFork: true } }
+  }
+});
 ```
 
 > `singleFork: true` ensures tests run serially against the shared test database, preventing parallel writes from corrupting state.
 
-- [ ] **Step 4: Create `api/.env`**
+- [x] **Step 4: Create `api/.env`**
 
 ```
-DATABASE_URL=postgresql://marketplace:marketplace@localhost:5432/marketplace
+DATABASE_URL=postgresql://marketplace:marketplace@localhost:5433/marketplace
 SESSION_SECRET=dev-secret-change-in-production
 STRIPE_SECRET_KEY=sk_test_YOUR_KEY_HERE
 ```
 
-- [ ] **Step 5: Create `api/.env.test`**
+- [x] **Step 5: Create `api/.env.test`**
 
 ```
-DATABASE_URL=postgresql://marketplace:marketplace@localhost:5432/marketplace_test
+DATABASE_URL=postgresql://marketplace:marketplace@localhost:5433/marketplace_test
 SESSION_SECRET=test-secret
 STRIPE_SECRET_KEY=sk_test_YOUR_KEY_HERE
 ```
 
-- [ ] **Step 6: Create `.gitignore` at repo root**
+- [x] **Step 6: Create `.gitignore` at repo root**
 
 ```
 node_modules/
@@ -291,7 +295,7 @@ dist/
 .env.local
 ```
 
-- [ ] **Step 7: Install API dependencies**
+- [x] **Step 7: Install API dependencies**
 
 ```bash
 npm install -w api
@@ -299,7 +303,7 @@ npm install -w api
 
 Expected: `node_modules` populated, no errors
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add api/package.json api/tsconfig.json api/vitest.config.ts .gitignore
@@ -311,6 +315,7 @@ git commit -m "chore: scaffold API project with Express, Prisma, Vitest"
 ### Task 3: Core Package — Shared Types and Schemas
 
 **Files:**
+
 - Create: `core/package.json`
 - Create: `core/tsconfig.json`
 - Create: `core/src/types.ts`
@@ -318,6 +323,7 @@ git commit -m "chore: scaffold API project with Express, Prisma, Vitest"
 - Create: `core/src/index.ts`
 
 **Interfaces:**
+
 - Produces: `@marketplace/core` importable by both `api` and `web`
 - Produces: TypeScript interfaces for all domain objects
 - Produces: Zod schemas used by API routes for request validation and by the web checkout form
@@ -361,103 +367,111 @@ git commit -m "chore: scaffold API project with Express, Prisma, Vitest"
 
 ```typescript
 export interface Product {
-  id: number
-  name: string
-  description: string
-  primary_image: string
-  image_urls: string[]
-  unit_price: number
-  currency: string
+  id: number;
+  name: string;
+  description: string;
+  primary_image: string;
+  image_urls: string[];
+  unit_price: number;
+  currency: string;
 }
 
 export interface CartProduct {
-  id: number
-  name: string
-  primary_image: string
+  id: number;
+  name: string;
+  primary_image: string;
 }
 
 export interface CartItem {
-  quantity: number
-  price: number
-  currency: string
-  product: CartProduct
+  quantity: number;
+  price: number;
+  currency: string;
+  product: CartProduct;
 }
 
 export interface Cart {
-  id: number | null
-  items: CartItem[]
-  total_price: number
-  currency: string
+  id: number | null;
+  items: CartItem[];
+  total_price: number;
+  currency: string;
 }
 
 export interface AddressDetails {
-  name: string
-  street: string
-  city: string
-  postcode: string
+  name: string;
+  street: string;
+  city: string;
+  postcode: string;
 }
 
 export interface OrderItem {
-  quantity: number
-  price: number
-  currency: string
-  product: CartProduct
+  quantity: number;
+  price: number;
+  currency: string;
+  product: CartProduct;
 }
 
 export interface Order {
-  id: number
-  total_price: number
-  currency: string
-  status: string
-  items: OrderItem[]
-  address_details: AddressDetails
-  payment_details: { card_last_four_digits: string }
+  id: number;
+  total_price: number;
+  currency: string;
+  status: string;
+  items: OrderItem[];
+  address_details: AddressDetails;
+  payment_details: { card_last_four_digits: string };
 }
 
 export interface ApiError {
-  error: string
-  code?: string
+  error: string;
+  code?: string;
 }
 ```
 
 - [ ] **Step 4: Create `core/src/schemas.ts`**
 
 ```typescript
-import { z } from 'zod'
+import { z } from 'zod';
 
 export const AddToCartSchema = z.object({
-  productId: z.number({ required_error: 'productId is required' }).int().positive(),
-  quantity: z.number({ required_error: 'quantity is required' }).int().min(1, 'Quantity must be at least 1'),
-})
+  productId: z
+    .number({ required_error: 'productId is required' })
+    .int()
+    .positive(),
+  quantity: z
+    .number({ required_error: 'quantity is required' })
+    .int()
+    .min(1, 'Quantity must be at least 1')
+});
 
 export const UpdateCartItemSchema = z.object({
-  quantity: z.number({ required_error: 'quantity is required' }).int().min(0),
-})
+  quantity: z.number({ required_error: 'quantity is required' }).int().min(0)
+});
 
 export const AddressSchema = z.object({
   name: z.string().min(1, 'Full name is required'),
   street: z.string().min(1, 'Street address is required'),
   city: z.string().min(1, 'City is required'),
-  postcode: z.string().regex(/^[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2}$/i, 'Enter a valid UK postcode'),
-})
+  postcode: z
+    .string()
+    .regex(/^[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2}$/i, 'Enter a valid UK postcode')
+});
 
 export const PlaceOrderSchema = z.object({
   cartId: z.number({ required_error: 'cartId is required' }).int().positive(),
   paymentIntentId: z.string().min(1, 'paymentIntentId is required'),
-  address_details: AddressSchema,
-})
+  address_details: AddressSchema
+});
 
-export type AddToCartInput = z.infer<typeof AddToCartSchema>
-export type UpdateCartItemInput = z.infer<typeof UpdateCartItemSchema>
-export type AddressInput = z.infer<typeof AddressSchema>
-export type PlaceOrderInput = z.infer<typeof PlaceOrderSchema>
+export type AddToCartInput = z.infer<typeof AddToCartSchema>;
+export type UpdateCartItemInput = z.infer<typeof UpdateCartItemSchema>;
+export type AddressInput = z.infer<typeof AddressSchema>;
+export type PlaceOrderInput = z.infer<typeof PlaceOrderSchema>;
 ```
 
 - [ ] **Step 5: Create `core/src/index.ts`**
 
 ```typescript
-export * from './types.js'
-export * from './schemas.js'
+export * from './types.js';
+export * from './schemas.js';
 ```
 
 - [ ] **Step 6: Install core dependencies**
@@ -486,11 +500,13 @@ git commit -m "feat: add @marketplace/core package with shared types and Zod sch
 ### Task 4: Prisma Schema, Migration, and Seed
 
 **Files:**
+
 - Create: `api/prisma/schema.prisma`
 - Create: `api/prisma/seed.ts`
 - Create: `api/src/db/prisma.ts`
 
 **Interfaces:**
+
 - Produces: `prisma.product`, `prisma.cart`, `prisma.cartItem`, `prisma.order`, `prisma.orderItem` — all queryable
 
 - [ ] **Step 1: Create `api/prisma/schema.prisma`**
@@ -578,20 +594,20 @@ model OrderItem {
 - [ ] **Step 2: Create `api/src/db/prisma.ts`**
 
 ```typescript
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client';
 
-const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient }
+const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
-export const prisma = globalForPrisma.prisma ?? new PrismaClient()
+export const prisma = globalForPrisma.prisma ?? new PrismaClient();
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 ```
 
 - [ ] **Step 3: Run migration against both databases**
 
 ```bash
 cd api && npx prisma migrate dev --name init
-DATABASE_URL=postgresql://marketplace:marketplace@localhost:5432/marketplace_test npx prisma migrate deploy
+DATABASE_URL=postgresql://marketplace:marketplace@localhost:5433/marketplace_test npx prisma migrate deploy
 cd ..
 ```
 
@@ -600,88 +616,99 @@ Expected: `migrations/` folder created, both databases have tables
 - [ ] **Step 4: Create `api/prisma/seed.ts`**
 
 ```typescript
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 async function main() {
-  await prisma.product.deleteMany()
+  await prisma.product.deleteMany();
   await prisma.product.createMany({
     data: [
       {
         name: 'Classic White T-Shirt',
-        description: 'A wardrobe essential. 100% organic cotton, preshrunk, relaxed fit.',
-        primary_image: 'https://placehold.co/800x800/f5f5f5/333?text=White+T-Shirt',
+        description:
+          'A wardrobe essential. 100% organic cotton, preshrunk, relaxed fit.',
+        primary_image:
+          'https://placehold.co/800x800/f5f5f5/333?text=White+T-Shirt',
         image_urls: [
           'https://placehold.co/800x800/f5f5f5/333?text=White+T-Shirt',
-          'https://placehold.co/800x800/f5f5f5/333?text=White+T-Shirt+Back',
+          'https://placehold.co/800x800/f5f5f5/333?text=White+T-Shirt+Back'
         ],
         unit_price: 18.99,
-        currency: 'GBP',
+        currency: 'GBP'
       },
       {
         name: 'Navy Chino Trousers',
-        description: 'Slim fit chinos in a versatile navy. Suitable for smart-casual occasions.',
-        primary_image: 'https://placehold.co/800x800/1a2744/f5f5f5?text=Navy+Chinos',
+        description:
+          'Slim fit chinos in a versatile navy. Suitable for smart-casual occasions.',
+        primary_image:
+          'https://placehold.co/800x800/1a2744/f5f5f5?text=Navy+Chinos',
         image_urls: [
           'https://placehold.co/800x800/1a2744/f5f5f5?text=Navy+Chinos',
-          'https://placehold.co/800x800/1a2744/f5f5f5?text=Navy+Chinos+Detail',
+          'https://placehold.co/800x800/1a2744/f5f5f5?text=Navy+Chinos+Detail'
         ],
-        unit_price: 42.00,
-        currency: 'GBP',
+        unit_price: 42.0,
+        currency: 'GBP'
       },
       {
         name: 'Merino Wool Jumper',
-        description: 'Fine merino wool. Temperature-regulating and machine washable.',
-        primary_image: 'https://placehold.co/800x800/8b4513/f5f5f5?text=Merino+Jumper',
+        description:
+          'Fine merino wool. Temperature-regulating and machine washable.',
+        primary_image:
+          'https://placehold.co/800x800/8b4513/f5f5f5?text=Merino+Jumper',
         image_urls: [
           'https://placehold.co/800x800/8b4513/f5f5f5?text=Merino+Jumper',
-          'https://placehold.co/800x800/8b4513/f5f5f5?text=Merino+Detail',
+          'https://placehold.co/800x800/8b4513/f5f5f5?text=Merino+Detail'
         ],
-        unit_price: 65.00,
-        currency: 'GBP',
+        unit_price: 65.0,
+        currency: 'GBP'
       },
       {
         name: 'Leather Chelsea Boots',
-        description: 'Full-grain leather upper, elastic side panels, leather sole.',
-        primary_image: 'https://placehold.co/800x800/2c1810/f5f5f5?text=Chelsea+Boots',
+        description:
+          'Full-grain leather upper, elastic side panels, leather sole.',
+        primary_image:
+          'https://placehold.co/800x800/2c1810/f5f5f5?text=Chelsea+Boots',
         image_urls: [
           'https://placehold.co/800x800/2c1810/f5f5f5?text=Chelsea+Boots',
-          'https://placehold.co/800x800/2c1810/f5f5f5?text=Boots+Side',
+          'https://placehold.co/800x800/2c1810/f5f5f5?text=Boots+Side'
         ],
-        unit_price: 120.00,
-        currency: 'GBP',
+        unit_price: 120.0,
+        currency: 'GBP'
       },
       {
         name: 'Canvas Tote Bag',
-        description: 'Heavy-duty canvas tote with internal zip pocket. 20L capacity.',
+        description:
+          'Heavy-duty canvas tote with internal zip pocket. 20L capacity.',
         primary_image: 'https://placehold.co/800x800/d4c5a9/333?text=Tote+Bag',
         image_urls: [
           'https://placehold.co/800x800/d4c5a9/333?text=Tote+Bag',
-          'https://placehold.co/800x800/d4c5a9/333?text=Tote+Interior',
+          'https://placehold.co/800x800/d4c5a9/333?text=Tote+Interior'
         ],
         unit_price: 24.99,
-        currency: 'GBP',
+        currency: 'GBP'
       },
       {
         name: 'Slim Leather Belt',
-        description: 'Vegetable-tanned leather belt. 30mm width. Solid brass buckle.',
-        primary_image: 'https://placehold.co/800x800/5c3d2e/f5f5f5?text=Leather+Belt',
+        description:
+          'Vegetable-tanned leather belt. 30mm width. Solid brass buckle.',
+        primary_image:
+          'https://placehold.co/800x800/5c3d2e/f5f5f5?text=Leather+Belt',
         image_urls: [
           'https://placehold.co/800x800/5c3d2e/f5f5f5?text=Leather+Belt',
-          'https://placehold.co/800x800/5c3d2e/f5f5f5?text=Belt+Buckle',
+          'https://placehold.co/800x800/5c3d2e/f5f5f5?text=Belt+Buckle'
         ],
         unit_price: 34.99,
-        currency: 'GBP',
-      },
-    ],
-  })
-  console.log('Seeded 6 products')
+        currency: 'GBP'
+      }
+    ]
+  });
+  console.log('Seeded 6 products');
 }
 
 main()
   .catch(console.error)
-  .finally(() => prisma.$disconnect())
+  .finally(() => prisma.$disconnect());
 ```
 
 - [ ] **Step 5: Add seed script to `api/package.json`**
@@ -714,6 +741,7 @@ git commit -m "chore: add Prisma schema, migration, and product seed data"
 ### Task 5: Express App, Session Middleware, Error Handler
 
 **Files:**
+
 - Create: `api/src/types/session.d.ts`
 - Create: `api/src/middleware/session.ts`
 - Create: `api/src/middleware/error.ts`
@@ -721,17 +749,18 @@ git commit -m "chore: add Prisma schema, migration, and product seed data"
 - Create: `api/index.ts`
 
 **Interfaces:**
+
 - Produces: `app` (Express app) importable by tests and `index.ts`
 - Produces: `req.session.cartId` available on all routes as `number | undefined`
 
 - [ ] **Step 1: Create `api/src/types/session.d.ts`**
 
 ```typescript
-import 'express-session'
+import 'express-session';
 
 declare module 'express-session' {
   interface SessionData {
-    cartId?: number
+    cartId?: number;
   }
 }
 ```
@@ -739,18 +768,18 @@ declare module 'express-session' {
 - [ ] **Step 2: Create `api/src/middleware/session.ts`**
 
 ```typescript
-import session from 'express-session'
-import connectPg from 'connect-pg-simple'
-import pg from 'pg'
+import session from 'express-session';
+import connectPg from 'connect-pg-simple';
+import pg from 'pg';
 
-const PgSession = connectPg(session)
+const PgSession = connectPg(session);
 
-const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL })
+const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
 
 export const sessionMiddleware = session({
   store: new PgSession({
     pool,
-    createTableIfMissing: true,
+    createTableIfMissing: true
   }),
   secret: process.env.SESSION_SECRET ?? 'fallback-dev-secret',
   resave: false,
@@ -758,81 +787,83 @@ export const sessionMiddleware = session({
   cookie: {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    maxAge: 30 * 24 * 60 * 60 * 1000,
-  },
-})
+    maxAge: 30 * 24 * 60 * 60 * 1000
+  }
+});
 ```
 
 - [ ] **Step 3: Create `api/src/middleware/error.ts`**
 
 ```typescript
-import type { Request, Response, NextFunction } from 'express'
+import type { Request, Response, NextFunction } from 'express';
 
 export function errorHandler(
   err: Error,
   _req: Request,
   res: Response,
-  _next: NextFunction,
+  _next: NextFunction
 ) {
-  console.error(err)
-  res.status(500).json({ error: 'Internal server error', code: 'INTERNAL_ERROR' })
+  console.error(err);
+  res
+    .status(500)
+    .json({ error: 'Internal server error', code: 'INTERNAL_ERROR' });
 }
 ```
 
 - [ ] **Step 4: Create `api/src/app.ts`**
 
 ```typescript
-import 'dotenv/config'
-import express from 'express'
-import cors from 'cors'
-import { sessionMiddleware } from './middleware/session.js'
-import { errorHandler } from './middleware/error.js'
-import productsRouter from './routes/products.js'
-import cartRouter from './routes/cart.js'
-import checkoutRouter from './routes/checkout.js'
-import ordersRouter from './routes/orders.js'
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import { sessionMiddleware } from './middleware/session.js';
+import { errorHandler } from './middleware/error.js';
+import productsRouter from './routes/products.js';
+import cartRouter from './routes/cart.js';
+import checkoutRouter from './routes/checkout.js';
+import ordersRouter from './routes/orders.js';
 
-export const app = express()
+export const app = express();
 
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }))
-app.use(express.json())
-app.use(sessionMiddleware)
+app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+app.use(express.json());
+app.use(sessionMiddleware);
 
-app.use('/products', productsRouter)
-app.use('/cart', cartRouter)
-app.use('/checkout', checkoutRouter)
-app.use('/order', ordersRouter)
+app.use('/products', productsRouter);
+app.use('/cart', cartRouter);
+app.use('/checkout', checkoutRouter);
+app.use('/order', ordersRouter);
 
-app.use(errorHandler)
+app.use(errorHandler);
 ```
 
 - [ ] **Step 5: Create `api/index.ts`**
 
 ```typescript
-import { app } from './src/app.js'
+import { app } from './src/app.js';
 
-const PORT = process.env.PORT ?? 3001
+const PORT = process.env.PORT ?? 3001;
 
 app.listen(PORT, () => {
-  console.log(`API running on http://localhost:${PORT}`)
-})
+  console.log(`API running on http://localhost:${PORT}`);
+});
 ```
 
 - [ ] **Step 6: Create `api/tests/setup.ts`**
 
 ```typescript
-import { afterAll, beforeAll } from 'vitest'
-import { prisma } from '../src/db/prisma.js'
+import { afterAll, beforeAll } from 'vitest';
+import { prisma } from '../src/db/prisma.js';
 
 beforeAll(async () => {
   process.env.DATABASE_URL =
-    'postgresql://marketplace:marketplace@localhost:5432/marketplace_test'
-  await prisma.$connect()
-})
+    'postgresql://marketplace:marketplace@localhost:5433/marketplace_test';
+  await prisma.$connect();
+});
 
 afterAll(async () => {
-  await prisma.$disconnect()
-})
+  await prisma.$disconnect();
+});
 ```
 
 - [ ] **Step 7: Verify the app starts**
@@ -856,6 +887,7 @@ git commit -m "feat: add Express app with session middleware and error handler"
 ### Task 6: Web Project Scaffold
 
 **Files:**
+
 - Create: `web/package.json`
 - Create: `web/tsconfig.json`
 - Create: `web/next.config.ts`
@@ -863,6 +895,7 @@ git commit -m "feat: add Express app with session middleware and error handler"
 - Create: `web/.env.local` (gitignored)
 
 **Interfaces:**
+
 - Produces: `npm run dev -w web` starts Next.js on port 3000
 
 - [ ] **Step 1: Create `web/package.json`**
@@ -930,19 +963,17 @@ git commit -m "feat: add Express app with session middleware and error handler"
 - [ ] **Step 3: Create `web/next.config.ts`**
 
 ```typescript
-import type { NextConfig } from 'next'
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   transpilePackages: ['@marketplace/core'],
   images: {
     formats: ['image/avif', 'image/webp'],
-    remotePatterns: [
-      { protocol: 'https', hostname: 'placehold.co' },
-    ],
-  },
-}
+    remotePatterns: [{ protocol: 'https', hostname: 'placehold.co' }]
+  }
+};
 
-export default nextConfig
+export default nextConfig;
 ```
 
 > `transpilePackages` is required because `@marketplace/core` exports TypeScript source directly (no build step). Next.js will transpile it as part of its own build.
@@ -950,7 +981,7 @@ export default nextConfig
 - [ ] **Step 4: Create `web/playwright.config.ts`**
 
 ```typescript
-import { defineConfig, devices } from '@playwright/test'
+import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -958,25 +989,25 @@ export default defineConfig({
   retries: 0,
   use: {
     baseURL: 'http://localhost:3000',
-    trace: 'on-first-retry',
+    trace: 'on-first-retry'
   },
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
-    { name: 'mobile', use: { ...devices['iPhone 13'] } },
+    { name: 'mobile', use: { ...devices['iPhone 13'] } }
   ],
   webServer: [
     {
       command: 'npm run dev -w api',
       url: 'http://localhost:3001/products',
-      reuseExistingServer: true,
+      reuseExistingServer: true
     },
     {
       command: 'npm run dev -w web',
       url: 'http://localhost:3000',
-      reuseExistingServer: true,
-    },
-  ],
-})
+      reuseExistingServer: true
+    }
+  ]
+});
 ```
 
 - [ ] **Step 5: Create `web/.env.local`**
@@ -1036,10 +1067,12 @@ git commit -m "chore: scaffold Next.js web project with Playwright"
 ### Task 7: GET /products Endpoint
 
 **Files:**
+
 - Create: `api/src/routes/products.ts`
 - Create: `api/tests/products.test.ts`
 
 **Interfaces:**
+
 - Produces: `GET /products` → `{ results: Product[] }`
 - Consumes: `prisma.product` (from Task 3)
 
@@ -1048,19 +1081,19 @@ git commit -m "chore: scaffold Next.js web project with Playwright"
 Create `api/tests/products.test.ts`:
 
 ```typescript
-import { describe, it, expect, beforeAll, afterAll } from 'vitest'
-import request from 'supertest'
-import { app } from '../src/app.js'
-import { prisma } from '../src/db/prisma.js'
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import request from 'supertest';
+import { app } from '../src/app.js';
+import { prisma } from '../src/db/prisma.js';
 
-let productId: number
+let productId: number;
 
 beforeAll(async () => {
-  await prisma.orderItem.deleteMany()
-  await prisma.order.deleteMany()
-  await prisma.cartItem.deleteMany()
-  await prisma.cart.deleteMany()
-  await prisma.product.deleteMany()
+  await prisma.orderItem.deleteMany();
+  await prisma.order.deleteMany();
+  await prisma.cartItem.deleteMany();
+  await prisma.cart.deleteMany();
+  await prisma.product.deleteMany();
 
   const product = await prisma.product.create({
     data: {
@@ -1069,34 +1102,34 @@ beforeAll(async () => {
       primary_image: 'https://example.com/img.jpg',
       image_urls: ['https://example.com/img.jpg'],
       unit_price: 12.99,
-      currency: 'GBP',
-    },
-  })
-  productId = product.id
-})
+      currency: 'GBP'
+    }
+  });
+  productId = product.id;
+});
 
 afterAll(async () => {
-  await prisma.product.deleteMany()
-})
+  await prisma.product.deleteMany();
+});
 
 describe('GET /products', () => {
   it('returns a results array with all products', async () => {
-    const res = await request(app).get('/products').expect(200)
-    expect(res.body.results).toHaveLength(1)
+    const res = await request(app).get('/products').expect(200);
+    expect(res.body.results).toHaveLength(1);
     expect(res.body.results[0]).toMatchObject({
       id: productId,
       name: 'Test T-Shirt',
       unit_price: 12.99,
-      currency: 'GBP',
-    })
-  })
+      currency: 'GBP'
+    });
+  });
 
   it('does not include description or image_urls in listing', async () => {
-    const res = await request(app).get('/products').expect(200)
-    expect(res.body.results[0]).not.toHaveProperty('description')
-    expect(res.body.results[0]).not.toHaveProperty('image_urls')
-  })
-})
+    const res = await request(app).get('/products').expect(200);
+    expect(res.body.results[0]).not.toHaveProperty('description');
+    expect(res.body.results[0]).not.toHaveProperty('image_urls');
+  });
+});
 ```
 
 - [ ] **Step 2: Run test to confirm it fails**
@@ -1110,10 +1143,10 @@ Expected: FAIL — `Cannot find module '../src/routes/products.js'`
 - [ ] **Step 3: Create `api/src/routes/products.ts`**
 
 ```typescript
-import { Router } from 'express'
-import { prisma } from '../db/prisma.js'
+import { Router } from 'express';
+import { prisma } from '../db/prisma.js';
 
-const router = Router()
+const router = Router();
 
 router.get('/', async (_req, res, next) => {
   try {
@@ -1123,22 +1156,22 @@ router.get('/', async (_req, res, next) => {
         name: true,
         primary_image: true,
         unit_price: true,
-        currency: true,
-      },
-    })
+        currency: true
+      }
+    });
 
     res.json({
       results: products.map((p) => ({
         ...p,
-        unit_price: Number(p.unit_price),
-      })),
-    })
+        unit_price: Number(p.unit_price)
+      }))
+    });
   } catch (err) {
-    next(err)
+    next(err);
   }
-})
+});
 
-export default router
+export default router;
 ```
 
 - [ ] **Step 4: Run test to confirm it passes**
@@ -1161,10 +1194,12 @@ git commit -m "feat: add GET /products endpoint"
 ### Task 8: GET /products/:id Endpoint
 
 **Files:**
+
 - Modify: `api/src/routes/products.ts`
 - Modify: `api/tests/products.test.ts`
 
 **Interfaces:**
+
 - Produces: `GET /products/:id` → full `Product` object including `description` and `image_urls`
 
 - [ ] **Step 1: Write the failing test**
@@ -1174,7 +1209,7 @@ Add to `api/tests/products.test.ts`:
 ```typescript
 describe('GET /products/:id', () => {
   it('returns full product details', async () => {
-    const res = await request(app).get(`/products/${productId}`).expect(200)
+    const res = await request(app).get(`/products/${productId}`).expect(200);
     expect(res.body).toMatchObject({
       id: productId,
       name: 'Test T-Shirt',
@@ -1182,15 +1217,15 @@ describe('GET /products/:id', () => {
       primary_image: 'https://example.com/img.jpg',
       image_urls: ['https://example.com/img.jpg'],
       unit_price: 12.99,
-      currency: 'GBP',
-    })
-  })
+      currency: 'GBP'
+    });
+  });
 
   it('returns 404 for a non-existent product', async () => {
-    const res = await request(app).get('/products/999999').expect(404)
-    expect(res.body).toMatchObject({ error: expect.any(String) })
-  })
-})
+    const res = await request(app).get('/products/999999').expect(404);
+    expect(res.body).toMatchObject({ error: expect.any(String) });
+  });
+});
 ```
 
 - [ ] **Step 2: Run test to confirm it fails**
@@ -1206,24 +1241,24 @@ Expected: FAIL — `expected 404 to equal 200`
 ```typescript
 router.get('/:id', async (req, res, next) => {
   try {
-    const id = parseInt(req.params.id, 10)
+    const id = parseInt(req.params.id, 10);
     if (isNaN(id)) {
-      res.status(404).json({ error: 'Product not found', code: 'NOT_FOUND' })
-      return
+      res.status(404).json({ error: 'Product not found', code: 'NOT_FOUND' });
+      return;
     }
 
-    const product = await prisma.product.findUnique({ where: { id } })
+    const product = await prisma.product.findUnique({ where: { id } });
 
     if (!product) {
-      res.status(404).json({ error: 'Product not found', code: 'NOT_FOUND' })
-      return
+      res.status(404).json({ error: 'Product not found', code: 'NOT_FOUND' });
+      return;
     }
 
-    res.json({ ...product, unit_price: Number(product.unit_price) })
+    res.json({ ...product, unit_price: Number(product.unit_price) });
   } catch (err) {
-    next(err)
+    next(err);
   }
-})
+});
 ```
 
 - [ ] **Step 4: Run tests to confirm they pass**
@@ -1248,25 +1283,27 @@ git commit -m "feat: add GET /products/:id endpoint"
 ### Task 9: Cart Routes Setup + GET /cart
 
 **Files:**
+
 - Create: `api/src/routes/cart.ts`
 - Create: `api/tests/cart.test.ts`
 
 **Interfaces:**
+
 - Produces: `GET /cart` → `Cart` object (empty cart if no session cart exists)
 - Produces: `formatCart(cart)` — internal helper used by all cart routes
 
 ```typescript
 // Cart response shape
 interface CartResponse {
-  id: number | null
+  id: number | null;
   items: Array<{
-    quantity: number
-    price: number      // unit_price * quantity, computed at query time
-    currency: string
-    product: { id: number; name: string; primary_image: string }
-  }>
-  total_price: number
-  currency: string
+    quantity: number;
+    price: number; // unit_price * quantity, computed at query time
+    currency: string;
+    product: { id: number; name: string; primary_image: string };
+  }>;
+  total_price: number;
+  currency: string;
 }
 ```
 
@@ -1275,33 +1312,33 @@ interface CartResponse {
 Create `api/tests/cart.test.ts`:
 
 ```typescript
-import { describe, it, expect, beforeEach, afterAll } from 'vitest'
-import { agent } from 'supertest'
-import { app } from '../src/app.js'
-import { prisma } from '../src/db/prisma.js'
+import { describe, it, expect, beforeEach, afterAll } from 'vitest';
+import { agent } from 'supertest';
+import { app } from '../src/app.js';
+import { prisma } from '../src/db/prisma.js';
 
 beforeEach(async () => {
-  await prisma.cartItem.deleteMany()
-  await prisma.cart.deleteMany()
-})
+  await prisma.cartItem.deleteMany();
+  await prisma.cart.deleteMany();
+});
 
 afterAll(async () => {
-  await prisma.cartItem.deleteMany()
-  await prisma.cart.deleteMany()
-  await prisma.product.deleteMany()
-})
+  await prisma.cartItem.deleteMany();
+  await prisma.cart.deleteMany();
+  await prisma.product.deleteMany();
+});
 
 describe('GET /cart', () => {
   it('returns an empty cart when no cart exists for the session', async () => {
-    const res = await agent(app).get('/cart').expect(200)
+    const res = await agent(app).get('/cart').expect(200);
     expect(res.body).toEqual({
       id: null,
       items: [],
       total_price: 0,
-      currency: 'GBP',
-    })
-  })
-})
+      currency: 'GBP'
+    });
+  });
+});
 ```
 
 - [ ] **Step 2: Run test to confirm it fails**
@@ -1315,15 +1352,15 @@ Expected: FAIL — `Cannot find module '../src/routes/cart.js'`
 - [ ] **Step 3: Create `api/src/routes/cart.ts`**
 
 ```typescript
-import { Router } from 'express'
-import { prisma } from '../db/prisma.js'
-import type { Prisma } from '@prisma/client'
+import { Router } from 'express';
+import { prisma } from '../db/prisma.js';
+import type { Prisma } from '@prisma/client';
 
-const router = Router()
+const router = Router();
 
 type CartWithItems = Prisma.CartGetPayload<{
-  include: { items: { include: { product: true } } }
-}>
+  include: { items: { include: { product: true } } };
+}>;
 
 function formatCart(cart: CartWithItems) {
   const items = cart.items.map((item) => ({
@@ -1333,48 +1370,48 @@ function formatCart(cart: CartWithItems) {
     product: {
       id: item.product.id,
       name: item.product.name,
-      primary_image: item.product.primary_image,
-    },
-  }))
+      primary_image: item.product.primary_image
+    }
+  }));
 
   return {
     id: cart.id,
     items,
     total_price: items.reduce((sum, item) => sum + item.price, 0),
-    currency: 'GBP',
-  }
+    currency: 'GBP'
+  };
 }
 
 const cartInclude = {
-  items: { include: { product: true } },
-} satisfies Prisma.CartInclude
+  items: { include: { product: true } }
+} satisfies Prisma.CartInclude;
 
 router.get('/', async (req, res, next) => {
   try {
     if (!req.session.cartId) {
-      res.json({ id: null, items: [], total_price: 0, currency: 'GBP' })
-      return
+      res.json({ id: null, items: [], total_price: 0, currency: 'GBP' });
+      return;
     }
 
     const cart = await prisma.cart.findUnique({
       where: { id: req.session.cartId },
-      include: cartInclude,
-    })
+      include: cartInclude
+    });
 
     if (!cart) {
-      req.session.cartId = undefined
-      res.json({ id: null, items: [], total_price: 0, currency: 'GBP' })
-      return
+      req.session.cartId = undefined;
+      res.json({ id: null, items: [], total_price: 0, currency: 'GBP' });
+      return;
     }
 
-    res.json(formatCart(cart))
+    res.json(formatCart(cart));
   } catch (err) {
-    next(err)
+    next(err);
   }
-})
+});
 
-export { formatCart, cartInclude }
-export default router
+export { formatCart, cartInclude };
+export default router;
 ```
 
 - [ ] **Step 4: Run test to confirm it passes**
@@ -1397,10 +1434,12 @@ git commit -m "feat: add GET /cart endpoint"
 ### Task 10: POST /cart/products
 
 **Files:**
+
 - Modify: `api/src/routes/cart.ts`
 - Modify: `api/tests/cart.test.ts`
 
 **Interfaces:**
+
 - Produces: `POST /cart/products` with body `{ productId: number, quantity: number }` → `CartResponse`
 - Sets `req.session.cartId` on first call (persisting the session and setting the cookie)
 
@@ -1409,16 +1448,16 @@ git commit -m "feat: add GET /cart endpoint"
 Add to `api/tests/cart.test.ts`, after creating a product in `beforeAll`:
 
 ```typescript
-let productId: number
+let productId: number;
 
 // Add to the top of the file, before the describe blocks:
 // In beforeEach, also seed one product (reuse across tests)
 
 // Replace the existing beforeEach with:
 beforeEach(async () => {
-  await prisma.cartItem.deleteMany()
-  await prisma.cart.deleteMany()
-  await prisma.product.deleteMany()
+  await prisma.cartItem.deleteMany();
+  await prisma.cart.deleteMany();
+  await prisma.product.deleteMany();
 
   const product = await prisma.product.create({
     data: {
@@ -1426,59 +1465,59 @@ beforeEach(async () => {
       description: 'desc',
       primary_image: 'img.jpg',
       image_urls: [],
-      unit_price: 10.00,
-      currency: 'GBP',
-    },
-  })
-  productId = product.id
-})
+      unit_price: 10.0,
+      currency: 'GBP'
+    }
+  });
+  productId = product.id;
+});
 
 describe('POST /cart/products', () => {
   it('creates a cart and adds the product', async () => {
-    const ag = agent(app)
+    const ag = agent(app);
     const res = await ag
       .post('/cart/products')
       .send({ productId, quantity: 2 })
-      .expect(200)
+      .expect(200);
 
-    expect(res.body.items).toHaveLength(1)
+    expect(res.body.items).toHaveLength(1);
     expect(res.body.items[0]).toMatchObject({
       quantity: 2,
       price: 20,
       currency: 'GBP',
-      product: { id: productId, name: 'Test T-Shirt' },
-    })
-    expect(res.body.total_price).toBe(20)
-  })
+      product: { id: productId, name: 'Test T-Shirt' }
+    });
+    expect(res.body.total_price).toBe(20);
+  });
 
   it('increments quantity when the same product is added again', async () => {
-    const ag = agent(app)
-    await ag.post('/cart/products').send({ productId, quantity: 1 })
+    const ag = agent(app);
+    await ag.post('/cart/products').send({ productId, quantity: 1 });
     const res = await ag
       .post('/cart/products')
       .send({ productId, quantity: 2 })
-      .expect(200)
+      .expect(200);
 
-    expect(res.body.items).toHaveLength(1)
-    expect(res.body.items[0].quantity).toBe(3)
-  })
+    expect(res.body.items).toHaveLength(1);
+    expect(res.body.items[0].quantity).toBe(3);
+  });
 
   it('returns 400 when productId is missing', async () => {
     const res = await agent(app)
       .post('/cart/products')
       .send({ quantity: 1 })
-      .expect(400)
-    expect(res.body).toMatchObject({ error: expect.any(String) })
-  })
+      .expect(400);
+    expect(res.body).toMatchObject({ error: expect.any(String) });
+  });
 
   it('returns 404 when product does not exist', async () => {
     const res = await agent(app)
       .post('/cart/products')
       .send({ productId: 999999, quantity: 1 })
-      .expect(404)
-    expect(res.body).toMatchObject({ error: expect.any(String) })
-  })
-})
+      .expect(404);
+    expect(res.body).toMatchObject({ error: expect.any(String) });
+  });
+});
 ```
 
 - [ ] **Step 2: Run tests to confirm new tests fail**
@@ -1492,53 +1531,63 @@ Expected: FAIL — `POST /cart/products` tests fail with 404
 - [ ] **Step 3: Add `POST /cart/products` to `api/src/routes/cart.ts`**
 
 Add the import at the top of the file:
+
 ```typescript
-import { AddToCartSchema } from '@marketplace/core'
+import { AddToCartSchema } from '@marketplace/core';
 ```
 
 Then the route:
+
 ```typescript
 router.post('/products', async (req, res, next) => {
   try {
-    const parsed = AddToCartSchema.safeParse(req.body)
+    const parsed = AddToCartSchema.safeParse(req.body);
     if (!parsed.success) {
-      res.status(400).json({ error: parsed.error.errors[0].message, code: 'INVALID_INPUT' })
-      return
+      res
+        .status(400)
+        .json({ error: parsed.error.errors[0].message, code: 'INVALID_INPUT' });
+      return;
     }
-    const { productId, quantity } = parsed.data
+    const { productId, quantity } = parsed.data;
 
-    const product = await prisma.product.findUnique({ where: { id: productId } })
+    const product = await prisma.product.findUnique({
+      where: { id: productId }
+    });
     if (!product) {
-      res.status(404).json({ error: 'Product not found', code: 'NOT_FOUND' })
-      return
+      res.status(404).json({ error: 'Product not found', code: 'NOT_FOUND' });
+      return;
     }
 
-    let cart
+    let cart;
     if (req.session.cartId) {
-      cart = await prisma.cart.findUnique({ where: { id: req.session.cartId } })
+      cart = await prisma.cart.findUnique({
+        where: { id: req.session.cartId }
+      });
     }
 
     if (!cart) {
-      cart = await prisma.cart.create({ data: { session_id: req.session.id } })
-      req.session.cartId = cart.id
+      cart = await prisma.cart.create({ data: { session_id: req.session.id } });
+      req.session.cartId = cart.id;
     }
 
     await prisma.cartItem.upsert({
-      where: { cart_id_product_id: { cart_id: cart.id, product_id: productId } },
+      where: {
+        cart_id_product_id: { cart_id: cart.id, product_id: productId }
+      },
       update: { quantity: { increment: quantity } },
-      create: { cart_id: cart.id, product_id: productId, quantity },
-    })
+      create: { cart_id: cart.id, product_id: productId, quantity }
+    });
 
     const updated = await prisma.cart.findUniqueOrThrow({
       where: { id: cart.id },
-      include: cartInclude,
-    })
+      include: cartInclude
+    });
 
-    res.json(formatCart(updated))
+    res.json(formatCart(updated));
   } catch (err) {
-    next(err)
+    next(err);
   }
-})
+});
 ```
 
 - [ ] **Step 4: Run tests to confirm they pass**
@@ -1561,10 +1610,12 @@ git commit -m "feat: add POST /cart/products — add item to cart"
 ### Task 11: PUT /cart/products/:productId
 
 **Files:**
+
 - Modify: `api/src/routes/cart.ts`
 - Modify: `api/tests/cart.test.ts`
 
 **Interfaces:**
+
 - Produces: `PUT /cart/products/:productId` with body `{ quantity: number }` → `CartResponse`
 - Setting quantity to 0 removes the item
 
@@ -1575,36 +1626,36 @@ Add to `api/tests/cart.test.ts`:
 ```typescript
 describe('PUT /cart/products/:productId', () => {
   it('updates the quantity of an item', async () => {
-    const ag = agent(app)
-    await ag.post('/cart/products').send({ productId, quantity: 1 })
+    const ag = agent(app);
+    await ag.post('/cart/products').send({ productId, quantity: 1 });
     const res = await ag
       .put(`/cart/products/${productId}`)
       .send({ quantity: 5 })
-      .expect(200)
+      .expect(200);
 
-    expect(res.body.items[0].quantity).toBe(5)
-    expect(res.body.total_price).toBe(50)
-  })
+    expect(res.body.items[0].quantity).toBe(5);
+    expect(res.body.total_price).toBe(50);
+  });
 
   it('removes the item when quantity is set to 0', async () => {
-    const ag = agent(app)
-    await ag.post('/cart/products').send({ productId, quantity: 2 })
+    const ag = agent(app);
+    await ag.post('/cart/products').send({ productId, quantity: 2 });
     const res = await ag
       .put(`/cart/products/${productId}`)
       .send({ quantity: 0 })
-      .expect(200)
+      .expect(200);
 
-    expect(res.body.items).toHaveLength(0)
-    expect(res.body.total_price).toBe(0)
-  })
+    expect(res.body.items).toHaveLength(0);
+    expect(res.body.total_price).toBe(0);
+  });
 
   it('returns 404 when no cart exists', async () => {
     await agent(app)
       .put(`/cart/products/${productId}`)
       .send({ quantity: 1 })
-      .expect(404)
-  })
-})
+      .expect(404);
+  });
+});
 ```
 
 - [ ] **Step 2: Run tests to confirm they fail**
@@ -1618,58 +1669,80 @@ Expected: FAIL
 - [ ] **Step 3: Add route to `api/src/routes/cart.ts`**
 
 Add the import at the top of the file (alongside the `AddToCartSchema` import from Task 10):
+
 ```typescript
-import { AddToCartSchema, UpdateCartItemSchema } from '@marketplace/core'
+import { AddToCartSchema, UpdateCartItemSchema } from '@marketplace/core';
 ```
 
 Then the route:
+
 ```typescript
 router.put('/products/:productId', async (req, res, next) => {
   try {
-    const productId = parseInt(req.params.productId, 10)
-    const parsed = UpdateCartItemSchema.safeParse(req.body)
+    const productId = parseInt(req.params.productId, 10);
+    const parsed = UpdateCartItemSchema.safeParse(req.body);
 
     if (isNaN(productId) || !parsed.success) {
-      res.status(400).json({ error: parsed.success ? 'Invalid productId' : parsed.error.errors[0].message, code: 'INVALID_INPUT' })
-      return
+      res.status(400).json({
+        error: parsed.success
+          ? 'Invalid productId'
+          : parsed.error.errors[0].message,
+        code: 'INVALID_INPUT'
+      });
+      return;
     }
-    const { quantity } = parsed.data
+    const { quantity } = parsed.data;
 
     if (!req.session.cartId) {
-      res.status(404).json({ error: 'Cart not found', code: 'NOT_FOUND' })
-      return
+      res.status(404).json({ error: 'Cart not found', code: 'NOT_FOUND' });
+      return;
     }
 
     const cartItem = await prisma.cartItem.findUnique({
-      where: { cart_id_product_id: { cart_id: req.session.cartId, product_id: productId } },
-    })
+      where: {
+        cart_id_product_id: {
+          cart_id: req.session.cartId,
+          product_id: productId
+        }
+      }
+    });
 
     if (!cartItem) {
-      res.status(404).json({ error: 'Item not in cart', code: 'NOT_FOUND' })
-      return
+      res.status(404).json({ error: 'Item not in cart', code: 'NOT_FOUND' });
+      return;
     }
 
     if (quantity === 0) {
       await prisma.cartItem.delete({
-        where: { cart_id_product_id: { cart_id: req.session.cartId, product_id: productId } },
-      })
+        where: {
+          cart_id_product_id: {
+            cart_id: req.session.cartId,
+            product_id: productId
+          }
+        }
+      });
     } else {
       await prisma.cartItem.update({
-        where: { cart_id_product_id: { cart_id: req.session.cartId, product_id: productId } },
-        data: { quantity },
-      })
+        where: {
+          cart_id_product_id: {
+            cart_id: req.session.cartId,
+            product_id: productId
+          }
+        },
+        data: { quantity }
+      });
     }
 
     const cart = await prisma.cart.findUniqueOrThrow({
       where: { id: req.session.cartId },
-      include: cartInclude,
-    })
+      include: cartInclude
+    });
 
-    res.json(formatCart(cart))
+    res.json(formatCart(cart));
   } catch (err) {
-    next(err)
+    next(err);
   }
-})
+});
 ```
 
 - [ ] **Step 4: Run tests to confirm they pass**
@@ -1692,10 +1765,12 @@ git commit -m "feat: add PUT /cart/products/:productId — update item quantity"
 ### Task 12: DELETE /cart/products/:productId
 
 **Files:**
+
 - Modify: `api/src/routes/cart.ts`
 - Modify: `api/tests/cart.test.ts`
 
 **Interfaces:**
+
 - Produces: `DELETE /cart/products/:productId` → `CartResponse`
 
 - [ ] **Step 1: Write the failing test**
@@ -1705,18 +1780,18 @@ Add to `api/tests/cart.test.ts`:
 ```typescript
 describe('DELETE /cart/products/:productId', () => {
   it('removes the item from the cart', async () => {
-    const ag = agent(app)
-    await ag.post('/cart/products').send({ productId, quantity: 2 })
-    const res = await ag.delete(`/cart/products/${productId}`).expect(200)
+    const ag = agent(app);
+    await ag.post('/cart/products').send({ productId, quantity: 2 });
+    const res = await ag.delete(`/cart/products/${productId}`).expect(200);
 
-    expect(res.body.items).toHaveLength(0)
-    expect(res.body.total_price).toBe(0)
-  })
+    expect(res.body.items).toHaveLength(0);
+    expect(res.body.total_price).toBe(0);
+  });
 
   it('returns 404 when no cart exists', async () => {
-    await agent(app).delete(`/cart/products/${productId}`).expect(404)
-  })
-})
+    await agent(app).delete(`/cart/products/${productId}`).expect(404);
+  });
+});
 ```
 
 - [ ] **Step 2: Run tests to confirm they fail**
@@ -1732,32 +1807,34 @@ Expected: FAIL
 ```typescript
 router.delete('/products/:productId', async (req, res, next) => {
   try {
-    const productId = parseInt(req.params.productId, 10)
+    const productId = parseInt(req.params.productId, 10);
 
     if (isNaN(productId)) {
-      res.status(400).json({ error: 'Invalid productId', code: 'INVALID_INPUT' })
-      return
+      res
+        .status(400)
+        .json({ error: 'Invalid productId', code: 'INVALID_INPUT' });
+      return;
     }
 
     if (!req.session.cartId) {
-      res.status(404).json({ error: 'Cart not found', code: 'NOT_FOUND' })
-      return
+      res.status(404).json({ error: 'Cart not found', code: 'NOT_FOUND' });
+      return;
     }
 
     await prisma.cartItem.deleteMany({
-      where: { cart_id: req.session.cartId, product_id: productId },
-    })
+      where: { cart_id: req.session.cartId, product_id: productId }
+    });
 
     const cart = await prisma.cart.findUniqueOrThrow({
       where: { id: req.session.cartId },
-      include: cartInclude,
-    })
+      include: cartInclude
+    });
 
-    res.json(formatCart(cart))
+    res.json(formatCart(cart));
   } catch (err) {
-    next(err)
+    next(err);
   }
-})
+});
 ```
 
 - [ ] **Step 4: Run all tests to confirm they pass**
@@ -1782,10 +1859,12 @@ git commit -m "feat: add DELETE /cart/products/:productId — remove item from c
 ### Task 13: POST /checkout/payment-intent
 
 **Files:**
+
 - Create: `api/src/routes/checkout.ts`
 - Create: `api/tests/orders.test.ts` (partial — setup for Tasks 12 & 13)
 
 **Interfaces:**
+
 - Produces: `POST /checkout/payment-intent` with body `{ cartId: number }` → `{ clientSecret: string; amount: number }`
 - Consumes: Stripe `sk_test_` key from `process.env.STRIPE_SECRET_KEY`
 
@@ -1796,19 +1875,19 @@ git commit -m "feat: add DELETE /cart/products/:productId — remove item from c
 Create `api/tests/orders.test.ts`:
 
 ```typescript
-import { describe, it, expect, beforeEach, afterAll } from 'vitest'
-import { agent } from 'supertest'
-import { app } from '../src/app.js'
-import { prisma } from '../src/db/prisma.js'
+import { describe, it, expect, beforeEach, afterAll } from 'vitest';
+import { agent } from 'supertest';
+import { app } from '../src/app.js';
+import { prisma } from '../src/db/prisma.js';
 
-let productId: number
+let productId: number;
 
 beforeEach(async () => {
-  await prisma.orderItem.deleteMany()
-  await prisma.order.deleteMany()
-  await prisma.cartItem.deleteMany()
-  await prisma.cart.deleteMany()
-  await prisma.product.deleteMany()
+  await prisma.orderItem.deleteMany();
+  await prisma.order.deleteMany();
+  await prisma.cartItem.deleteMany();
+  await prisma.cart.deleteMany();
+  await prisma.product.deleteMany();
 
   const product = await prisma.product.create({
     data: {
@@ -1816,44 +1895,44 @@ beforeEach(async () => {
       description: 'desc',
       primary_image: 'img.jpg',
       image_urls: [],
-      unit_price: 15.00,
-      currency: 'GBP',
-    },
-  })
-  productId = product.id
-})
+      unit_price: 15.0,
+      currency: 'GBP'
+    }
+  });
+  productId = product.id;
+});
 
 afterAll(async () => {
-  await prisma.orderItem.deleteMany()
-  await prisma.order.deleteMany()
-  await prisma.cartItem.deleteMany()
-  await prisma.cart.deleteMany()
-  await prisma.product.deleteMany()
-})
+  await prisma.orderItem.deleteMany();
+  await prisma.order.deleteMany();
+  await prisma.cartItem.deleteMany();
+  await prisma.cart.deleteMany();
+  await prisma.product.deleteMany();
+});
 
 describe('POST /checkout/payment-intent', () => {
   it('creates a Stripe PaymentIntent and returns clientSecret', async () => {
-    const ag = agent(app)
-    await ag.post('/cart/products').send({ productId, quantity: 2 })
-    const cartRes = await ag.get('/cart')
-    const cartId = cartRes.body.id
+    const ag = agent(app);
+    await ag.post('/cart/products').send({ productId, quantity: 2 });
+    const cartRes = await ag.get('/cart');
+    const cartId = cartRes.body.id;
 
     const res = await ag
       .post('/checkout/payment-intent')
       .send({ cartId })
-      .expect(200)
+      .expect(200);
 
-    expect(res.body.clientSecret).toMatch(/^pi_.*_secret_.*/)
-    expect(res.body.amount).toBe(30) // 15.00 × 2
-  })
+    expect(res.body.clientSecret).toMatch(/^pi_.*_secret_.*/);
+    expect(res.body.amount).toBe(30); // 15.00 × 2
+  });
 
   it('returns 404 when cart is empty or does not exist', async () => {
     await agent(app)
       .post('/checkout/payment-intent')
       .send({ cartId: 999999 })
-      .expect(404)
-  })
-})
+      .expect(404);
+  });
+});
 ```
 
 - [ ] **Step 2: Run to confirm failure**
@@ -1867,57 +1946,61 @@ Expected: FAIL
 - [ ] **Step 3: Create `api/src/routes/checkout.ts`**
 
 ```typescript
-import { Router } from 'express'
-import Stripe from 'stripe'
-import { prisma } from '../db/prisma.js'
+import { Router } from 'express';
+import Stripe from 'stripe';
+import { prisma } from '../db/prisma.js';
 
-const router = Router()
+const router = Router();
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 router.post('/payment-intent', async (req, res, next) => {
   try {
-    const { cartId } = req.body as { cartId?: unknown }
+    const { cartId } = req.body as { cartId?: unknown };
 
     if (typeof cartId !== 'number') {
-      res.status(400).json({ error: 'cartId is required', code: 'INVALID_INPUT' })
-      return
+      res
+        .status(400)
+        .json({ error: 'cartId is required', code: 'INVALID_INPUT' });
+      return;
     }
 
     const cart = await prisma.cart.findUnique({
       where: { id: cartId },
-      include: { items: { include: { product: true } } },
-    })
+      include: { items: { include: { product: true } } }
+    });
 
     if (!cart || cart.items.length === 0) {
-      res.status(404).json({ error: 'Cart not found or empty', code: 'NOT_FOUND' })
-      return
+      res
+        .status(404)
+        .json({ error: 'Cart not found or empty', code: 'NOT_FOUND' });
+      return;
     }
 
     const totalPence = Math.round(
       cart.items.reduce(
         (sum, item) => sum + Number(item.product.unit_price) * item.quantity,
-        0,
-      ) * 100,
-    )
+        0
+      ) * 100
+    );
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount: totalPence,
       currency: 'gbp',
       automatic_payment_methods: { enabled: true, allow_redirects: 'never' },
-      metadata: { cartId: String(cartId) },
-    })
+      metadata: { cartId: String(cartId) }
+    });
 
     res.json({
       clientSecret: paymentIntent.client_secret,
-      amount: totalPence / 100,
-    })
+      amount: totalPence / 100
+    });
   } catch (err) {
-    next(err)
+    next(err);
   }
-})
+});
 
-export default router
+export default router;
 ```
 
 - [ ] **Step 4: Run tests to confirm they pass**
@@ -1940,10 +2023,12 @@ git commit -m "feat: add POST /checkout/payment-intent — create Stripe Payment
 ### Task 14: POST /order
 
 **Files:**
+
 - Create: `api/src/routes/orders.ts`
 - Modify: `api/tests/orders.test.ts`
 
 **Interfaces:**
+
 - Produces: `POST /order` with body `{ cartId, paymentIntentId, address_details }` → `Order`
 - Verifies PaymentIntent status with Stripe before creating the order
 - Clears `req.session.cartId` after success
@@ -1951,25 +2036,35 @@ git commit -m "feat: add POST /checkout/payment-intent — create Stripe Payment
 ```typescript
 // Request body
 interface PlaceOrderBody {
-  cartId: number
-  paymentIntentId: string
+  cartId: number;
+  paymentIntentId: string;
   address_details: {
-    name: string
-    street: string
-    city: string
-    postcode: string
-  }
+    name: string;
+    street: string;
+    city: string;
+    postcode: string;
+  };
 }
 
 // Response
 interface OrderResponse {
-  id: number
-  total_price: number
-  currency: string
-  status: string
-  items: Array<{ quantity: number; price: number; currency: string; product: { id: number; name: string; primary_image: string } }>
-  address_details: { name: string; street: string; city: string; postcode: string }
-  payment_details: { card_last_four_digits: string }
+  id: number;
+  total_price: number;
+  currency: string;
+  status: string;
+  items: Array<{
+    quantity: number;
+    price: number;
+    currency: string;
+    product: { id: number; name: string; primary_image: string };
+  }>;
+  address_details: {
+    name: string;
+    street: string;
+    city: string;
+    postcode: string;
+  };
+  payment_details: { card_last_four_digits: string };
 }
 ```
 
@@ -1978,9 +2073,9 @@ interface OrderResponse {
 Add to `api/tests/orders.test.ts`:
 
 ```typescript
-import Stripe from 'stripe'
+import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 async function createConfirmedPaymentIntent(amountGbp: number) {
   const pi = await stripe.paymentIntents.create({
@@ -1988,19 +2083,19 @@ async function createConfirmedPaymentIntent(amountGbp: number) {
     currency: 'gbp',
     automatic_payment_methods: { enabled: true, allow_redirects: 'never' },
     payment_method: 'pm_card_visa',
-    confirm: true,
-  })
-  return pi
+    confirm: true
+  });
+  return pi;
 }
 
 describe('POST /order', () => {
   it('creates an order from a confirmed payment intent', async () => {
-    const ag = agent(app)
-    await ag.post('/cart/products').send({ productId, quantity: 2 })
-    const cartRes = await ag.get('/cart')
-    const cartId = cartRes.body.id
+    const ag = agent(app);
+    await ag.post('/cart/products').send({ productId, quantity: 2 });
+    const cartRes = await ag.get('/cart');
+    const cartId = cartRes.body.id;
 
-    const pi = await createConfirmedPaymentIntent(30)
+    const pi = await createConfirmedPaymentIntent(30);
 
     const res = await ag
       .post('/order')
@@ -2011,42 +2106,47 @@ describe('POST /order', () => {
           name: 'Jane Smith',
           street: '10 Downing Street',
           city: 'London',
-          postcode: 'SW1A 2AA',
-        },
+          postcode: 'SW1A 2AA'
+        }
       })
-      .expect(201)
+      .expect(201);
 
     expect(res.body).toMatchObject({
       total_price: 30,
       currency: 'GBP',
       status: 'confirmed',
-      address_details: { name: 'Jane Smith', city: 'London' },
-    })
-    expect(res.body.payment_details.card_last_four_digits).toHaveLength(4)
-    expect(res.body.items).toHaveLength(1)
+      address_details: { name: 'Jane Smith', city: 'London' }
+    });
+    expect(res.body.payment_details.card_last_four_digits).toHaveLength(4);
+    expect(res.body.items).toHaveLength(1);
 
     // Cart should be cleared after order
-    const cartAfter = await ag.get('/cart')
-    expect(cartAfter.body.items).toHaveLength(0)
-  })
+    const cartAfter = await ag.get('/cart');
+    expect(cartAfter.body.items).toHaveLength(0);
+  });
 
   it('returns 400 when paymentIntentId does not exist or is not succeeded', async () => {
-    const ag = agent(app)
-    await ag.post('/cart/products').send({ productId, quantity: 1 })
-    const cartRes = await ag.get('/cart')
+    const ag = agent(app);
+    await ag.post('/cart/products').send({ productId, quantity: 1 });
+    const cartRes = await ag.get('/cart');
 
     const res = await ag
       .post('/order')
       .send({
         cartId: cartRes.body.id,
         paymentIntentId: 'pi_fake_id',
-        address_details: { name: 'Jane', street: '1 St', city: 'London', postcode: 'SW1A 1AA' },
+        address_details: {
+          name: 'Jane',
+          street: '1 St',
+          city: 'London',
+          postcode: 'SW1A 1AA'
+        }
       })
-      .expect(400)
+      .expect(400);
 
-    expect(res.body).toMatchObject({ error: expect.any(String) })
-  })
-})
+    expect(res.body).toMatchObject({ error: expect.any(String) });
+  });
+});
 ```
 
 - [ ] **Step 2: Run to confirm failure**
@@ -2060,61 +2160,69 @@ Expected: FAIL
 - [ ] **Step 3: Create `api/src/routes/orders.ts`**
 
 ```typescript
-import { Router } from 'express'
-import Stripe from 'stripe'
-import { PlaceOrderSchema } from '@marketplace/core'
-import { prisma } from '../db/prisma.js'
+import { Router } from 'express';
+import Stripe from 'stripe';
+import { PlaceOrderSchema } from '@marketplace/core';
+import { prisma } from '../db/prisma.js';
 
-const router = Router()
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+const router = Router();
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 router.post('/', async (req, res, next) => {
   try {
-    const parsed = PlaceOrderSchema.safeParse(req.body)
+    const parsed = PlaceOrderSchema.safeParse(req.body);
     if (!parsed.success) {
-      res.status(400).json({ error: parsed.error.errors[0].message, code: 'INVALID_INPUT' })
-      return
+      res
+        .status(400)
+        .json({ error: parsed.error.errors[0].message, code: 'INVALID_INPUT' });
+      return;
     }
-    const { cartId, paymentIntentId, address_details } = parsed.data
+    const { cartId, paymentIntentId, address_details } = parsed.data;
 
-    let paymentIntent: Stripe.PaymentIntent
+    let paymentIntent: Stripe.PaymentIntent;
     try {
       paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId, {
-        expand: ['payment_method'],
-      })
+        expand: ['payment_method']
+      });
     } catch {
-      res.status(400).json({ error: 'Invalid payment intent', code: 'PAYMENT_FAILED' })
-      return
+      res
+        .status(400)
+        .json({ error: 'Invalid payment intent', code: 'PAYMENT_FAILED' });
+      return;
     }
 
     if (paymentIntent.status !== 'succeeded') {
-      res.status(400).json({ error: 'Payment not completed', code: 'PAYMENT_FAILED' })
-      return
+      res
+        .status(400)
+        .json({ error: 'Payment not completed', code: 'PAYMENT_FAILED' });
+      return;
     }
 
     const cart = await prisma.cart.findUnique({
       where: { id: cartId },
-      include: { items: { include: { product: true } } },
-    })
+      include: { items: { include: { product: true } } }
+    });
 
     if (!cart || cart.items.length === 0) {
-      res.status(404).json({ error: 'Cart not found or empty', code: 'NOT_FOUND' })
-      return
+      res
+        .status(404)
+        .json({ error: 'Cart not found or empty', code: 'NOT_FOUND' });
+      return;
     }
 
     const orderItems = cart.items.map((item) => ({
       product_id: item.product_id,
       quantity: item.quantity,
-      price: Number(item.product.unit_price) * item.quantity,
-    }))
+      price: Number(item.product.unit_price) * item.quantity
+    }));
 
-    const totalPrice = orderItems.reduce((sum, item) => sum + item.price, 0)
+    const totalPrice = orderItems.reduce((sum, item) => sum + item.price, 0);
 
-    const pm = paymentIntent.payment_method
+    const pm = paymentIntent.payment_method;
     const cardLastFour =
       pm && typeof pm === 'object' && pm.type === 'card' && pm.card?.last4
         ? pm.card.last4
-        : '0000'
+        : '0000';
 
     const order = await prisma.order.create({
       data: {
@@ -2126,14 +2234,14 @@ router.post('/', async (req, res, next) => {
         address_city: address_details.city,
         address_postcode: address_details.postcode,
         items: {
-          create: orderItems,
-        },
+          create: orderItems
+        }
       },
-      include: { items: { include: { product: true } } },
-    })
+      include: { items: { include: { product: true } } }
+    });
 
-    await prisma.cart.delete({ where: { id: cartId } })
-    req.session.cartId = undefined
+    await prisma.cart.delete({ where: { id: cartId } });
+    req.session.cartId = undefined;
 
     const response = {
       id: order.id,
@@ -2147,27 +2255,27 @@ router.post('/', async (req, res, next) => {
         product: {
           id: item.product.id,
           name: item.product.name,
-          primary_image: item.product.primary_image,
-        },
+          primary_image: item.product.primary_image
+        }
       })),
       address_details: {
         name: order.address_name,
         street: order.address_street,
         city: order.address_city,
-        postcode: order.address_postcode,
+        postcode: order.address_postcode
       },
       payment_details: {
-        card_last_four_digits: order.card_last_four,
-      },
-    }
+        card_last_four_digits: order.card_last_four
+      }
+    };
 
-    res.status(201).json(response)
+    res.status(201).json(response);
   } catch (err) {
-    next(err)
+    next(err);
   }
-})
+});
 
-export default router
+export default router;
 ```
 
 - [ ] **Step 4: Run all API tests to confirm they pass**
@@ -2192,10 +2300,12 @@ git commit -m "feat: add POST /order — place order via Stripe PaymentIntent"
 ### Task 15: API Client + Stripe Loader
 
 **Files:**
+
 - Create: `web/lib/api.ts`
 - Create: `web/lib/stripe.ts`
 
 **Interfaces:**
+
 - Produces: `fetchProducts()`, `fetchProduct(id)`, `fetchCart()`, `addToCart(productId, quantity)`, `updateCartItem(productId, quantity)`, `removeFromCart(productId)`, `createPaymentIntent(cartId)`, `placeOrder(body)` — all typed, all throw on error with `ApiError`
 - Consumes: `Cart`, `Order`, `Product` types from `@marketplace/core` (defined in Task 3)
 
@@ -2204,82 +2314,95 @@ git commit -m "feat: add POST /order — place order via Stripe PaymentIntent"
 - [ ] **Step 1: Create `web/lib/api.ts`**
 
 ```typescript
-import type { Cart, Order, Product } from '@marketplace/core'
+import type { Cart, Order, Product } from '@marketplace/core';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
 
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {
     ...init,
     credentials: 'include',
-    headers: { 'Content-Type': 'application/json', ...init?.headers },
-  })
+    headers: { 'Content-Type': 'application/json', ...init?.headers }
+  });
 
   if (!res.ok) {
-    const body = await res.json().catch(() => ({ error: 'Request failed' }))
-    throw Object.assign(new Error(body.error ?? 'Request failed'), { code: body.code, status: res.status })
+    const body = await res.json().catch(() => ({ error: 'Request failed' }));
+    throw Object.assign(new Error(body.error ?? 'Request failed'), {
+      code: body.code,
+      status: res.status
+    });
   }
 
-  return res.json() as Promise<T>
+  return res.json() as Promise<T>;
 }
 
 export function fetchProducts() {
-  return apiFetch<{ results: Omit<Product, 'description' | 'image_urls'>[] }>('/products')
+  return apiFetch<{ results: Omit<Product, 'description' | 'image_urls'>[] }>(
+    '/products'
+  );
 }
 
 export function fetchProduct(id: number) {
-  return apiFetch<Product>(`/products/${id}`)
+  return apiFetch<Product>(`/products/${id}`);
 }
 
 export function fetchCart() {
-  return apiFetch<Cart>('/cart')
+  return apiFetch<Cart>('/cart');
 }
 
 export function addToCart(productId: number, quantity: number) {
   return apiFetch<Cart>('/cart/products', {
     method: 'POST',
-    body: JSON.stringify({ productId, quantity }),
-  })
+    body: JSON.stringify({ productId, quantity })
+  });
 }
 
 export function updateCartItem(productId: number, quantity: number) {
   return apiFetch<Cart>(`/cart/products/${productId}`, {
     method: 'PUT',
-    body: JSON.stringify({ quantity }),
-  })
+    body: JSON.stringify({ quantity })
+  });
 }
 
 export function removeFromCart(productId: number) {
-  return apiFetch<Cart>(`/cart/products/${productId}`, { method: 'DELETE' })
+  return apiFetch<Cart>(`/cart/products/${productId}`, { method: 'DELETE' });
 }
 
 export function createPaymentIntent(cartId: number) {
-  return apiFetch<{ clientSecret: string; amount: number }>('/checkout/payment-intent', {
-    method: 'POST',
-    body: JSON.stringify({ cartId }),
-  })
+  return apiFetch<{ clientSecret: string; amount: number }>(
+    '/checkout/payment-intent',
+    {
+      method: 'POST',
+      body: JSON.stringify({ cartId })
+    }
+  );
 }
 
 export function placeOrder(body: {
-  cartId: number
-  paymentIntentId: string
-  address_details: { name: string; street: string; city: string; postcode: string }
+  cartId: number;
+  paymentIntentId: string;
+  address_details: {
+    name: string;
+    street: string;
+    city: string;
+    postcode: string;
+  };
 }) {
   return apiFetch<Order>('/order', {
     method: 'POST',
-    body: JSON.stringify(body),
-  })
+    body: JSON.stringify(body)
+  });
 }
 ```
 
 - [ ] **Step 3: Create `web/lib/stripe.ts`**
 
 ```typescript
-import { loadStripe } from '@stripe/stripe-js'
+import { loadStripe } from '@stripe/stripe-js';
 
 export const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
-)
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+);
 ```
 
 - [ ] **Step 3: Type-check**
@@ -2302,10 +2425,12 @@ git commit -m "feat: add typed API client and Stripe loader for web"
 ### Task 16: Root Layout + Navigation
 
 **Files:**
+
 - Create: `web/components/nav.tsx`
 - Modify: `web/app/layout.tsx`
 
 **Interfaces:**
+
 - Produces: `<Nav>` — server component that fetches cart and displays item count badge
 - Consumes: `fetchCart()` from `web/lib/api.ts`
 
@@ -2388,10 +2513,12 @@ git commit -m "feat: add root layout with navigation and cart badge"
 ### Task 17: Product Listing Page (PLP)
 
 **Files:**
+
 - Create: `web/components/product-card.tsx`
 - Modify: `web/app/page.tsx`
 
 **Interfaces:**
+
 - Consumes: `fetchProducts()` → `{ results: Product[] }`
 - Produces: SSR page at `/` displaying a grid of product cards
 
@@ -2485,11 +2612,13 @@ git commit -m "feat: add Product Listing Page with SSR product grid"
 ### Task 18: Product Detail Page (PDP)
 
 **Files:**
+
 - Create: `web/components/product-gallery.tsx`
 - Create: `web/components/add-to-cart-button.tsx`
 - Create: `web/app/products/[id]/page.tsx`
 
 **Interfaces:**
+
 - Consumes: `fetchProduct(id)` → full `Product`
 - Produces: SSR page at `/products/:id` with image gallery, description, price, and add-to-cart button
 
@@ -2655,10 +2784,12 @@ git commit -m "feat: add Product Detail Page with image gallery and add-to-cart"
 ### Task 19: Cart Page
 
 **Files:**
+
 - Create: `web/components/cart-item-row.tsx`
 - Create: `web/app/cart/page.tsx`
 
 **Interfaces:**
+
 - Consumes: `fetchCart()`, `updateCartItem(productId, quantity)`, `removeFromCart(productId)`
 - Produces: SSR cart page at `/cart` showing items with quantity controls and order total
 
@@ -2801,11 +2932,13 @@ git commit -m "feat: add Cart page with quantity controls and remove"
 ### Task 20: Checkout Page
 
 **Files:**
+
 - Create: `web/components/address-form.tsx`
 - Create: `web/components/stripe-payment-form.tsx`
 - Create: `web/app/checkout/page.tsx`
 
 **Interfaces:**
+
 - Consumes: `fetchCart()`, `createPaymentIntent(cartId)`, `placeOrder(body)`
 - Produces: client-side checkout page at `/checkout` with UK address form and Stripe CardElement
 - On success: redirects to `/order-confirmation/:id`
@@ -3038,9 +3171,11 @@ git commit -m "feat: add Checkout page with address form and Stripe payment"
 ### Task 21: Order Confirmation Page
 
 **Files:**
+
 - Create: `web/app/order-confirmation/[id]/page.tsx`
 
 **Interfaces:**
+
 - Consumes: Order ID from URL params; order details are passed via `router.push` state — but since Next.js server components can't read router state, fetch the order from the API.
 - Note: A `GET /order/:id` endpoint is needed. Add it to the orders router in the API.
 
@@ -3051,20 +3186,20 @@ Add to `api/src/routes/orders.ts`:
 ```typescript
 router.get('/:id', async (req, res, next) => {
   try {
-    const id = parseInt(req.params.id, 10)
+    const id = parseInt(req.params.id, 10);
     if (isNaN(id)) {
-      res.status(404).json({ error: 'Order not found', code: 'NOT_FOUND' })
-      return
+      res.status(404).json({ error: 'Order not found', code: 'NOT_FOUND' });
+      return;
     }
 
     const order = await prisma.order.findUnique({
       where: { id },
-      include: { items: { include: { product: true } } },
-    })
+      include: { items: { include: { product: true } } }
+    });
 
     if (!order) {
-      res.status(404).json({ error: 'Order not found', code: 'NOT_FOUND' })
-      return
+      res.status(404).json({ error: 'Order not found', code: 'NOT_FOUND' });
+      return;
     }
 
     res.json({
@@ -3079,28 +3214,28 @@ router.get('/:id', async (req, res, next) => {
         product: {
           id: item.product.id,
           name: item.product.name,
-          primary_image: item.product.primary_image,
-        },
+          primary_image: item.product.primary_image
+        }
       })),
       address_details: {
         name: order.address_name,
         street: order.address_street,
         city: order.address_city,
-        postcode: order.address_postcode,
+        postcode: order.address_postcode
       },
-      payment_details: { card_last_four_digits: order.card_last_four },
-    })
+      payment_details: { card_last_four_digits: order.card_last_four }
+    });
   } catch (err) {
-    next(err)
+    next(err);
   }
-})
+});
 ```
 
 Also add `fetchOrder` to `web/lib/api.ts`:
 
 ```typescript
 export function fetchOrder(id: number) {
-  return apiFetch<Order>(`/order/${id}`)
+  return apiFetch<Order>(`/order/${id}`);
 }
 ```
 
@@ -3183,6 +3318,7 @@ git commit -m "feat: add Order Confirmation page and GET /order/:id endpoint"
 ### Task 22: Image Optimization
 
 **Files:**
+
 - Modify: `web/next.config.ts` (add image formats — already done in Task 5)
 - Audit: `web/components/product-card.tsx`, `web/components/product-gallery.tsx`, `web/components/cart-item-row.tsx`
 
@@ -3191,11 +3327,13 @@ git commit -m "feat: add Order Confirmation page and GET /order/:id endpoint"
 - [ ] **Step 1: Audit all `<Image>` usages**
 
 Check each file against these rules:
+
 - PLP (`product-card.tsx`): `sizes` set for responsive grid ✓ (set in Task 16)
 - PDP (`product-gallery.tsx`): primary image has `priority` ✓ (set in Task 17)
 - Cart (`cart-item-row.tsx`): thumbnail images — add explicit `width/height` and no `priority`
 
 In `web/components/cart-item-row.tsx`, confirm the `<Image>` has:
+
 ```typescript
 <Image
   src={item.product.primary_image}
@@ -3205,6 +3343,7 @@ In `web/components/cart-item-row.tsx`, confirm the `<Image>` has:
   style={{ objectFit: 'cover' }}
 />
 ```
+
 No `priority` needed here — cart thumbnails are not LCP candidates.
 
 - [ ] **Step 2: Add `sizes` to PDP gallery thumbnails in `web/components/product-gallery.tsx`**
@@ -3238,12 +3377,14 @@ git commit -m "perf: add correct sizes attribute to PDP thumbnail images"
 ### Task 23: SEO — Metadata, JSON-LD, and Sitemap
 
 **Files:**
+
 - Modify: `web/app/layout.tsx` (add base OG metadata)
 - Modify: `web/app/page.tsx` (already has metadata — add OG)
 - Modify: `web/app/products/[id]/page.tsx` (already has metadata + OG — add JSON-LD)
 - Create: `web/app/sitemap.ts`
 
 **Interfaces:**
+
 - Produces: `GET /sitemap.xml` — lists PLP and all PDP URLs for crawlers
 
 - [ ] **Step 1: Add base Open Graph metadata to `web/app/layout.tsx`**
@@ -3257,9 +3398,9 @@ export const metadata: Metadata = {
   openGraph: {
     siteName: 'Marketplace',
     locale: 'en_GB',
-    type: 'website',
-  },
-}
+    type: 'website'
+  }
+};
 ```
 
 - [ ] **Step 2: Add JSON-LD structured data to `web/app/products/[id]/page.tsx`**
@@ -3278,12 +3419,13 @@ const jsonLd = {
     priceCurrency: product.currency,
     price: product.unit_price.toFixed(2),
     availability: 'https://schema.org/InStock',
-    seller: { '@type': 'Organization', name: 'Marketplace' },
-  },
-}
+    seller: { '@type': 'Organization', name: 'Marketplace' }
+  }
+};
 ```
 
 Add inside the returned JSX (after `<article>`):
+
 ```typescript
 <script
   type="application/ld+json"
@@ -3294,25 +3436,30 @@ Add inside the returned JSX (after `<article>`):
 - [ ] **Step 3: Create `web/app/sitemap.ts`**
 
 ```typescript
-import type { MetadataRoute } from 'next'
-import { fetchProducts } from '@/lib/api'
+import type { MetadataRoute } from 'next';
+import { fetchProducts } from '@/lib/api';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+  const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 
-  const { results } = await fetchProducts()
+  const { results } = await fetchProducts();
 
   const productUrls: MetadataRoute.Sitemap = results.map((product) => ({
     url: `${BASE_URL}/products/${product.id}`,
     lastModified: new Date(),
     changeFrequency: 'weekly',
-    priority: 0.8,
-  }))
+    priority: 0.8
+  }));
 
   return [
-    { url: BASE_URL, lastModified: new Date(), changeFrequency: 'daily', priority: 1 },
-    ...productUrls,
-  ]
+    {
+      url: BASE_URL,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 1
+    },
+    ...productUrls
+  ];
 }
 ```
 
@@ -3340,50 +3487,57 @@ git commit -m "feat: add SEO metadata, JSON-LD structured data, and sitemap.xml"
 ### Task 24: E2E — Browse Products
 
 **Files:**
+
 - Create: `web/tests/e2e/browse.spec.ts`
 
 - [ ] **Step 1: Write the test**
 
 ```typescript
-import { test, expect } from '@playwright/test'
+import { test, expect } from '@playwright/test';
 
 test.describe('Product browsing', () => {
   test('PLP shows a list of products', async ({ page }) => {
-    await page.goto('/')
-    await expect(page.getByRole('heading', { name: 'All Products' })).toBeVisible()
-    const products = page.getByRole('listitem')
-    await expect(products).toHaveCount(6)
-  })
+    await page.goto('/');
+    await expect(
+      page.getByRole('heading', { name: 'All Products' })
+    ).toBeVisible();
+    const products = page.getByRole('listitem');
+    await expect(products).toHaveCount(6);
+  });
 
   test('clicking a product navigates to the PDP', async ({ page }) => {
-    await page.goto('/')
-    await page.getByRole('listitem').first().getByRole('link').click()
-    await expect(page).toHaveURL(/\/products\/\d+/)
-    await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
-  })
+    await page.goto('/');
+    await page.getByRole('listitem').first().getByRole('link').click();
+    await expect(page).toHaveURL(/\/products\/\d+/);
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  });
 
-  test('PDP shows product name, description, price, and add-to-cart button', async ({ page }) => {
-    await page.goto('/products/1')
-    await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
-    await expect(page.getByRole('button', { name: 'Add to Cart' })).toBeVisible()
-  })
+  test('PDP shows product name, description, price, and add-to-cart button', async ({
+    page
+  }) => {
+    await page.goto('/products/1');
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: 'Add to Cart' })
+    ).toBeVisible();
+  });
 
   test('PDP has JSON-LD structured data', async ({ page }) => {
-    await page.goto('/products/1')
+    await page.goto('/products/1');
     const jsonLd = await page.$eval(
       'script[type="application/ld+json"]',
-      (el) => JSON.parse(el.textContent ?? '{}'),
-    )
-    expect(jsonLd['@type']).toBe('Product')
-    expect(jsonLd.name).toBeTruthy()
-  })
+      (el) => JSON.parse(el.textContent ?? '{}')
+    );
+    expect(jsonLd['@type']).toBe('Product');
+    expect(jsonLd.name).toBeTruthy();
+  });
 
   test('sitemap.xml is accessible', async ({ page }) => {
-    const res = await page.goto('/sitemap.xml')
-    expect(res?.status()).toBe(200)
-    expect(res?.headers()['content-type']).toContain('xml')
-  })
-})
+    const res = await page.goto('/sitemap.xml');
+    expect(res?.status()).toBe(200);
+    expect(res?.headers()['content-type']).toContain('xml');
+  });
+});
 ```
 
 - [ ] **Step 2: Run the tests**
@@ -3408,50 +3562,51 @@ git commit -m "test: add E2E tests for product browsing"
 ### Task 25: E2E — Cart Flow
 
 **Files:**
+
 - Create: `web/tests/e2e/cart.spec.ts`
 
 - [ ] **Step 1: Write the test**
 
 ```typescript
-import { test, expect } from '@playwright/test'
+import { test, expect } from '@playwright/test';
 
 test.describe('Cart flow', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/products/1')
-    await page.getByRole('button', { name: 'Add to Cart' }).click()
-    await expect(page.getByRole('link', { name: /Cart/ })).toContainText('(')
-  })
+    await page.goto('/products/1');
+    await page.getByRole('button', { name: 'Add to Cart' }).click();
+    await expect(page.getByRole('link', { name: /Cart/ })).toContainText('(');
+  });
 
   test('added item appears in the cart', async ({ page }) => {
-    await page.goto('/cart')
-    await expect(page.getByRole('list', { name: 'Cart items' })).toBeVisible()
-    const items = page.getByRole('listitem')
-    await expect(items).toHaveCount(1)
-  })
+    await page.goto('/cart');
+    await expect(page.getByRole('list', { name: 'Cart items' })).toBeVisible();
+    const items = page.getByRole('listitem');
+    await expect(items).toHaveCount(1);
+  });
 
   test('cart shows the correct total', async ({ page }) => {
-    await page.goto('/cart')
-    const total = page.getByLabel(/Order total/)
-    await expect(total).toBeVisible()
-    await expect(total).toContainText('£')
-  })
+    await page.goto('/cart');
+    const total = page.getByLabel(/Order total/);
+    await expect(total).toBeVisible();
+    await expect(total).toContainText('£');
+  });
 
   test('increasing quantity updates the total', async ({ page }) => {
-    await page.goto('/cart')
-    const increaseBtn = page.getByRole('button', { name: 'Increase quantity' })
-    await increaseBtn.click()
-    await page.waitForLoadState('networkidle')
-    const item = page.getByRole('listitem').first()
-    await expect(item.getByLabel(/Quantity/)).toContainText('2')
-  })
+    await page.goto('/cart');
+    const increaseBtn = page.getByRole('button', { name: 'Increase quantity' });
+    await increaseBtn.click();
+    await page.waitForLoadState('networkidle');
+    const item = page.getByRole('listitem').first();
+    await expect(item.getByLabel(/Quantity/)).toContainText('2');
+  });
 
   test('removing an item empties the cart', async ({ page }) => {
-    await page.goto('/cart')
-    await page.getByRole('button', { name: /Remove/ }).click()
-    await page.waitForLoadState('networkidle')
-    await expect(page.getByText('Your cart is empty')).toBeVisible()
-  })
-})
+    await page.goto('/cart');
+    await page.getByRole('button', { name: /Remove/ }).click();
+    await page.waitForLoadState('networkidle');
+    await expect(page.getByText('Your cart is empty')).toBeVisible();
+  });
+});
 ```
 
 - [ ] **Step 2: Run the tests**
@@ -3474,6 +3629,7 @@ git commit -m "test: add E2E tests for cart flow"
 ### Task 26: E2E — Checkout Flow
 
 **Files:**
+
 - Create: `web/tests/e2e/checkout.spec.ts`
 
 > Uses Stripe test card `4242 4242 4242 4242`. Stripe's CardElement renders inside an iframe — use `page.frameLocator` to interact with it.
@@ -3481,55 +3637,67 @@ git commit -m "test: add E2E tests for cart flow"
 - [ ] **Step 1: Write the test**
 
 ```typescript
-import { test, expect } from '@playwright/test'
+import { test, expect } from '@playwright/test';
 
 test.describe('Checkout flow', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/products/1')
-    await page.getByRole('button', { name: 'Add to Cart' }).click()
-    await page.waitForLoadState('networkidle')
-  })
+    await page.goto('/products/1');
+    await page.getByRole('button', { name: 'Add to Cart' }).click();
+    await page.waitForLoadState('networkidle');
+  });
 
-  test('redirects to /cart when checkout is visited with empty cart', async ({ page }) => {
+  test('redirects to /cart when checkout is visited with empty cart', async ({
+    page
+  }) => {
     // New context = fresh session = empty cart
-    await page.goto('/checkout')
+    await page.goto('/checkout');
     // Give client-side redirect time to run
-    await page.waitForURL(/\/cart/)
-    await expect(page).toHaveURL('/cart')
-  })
+    await page.waitForURL(/\/cart/);
+    await expect(page).toHaveURL('/cart');
+  });
 
-  test('completes a full purchase and lands on order confirmation', async ({ page }) => {
-    await page.goto('/checkout')
-    await expect(page.getByRole('heading', { name: 'Checkout' })).toBeVisible()
+  test('completes a full purchase and lands on order confirmation', async ({
+    page
+  }) => {
+    await page.goto('/checkout');
+    await expect(page.getByRole('heading', { name: 'Checkout' })).toBeVisible();
 
     // Fill address
-    await page.getByLabel('Full name').fill('Jane Smith')
-    await page.getByLabel('Street address').fill('10 Downing Street')
-    await page.getByLabel('City').fill('London')
-    await page.getByLabel('Postcode').fill('SW1A 2AA')
+    await page.getByLabel('Full name').fill('Jane Smith');
+    await page.getByLabel('Street address').fill('10 Downing Street');
+    await page.getByLabel('City').fill('London');
+    await page.getByLabel('Postcode').fill('SW1A 2AA');
 
     // Fill Stripe card (inside iframe)
-    const stripeFrame = page.frameLocator('iframe[name^="__privateStripeFrame"]').first()
-    await stripeFrame.getByRole('textbox', { name: 'Card number' }).fill('4242424242424242')
-    await stripeFrame.getByRole('textbox', { name: /expiry/i }).fill('12/30')
-    await stripeFrame.getByRole('textbox', { name: /CVC/i }).fill('123')
+    const stripeFrame = page
+      .frameLocator('iframe[name^="__privateStripeFrame"]')
+      .first();
+    await stripeFrame
+      .getByRole('textbox', { name: 'Card number' })
+      .fill('4242424242424242');
+    await stripeFrame.getByRole('textbox', { name: /expiry/i }).fill('12/30');
+    await stripeFrame.getByRole('textbox', { name: /CVC/i }).fill('123');
 
-    await page.getByRole('button', { name: 'Place Order' }).click()
+    await page.getByRole('button', { name: 'Place Order' }).click();
 
     // Wait for redirect to order confirmation (Stripe payment takes a moment)
-    await page.waitForURL(/\/order-confirmation\/\d+/, { timeout: 15000 })
+    await page.waitForURL(/\/order-confirmation\/\d+/, { timeout: 15000 });
 
-    await expect(page.getByRole('heading', { name: 'Order Confirmed' })).toBeVisible()
-    await expect(page.getByText(/Jane Smith/)).toBeVisible()
-    await expect(page.getByText(/Card ending in/)).toBeVisible()
-  })
+    await expect(
+      page.getByRole('heading', { name: 'Order Confirmed' })
+    ).toBeVisible();
+    await expect(page.getByText(/Jane Smith/)).toBeVisible();
+    await expect(page.getByText(/Card ending in/)).toBeVisible();
+  });
 
-  test('shows a validation error when address fields are empty', async ({ page }) => {
-    await page.goto('/checkout')
-    await page.getByRole('button', { name: 'Place Order' }).click()
-    await expect(page.getByRole('alert').first()).toBeVisible()
-  })
-})
+  test('shows a validation error when address fields are empty', async ({
+    page
+  }) => {
+    await page.goto('/checkout');
+    await page.getByRole('button', { name: 'Place Order' }).click();
+    await expect(page.getByRole('alert').first()).toBeVisible();
+  });
+});
 ```
 
 - [ ] **Step 2: Run the tests**
@@ -3567,15 +3735,15 @@ git commit -m "test: add E2E tests for checkout and order confirmation flow"
 
 ## Summary
 
-| Phase | Tasks | Key Deliverables |
-|-------|-------|-----------------|
-| 1 — Infrastructure | 1–6 | Docker/PG, API scaffold, `@marketplace/core` (shared types + schemas), Prisma schema+seed, sessions, Next.js scaffold |
-| 2 — Product API | 7–8 | `GET /products`, `GET /products/:id` |
-| 3 — Cart API | 9–12 | `GET/POST/PUT/DELETE /cart/products` with session-tied carts |
-| 4 — Checkout & Order API | 13–14 | Stripe PaymentIntent, `POST /order` |
-| 5 — Frontend Foundation | 15–16 | API client, layout, nav with cart badge |
-| 6 — Product Pages | 17–18 | PLP grid, PDP with gallery and add-to-cart |
-| 7 — Cart Page | 19 | Cart with qty controls and remove |
-| 8 — Checkout & Confirmation | 20–21 | Checkout form + Stripe, order confirmation |
-| 9 — SEO & Images | 22–23 | AVIF/WebP, metadata, JSON-LD, sitemap.xml |
-| 10 — E2E Tests | 24–26 | Browse, cart, and full checkout flows |
+| Phase                       | Tasks | Key Deliverables                                                                                                      |
+| --------------------------- | ----- | --------------------------------------------------------------------------------------------------------------------- |
+| 1 — Infrastructure          | 1–6   | Docker/PG, API scaffold, `@marketplace/core` (shared types + schemas), Prisma schema+seed, sessions, Next.js scaffold |
+| 2 — Product API             | 7–8   | `GET /products`, `GET /products/:id`                                                                                  |
+| 3 — Cart API                | 9–12  | `GET/POST/PUT/DELETE /cart/products` with session-tied carts                                                          |
+| 4 — Checkout & Order API    | 13–14 | Stripe PaymentIntent, `POST /order`                                                                                   |
+| 5 — Frontend Foundation     | 15–16 | API client, layout, nav with cart badge                                                                               |
+| 6 — Product Pages           | 17–18 | PLP grid, PDP with gallery and add-to-cart                                                                            |
+| 7 — Cart Page               | 19    | Cart with qty controls and remove                                                                                     |
+| 8 — Checkout & Confirmation | 20–21 | Checkout form + Stripe, order confirmation                                                                            |
+| 9 — SEO & Images            | 22–23 | AVIF/WebP, metadata, JSON-LD, sitemap.xml                                                                             |
+| 10 — E2E Tests              | 24–26 | Browse, cart, and full checkout flows                                                                                 |
