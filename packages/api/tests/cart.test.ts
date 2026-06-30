@@ -120,3 +120,18 @@ describe('PUT /cart/products/:productId', () => {
       .expect(404);
   });
 });
+
+describe('DELETE /cart/products/:productId', () => {
+  it('removes the item from the cart', async () => {
+    const ag = agent(app);
+    await ag.post('/cart/products').send({ productId, quantity: 2 });
+    const res = await ag.delete(`/cart/products/${productId}`).expect(200);
+
+    expect(res.body.items).toHaveLength(0);
+    expect(res.body.total_price).toBe(0);
+  });
+
+  it('returns 404 when no cart exists', async () => {
+    await agent(app).delete(`/cart/products/${productId}`).expect(404);
+  });
+});

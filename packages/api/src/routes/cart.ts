@@ -174,5 +174,36 @@ router.put('/products/:productId', async (req, res, next) => {
   }
 });
 
+router.delete('/products/:productId', async (req, res, next) => {
+  try {
+    const productId = parseInt(req.params.productId, 10);
+
+    if (isNaN(productId)) {
+      res
+        .status(400)
+        .json({ error: 'Invalid productId', code: 'INVALID_INPUT' });
+      return;
+    }
+
+    if (!req.session.cartId) {
+      res.status(404).json({ error: 'Cart not found', code: 'NOT_FOUND' });
+      return;
+    }
+
+    await prisma.cartItem.deleteMany({
+      where: { cart_id: req.session.cartId, product_id: productId }
+    });
+
+    const cart = await prisma.cart.findUniqueOrThrow({
+      where: { id: req.session.cartId },
+      include: cartInclude
+    });
+
+    res.json(formatCart(cart));
+  } catch (err) {
+    next(err);
+  }
+});
+
 export { formatCart, cartInclude };
 export default router;
