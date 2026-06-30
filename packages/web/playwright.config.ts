@@ -14,12 +14,12 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command: 'npm run dev -w api',
+      command: 'bun run --filter api dev',
       url: 'http://localhost:3001/products',
       reuseExistingServer: true
     },
     {
-      command: 'npm run dev -w web',
+      command: 'bun run --filter web dev',
       url: 'http://localhost:3000',
       reuseExistingServer: true
     }

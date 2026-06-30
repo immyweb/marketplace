@@ -3,10 +3,10 @@
   "private": true,
   "workspaces": ["packages/core", "packages/api", "packages/web"],
   "scripts": {
-    "dev": "npm run dev:api & npm run dev:web",
-    "dev:api": "npm run dev -w api",
-    "dev:web": "npm run dev -w web",
-    "test:api": "npm run test -w api",
-    "test:e2e": "npm run test:e2e -w web"
+    "dev": "bun run --filter api dev & bun run --filter web dev",
+    "dev:api": "bun run --filter api dev",
+    "dev:web": "bun run --filter web dev",
+    "test:api": "bun run --filter api test",
+    "test:e2e": "bun run --filter web test:e2e"
   }
 }
