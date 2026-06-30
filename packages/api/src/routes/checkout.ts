@@ -43,6 +43,11 @@ router.post('/payment-intent', async (req, res, next) => {
       metadata: { cartId: String(cartId) }
     });
 
+    if (!paymentIntent.client_secret) {
+      next(new Error('Stripe did not return a client_secret'));
+      return;
+    }
+
     res.json({
       clientSecret: paymentIntent.client_secret,
       amount: totalPence / 100
