@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id            Int         @id @default(autoincrement())
+  name          String
+  description   String
+  primary_image String
+  image_urls    String[]
+  unit_price    Decimal     @db.Decimal(10, 2)
+  currency      String      @default("GBP")
+  cart_items    CartItem[]
+  order_items   OrderItem[]
+
+  @@map("products")
+}
+
+model Cart {
+  id         Int        @id @default(autoincrement())
+  session_id String     @unique
+  currency   String     @default("GBP")
+  items      CartItem[]
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+
+  @@map("carts")
+}
+
+model CartItem {
+  id         Int     @id @default(autoincrement())
+  cart_id    Int
+  product_id Int
+  quantity   Int
+  cart       Cart    @relation(fields: [cart_id], references: [id], onDelete: Cascade)
+  product    Product @relation(fields: [product_id], references: [id])
+
+  @@unique([cart_id, product_id])
+  @@map("cart_items")
+}
+
+model Order {
+  id                Int         @id @default(autoincrement())
+  total_price       Decimal     @db.Decimal(10, 2)
+  currency          String      @default("GBP")
+  status            String      @default("confirmed")
+  stripe_payment_id String
+  card_last_four    String
+  address_name      String
+  address_street    String
+  address_city      String
+  address_postcode  String
+  items             OrderItem[]
+  created_at        DateTime    @default(now())
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id         Int     @id @default(autoincrement())
+  order_id   Int
+  product_id Int
+  quantity   Int
+  price      Decimal @db.Decimal(10, 2)
+  order      Order   @relation(fields: [order_id], references: [id])
+  product    Product @relation(fields: [product_id], references: [id])
+
+  @@map("order_items")
+}

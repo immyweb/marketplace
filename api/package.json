@@ -10,6 +10,9 @@
     "db:migrate:test": "DATABASE_URL=$DATABASE_URL_TEST prisma migrate deploy",
     "db:seed": "tsx prisma/seed.ts"
   },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "dependencies": {
     "@marketplace/core": "*",
     "@prisma/client": "^6.0.0",
