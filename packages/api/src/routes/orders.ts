@@ -17,6 +17,12 @@ router.post('/', async (req, res, next) => {
     }
     const { cartId, paymentIntentId, address_details } = parsed.data;
 
+    // Ensure the cart belongs to the current session to prevent IDOR
+    if (cartId !== req.session.cartId) {
+      res.status(403).json({ error: 'Cart does not belong to this session', code: 'FORBIDDEN' });
+      return;
+    }
+
     let paymentIntent: Stripe.PaymentIntent;
     try {
       paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId, {
@@ -62,23 +68,29 @@ router.post('/', async (req, res, next) => {
         ? pm.card.last4
         : '0000';
 
-    const order = await prisma.order.create({
-      data: {
-        total_price: totalPrice,
-        stripe_payment_id: paymentIntentId,
-        card_last_four: cardLastFour,
-        address_name: address_details.name,
-        address_street: address_details.street,
-        address_city: address_details.city,
-        address_postcode: address_details.postcode,
-        items: {
-          create: orderItems
-        }
-      },
-      include: { items: { include: { product: true } } }
+    // Use a transaction so order creation and cart deletion are atomic.
+    // If the process crashes between these two steps, we'd otherwise end
+    // up with a dangling order and a cart that can be re-ordered.
+    const order = await prisma.$transaction(async (tx) => {
+      const created = await tx.order.create({
+        data: {
+          total_price: totalPrice,
+          stripe_payment_id: paymentIntentId,
+          card_last_four: cardLastFour,
+          address_name: address_details.name,
+          address_street: address_details.street,
+          address_city: address_details.city,
+          address_postcode: address_details.postcode,
+          items: {
+            create: orderItems
+          }
+        },
+        include: { items: { include: { product: true } } }
+      });
+      await tx.cart.delete({ where: { id: cartId } });
+      return created;
     });
 
-    await prisma.cart.delete({ where: { id: cartId } });
     req.session.cartId = undefined;
 
     const response = {
@@ -89,7 +101,7 @@ router.post('/', async (req, res, next) => {
       items: order.items.map((item) => ({
         quantity: item.quantity,
         price: Number(item.price),
-        currency: 'GBP',
+        currency: item.product.currency,
         product: {
           id: item.product.id,
           name: item.product.name,
