@@ -71,7 +71,11 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 - After any significant UI change or new feature that touches the user interface: create a new end-to-end test covering the feature, or update an existing one if it already covers the affected flow. Then run those E2E tests and confirm they pass before considering the work done.
 - Use context7 MCP server to fetch up-to-date documentation for libraries.
 
-## 6. Project Context
+## 6. Architecture Decision Records
+
+Before changing testing, auth, data layer, or agent setup, read [docs/adr/README.md](docs/adr/README.md) first.
+
+## 7. Project Context
 
 **The current state of this codebase:**
 
