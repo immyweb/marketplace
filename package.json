@@ -1,8 +1,9 @@
 {
   "name": "marketplace",
   "private": true,
-  "workspaces": ["core", "api", "web"],
+  "workspaces": ["packages/core", "packages/api", "packages/web"],
   "scripts": {
+    "dev": "npm run dev:api & npm run dev:web",
     "dev:api": "npm run dev -w api",
     "dev:web": "npm run dev -w web",
     "test:api": "npm run test -w api",

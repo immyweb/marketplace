@@ -27,73 +27,74 @@
 
 ```
 marketplace/
-├── api/
-│   ├── prisma/
-│   │   ├── schema.prisma
-│   │   └── seed.ts
-│   ├── src/
-│   │   ├── db/
-│   │   │   └── prisma.ts            # Prisma client singleton
-│   │   ├── middleware/
-│   │   │   ├── session.ts           # express-session + connect-pg-simple setup
-│   │   │   └── error.ts             # global error handler
-│   │   ├── routes/
-│   │   │   ├── products.ts          # GET /products, GET /products/:id
-│   │   │   ├── cart.ts              # GET/POST/PUT/DELETE /cart
-│   │   │   ├── checkout.ts          # POST /checkout/payment-intent
-│   │   │   └── orders.ts            # POST /order
-│   │   ├── types/
-│   │   │   └── session.d.ts         # Extends express-session SessionData
-│   │   └── app.ts                   # Express app (no listen — testable via supertest)
-│   ├── tests/
-│   │   ├── setup.ts                 # beforeAll DB clean, afterAll disconnect
-│   │   ├── products.test.ts
-│   │   ├── cart.test.ts
-│   │   └── orders.test.ts
-│   ├── index.ts                     # Calls app.listen(3001)
-│   ├── package.json
-│   ├── tsconfig.json
-│   └── vitest.config.ts
-├── web/
-│   ├── app/
-│   │   ├── layout.tsx               # Root layout: <html>, <Nav>
-│   │   ├── page.tsx                 # PLP — server component, fetches /products
-│   │   ├── products/[id]/
-│   │   │   └── page.tsx             # PDP — server component, fetches /products/:id
-│   │   ├── cart/
-│   │   │   └── page.tsx             # Cart page — server component, fetches /cart
-│   │   ├── checkout/
-│   │   │   └── page.tsx             # Checkout page — client component
-│   │   └── order-confirmation/[id]/
-│   │       └── page.tsx             # Confirmation — server component
-│   ├── components/
-│   │   ├── nav.tsx                  # Header + cart item count badge
-│   │   ├── product-card.tsx         # Card for PLP grid
-│   │   ├── product-gallery.tsx      # Image switcher for PDP
-│   │   ├── add-to-cart-button.tsx   # Client component: POST /cart/products
-│   │   ├── cart-item-row.tsx        # Row with qty controls + remove
-│   │   ├── address-form.tsx         # UK address fields (React Hook Form)
-│   │   └── stripe-payment-form.tsx  # Stripe CardElement wrapper
-│   ├── lib/
-│   │   ├── api.ts                   # Typed fetch wrapper for all API calls
-│   │   └── stripe.ts                # loadStripe singleton
-│   ├── tests/e2e/
-│   │   ├── browse.spec.ts
-│   │   ├── cart.spec.ts
-│   │   └── checkout.spec.ts
-│   ├── next.config.ts
-│   ├── playwright.config.ts
-│   ├── package.json
-│   └── tsconfig.json
-├── core/
-│   ├── src/
-│   │   ├── types.ts                 # Product, Cart, CartItem, Order, ApiError — TypeScript interfaces
-│   │   ├── schemas.ts               # Zod schemas for all API request bodies + address validation
-│   │   └── index.ts                 # Re-exports everything from types.ts and schemas.ts
-│   ├── package.json
-│   └── tsconfig.json
+├── packages/
+│   ├── api/
+│   │   ├── prisma/
+│   │   │   ├── schema.prisma
+│   │   │   └── seed.ts
+│   │   ├── src/
+│   │   │   ├── db/
+│   │   │   │   └── prisma.ts            # Prisma client singleton
+│   │   │   ├── middleware/
+│   │   │   │   ├── session.ts           # express-session + connect-pg-simple setup
+│   │   │   │   └── error.ts             # global error handler
+│   │   │   ├── routes/
+│   │   │   │   ├── products.ts          # GET /products, GET /products/:id
+│   │   │   │   ├── cart.ts              # GET/POST/PUT/DELETE /cart
+│   │   │   │   ├── checkout.ts          # POST /checkout/payment-intent
+│   │   │   │   └── orders.ts            # POST /order
+│   │   │   ├── types/
+│   │   │   │   └── session.d.ts         # Extends express-session SessionData
+│   │   │   └── app.ts                   # Express app (no listen — testable via supertest)
+│   │   ├── tests/
+│   │   │   ├── setup.ts                 # beforeAll DB clean, afterAll disconnect
+│   │   │   ├── products.test.ts
+│   │   │   ├── cart.test.ts
+│   │   │   └── orders.test.ts
+│   │   ├── index.ts                     # Calls app.listen(3001)
+│   │   ├── package.json
+│   │   ├── tsconfig.json
+│   │   └── vitest.config.ts
+│   ├── web/
+│   │   ├── app/
+│   │   │   ├── layout.tsx               # Root layout: <html>, <Nav>
+│   │   │   ├── page.tsx                 # PLP — server component, fetches /products
+│   │   │   ├── products/[id]/
+│   │   │   │   └── page.tsx             # PDP — server component, fetches /products/:id
+│   │   │   ├── cart/
+│   │   │   │   └── page.tsx             # Cart page — server component, fetches /cart
+│   │   │   ├── checkout/
+│   │   │   │   └── page.tsx             # Checkout page — client component
+│   │   │   └── order-confirmation/[id]/
+│   │   │       └── page.tsx             # Confirmation — server component
+│   │   ├── components/
+│   │   │   ├── nav.tsx                  # Header + cart item count badge
+│   │   │   ├── product-card.tsx         # Card for PLP grid
+│   │   │   ├── product-gallery.tsx      # Image switcher for PDP
+│   │   │   ├── add-to-cart-button.tsx   # Client component: POST /cart/products
+│   │   │   ├── cart-item-row.tsx        # Row with qty controls + remove
+│   │   │   ├── address-form.tsx         # UK address fields (React Hook Form)
+│   │   │   └── stripe-payment-form.tsx  # Stripe CardElement wrapper
+│   │   ├── lib/
+│   │   │   ├── api.ts                   # Typed fetch wrapper for all API calls
+│   │   │   └── stripe.ts                # loadStripe singleton
+│   │   ├── tests/e2e/
+│   │   │   ├── browse.spec.ts
+│   │   │   ├── cart.spec.ts
+│   │   │   └── checkout.spec.ts
+│   │   ├── next.config.ts
+│   │   ├── playwright.config.ts
+│   │   ├── package.json
+│   │   └── tsconfig.json
+│   └── core/
+│       ├── src/
+│       │   ├── types.ts                 # Product, Cart, CartItem, Order, ApiError — TypeScript interfaces
+│       │   ├── schemas.ts               # Zod schemas for all API request bodies + address validation
+│       │   └── index.ts                 # Re-exports everything from types.ts and schemas.ts
+│       ├── package.json
+│       └── tsconfig.json
 ├── docker-compose.yml
-└── package.json                     # npm workspaces root: ["api", "web", "core"]
+└── package.json                     # npm workspaces root: ["packages/api", "packages/web", "packages/core"]
 ```
 
 ---
@@ -144,7 +145,7 @@ GRANT ALL PRIVILEGES ON DATABASE marketplace_test TO marketplace;
 {
   "name": "marketplace",
   "private": true,
-  "workspaces": ["core", "api", "web"],
+  "workspaces": ["packages/core", "packages/api", "packages/web"],
   "scripts": {
     "dev:api": "npm run dev -w api",
     "dev:web": "npm run dev -w web",
@@ -176,18 +177,18 @@ git commit -m "chore: add Docker Compose with PostgreSQL and test database"
 
 **Files:**
 
-- Create: `api/package.json`
-- Create: `api/tsconfig.json`
-- Create: `api/vitest.config.ts`
-- Create: `api/.env` (gitignored)
-- Create: `api/.env.test` (gitignored)
+- Create: `packages/api/package.json`
+- Create: `packages/api/tsconfig.json`
+- Create: `packages/api/vitest.config.ts`
+- Create: `packages/api/.env` (gitignored)
+- Create: `packages/api/.env.test` (gitignored)
 - Create: `.gitignore`
 
 **Interfaces:**
 
 - Produces: `npm run dev -w api` starts the API; `npm run test -w api` runs Vitest
 
-- [x] **Step 1: Create `api/package.json`**
+- [x] **Step 1: Create `packages/api/package.json`**
 
 ```json
 {
@@ -228,7 +229,7 @@ git commit -m "chore: add Docker Compose with PostgreSQL and test database"
 }
 ```
 
-- [x] **Step 2: Create `api/tsconfig.json`**
+- [x] **Step 2: Create `packages/api/tsconfig.json`**
 
 ```json
 {
@@ -251,7 +252,7 @@ git commit -m "chore: add Docker Compose with PostgreSQL and test database"
 }
 ```
 
-- [x] **Step 3: Create `api/vitest.config.ts`**
+- [x] **Step 3: Create `packages/api/vitest.config.ts`**
 
 ```typescript
 import { defineConfig } from 'vitest/config';
@@ -269,7 +270,7 @@ export default defineConfig({
 
 > `singleFork: true` ensures tests run serially against the shared test database, preventing parallel writes from corrupting state.
 
-- [x] **Step 4: Create `api/.env`**
+- [x] **Step 4: Create `packages/api/.env`**
 
 ```
 DATABASE_URL=postgresql://marketplace:marketplace@localhost:5433/marketplace
@@ -277,7 +278,7 @@ SESSION_SECRET=dev-secret-change-in-production
 STRIPE_SECRET_KEY=sk_test_YOUR_KEY_HERE
 ```
 
-- [x] **Step 5: Create `api/.env.test`**
+- [x] **Step 5: Create `packages/api/.env.test`**
 
 ```
 DATABASE_URL=postgresql://marketplace:marketplace@localhost:5433/marketplace_test
@@ -306,7 +307,7 @@ Expected: `node_modules` populated, no errors
 - [x] **Step 8: Commit**
 
 ```bash
-git add api/package.json api/tsconfig.json api/vitest.config.ts .gitignore
+git add packages/api/package.json api/tsconfig.json api/vitest.config.ts .gitignore
 git commit -m "chore: scaffold API project with Express, Prisma, Vitest"
 ```
 
@@ -316,11 +317,11 @@ git commit -m "chore: scaffold API project with Express, Prisma, Vitest"
 
 **Files:**
 
-- Create: `core/package.json`
-- Create: `core/tsconfig.json`
-- Create: `core/src/types.ts`
-- Create: `core/src/schemas.ts`
-- Create: `core/src/index.ts`
+- Create: `packages/core/package.json`
+- Create: `packages/core/tsconfig.json`
+- Create: `packages/core/src/types.ts`
+- Create: `packages/core/src/schemas.ts`
+- Create: `packages/core/src/index.ts`
 
 **Interfaces:**
 
@@ -328,7 +329,7 @@ git commit -m "chore: scaffold API project with Express, Prisma, Vitest"
 - Produces: TypeScript interfaces for all domain objects
 - Produces: Zod schemas used by API routes for request validation and by the web checkout form
 
-- [x] **Step 1: Create `core/package.json`**
+- [x] **Step 1: Create `packages/core/package.json`**
 
 ```json
 {
@@ -345,7 +346,7 @@ git commit -m "chore: scaffold API project with Express, Prisma, Vitest"
 
 > `main` and `types` both point to the TypeScript source. `api` resolves it via tsx at dev time; `web` resolves it via Next.js's transpiler. No build step needed.
 
-- [x] **Step 2: Create `core/tsconfig.json`**
+- [x] **Step 2: Create `packages/core/tsconfig.json`**
 
 ```json
 {
@@ -363,7 +364,7 @@ git commit -m "chore: scaffold API project with Express, Prisma, Vitest"
 }
 ```
 
-- [x] **Step 3: Create `core/src/types.ts`**
+- [x] **Step 3: Create `packages/core/src/types.ts`**
 
 ```typescript
 export interface Product {
@@ -426,7 +427,7 @@ export interface ApiError {
 }
 ```
 
-- [x] **Step 4: Create `core/src/schemas.ts`**
+- [x] **Step 4: Create `packages/core/src/schemas.ts`**
 
 ```typescript
 import { z } from 'zod';
@@ -467,7 +468,7 @@ export type AddressInput = z.infer<typeof AddressSchema>;
 export type PlaceOrderInput = z.infer<typeof PlaceOrderSchema>;
 ```
 
-- [x] **Step 5: Create `core/src/index.ts`**
+- [x] **Step 5: Create `packages/core/src/index.ts`**
 
 ```typescript
 export * from './types.js';
@@ -483,7 +484,7 @@ npm install -w core
 - [x] **Step 7: Type-check core**
 
 ```bash
-cd core && npx tsc --noEmit && cd ..
+cd packages/core && npx tsc --noEmit && cd ../..
 ```
 
 Expected: no errors
@@ -491,7 +492,7 @@ Expected: no errors
 - [x] **Step 8: Commit**
 
 ```bash
-git add core/
+git add packages/core/
 git commit -m "feat: add @marketplace/core package with shared types and Zod schemas"
 ```
 
@@ -501,15 +502,15 @@ git commit -m "feat: add @marketplace/core package with shared types and Zod sch
 
 **Files:**
 
-- Create: `api/prisma/schema.prisma`
-- Create: `api/prisma/seed.ts`
-- Create: `api/src/db/prisma.ts`
+- Create: `packages/api/prisma/schema.prisma`
+- Create: `packages/api/prisma/seed.ts`
+- Create: `packages/api/src/db/prisma.ts`
 
 **Interfaces:**
 
 - Produces: `prisma.product`, `prisma.cart`, `prisma.cartItem`, `prisma.order`, `prisma.orderItem` — all queryable
 
-- [x] **Step 1: Create `api/prisma/schema.prisma`**
+- [x] **Step 1: Create `packages/api/prisma/schema.prisma`**
 
 ```prisma
 generator client {
@@ -591,7 +592,7 @@ model OrderItem {
 > `CartItem` does not store `price` — it is computed from `product.unit_price * quantity` at query time so it always reflects current prices.
 > `OrderItem` does store `price` — it locks in the price at the moment of purchase.
 
-- [x] **Step 2: Create `api/src/db/prisma.ts`**
+- [x] **Step 2: Create `packages/api/src/db/prisma.ts`**
 
 ```typescript
 import { PrismaClient } from '@prisma/client';
@@ -606,14 +607,14 @@ if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 - [x] **Step 3: Run migration against both databases**
 
 ```bash
-cd api && npx prisma migrate dev --name init
+cd packages/api && npx prisma migrate dev --name init
 DATABASE_URL=postgresql://marketplace:marketplace@localhost:5433/marketplace_test npx prisma migrate deploy
-cd ..
+cd ../..
 ```
 
 Expected: `migrations/` folder created, both databases have tables
 
-- [x] **Step 4: Create `api/prisma/seed.ts`**
+- [x] **Step 4: Create `packages/api/prisma/seed.ts`**
 
 ```typescript
 import { PrismaClient } from '@prisma/client';
@@ -711,9 +712,9 @@ main()
   .finally(() => prisma.$disconnect());
 ```
 
-- [x] **Step 5: Add seed script to `api/package.json`**
+- [x] **Step 5: Add seed script to `packages/api/package.json`**
 
-In `api/package.json`, the `db:seed` script already exists. Also add this to the package.json so Prisma knows the seed file:
+In `packages/api/package.json`, the `db:seed` script already exists. Also add this to the package.json so Prisma knows the seed file:
 
 ```json
 "prisma": {
@@ -732,7 +733,7 @@ Expected: `Seeded 6 products`
 - [x] **Step 7: Commit**
 
 ```bash
-git add api/prisma/ api/src/db/
+git add packages/api/prisma/ api/src/db/
 git commit -m "chore: add Prisma schema, migration, and product seed data"
 ```
 
@@ -742,18 +743,18 @@ git commit -m "chore: add Prisma schema, migration, and product seed data"
 
 **Files:**
 
-- Create: `api/src/types/session.d.ts`
-- Create: `api/src/middleware/session.ts`
-- Create: `api/src/middleware/error.ts`
-- Create: `api/src/app.ts`
-- Create: `api/index.ts`
+- Create: `packages/api/src/types/session.d.ts`
+- Create: `packages/api/src/middleware/session.ts`
+- Create: `packages/api/src/middleware/error.ts`
+- Create: `packages/api/src/app.ts`
+- Create: `packages/api/index.ts`
 
 **Interfaces:**
 
 - Produces: `app` (Express app) importable by tests and `index.ts`
 - Produces: `req.session.cartId` available on all routes as `number | undefined`
 
-- [ ] **Step 1: Create `api/src/types/session.d.ts`**
+- [x] **Step 1: Create `packages/api/src/types/session.d.ts`**
 
 ```typescript
 import 'express-session';
@@ -765,7 +766,7 @@ declare module 'express-session' {
 }
 ```
 
-- [ ] **Step 2: Create `api/src/middleware/session.ts`**
+- [x] **Step 2: Create `packages/api/src/middleware/session.ts`**
 
 ```typescript
 import session from 'express-session';
@@ -792,7 +793,7 @@ export const sessionMiddleware = session({
 });
 ```
 
-- [ ] **Step 3: Create `api/src/middleware/error.ts`**
+- [x] **Step 3: Create `packages/api/src/middleware/error.ts`**
 
 ```typescript
 import type { Request, Response, NextFunction } from 'express';
@@ -810,7 +811,7 @@ export function errorHandler(
 }
 ```
 
-- [ ] **Step 4: Create `api/src/app.ts`**
+- [x] **Step 4: Create `packages/api/src/app.ts`**
 
 ```typescript
 import 'dotenv/config';
@@ -837,7 +838,7 @@ app.use('/order', ordersRouter);
 app.use(errorHandler);
 ```
 
-- [ ] **Step 5: Create `api/index.ts`**
+- [x] **Step 5: Create `packages/api/index.ts`**
 
 ```typescript
 import { app } from './src/app.js';
@@ -849,7 +850,7 @@ app.listen(PORT, () => {
 });
 ```
 
-- [ ] **Step 6: Create `api/tests/setup.ts`**
+- [x] **Step 6: Create `packages/api/tests/setup.ts`**
 
 ```typescript
 import { afterAll, beforeAll } from 'vitest';
@@ -866,7 +867,7 @@ afterAll(async () => {
 });
 ```
 
-- [ ] **Step 7: Verify the app starts**
+- [x] **Step 7: Verify the app starts**
 
 ```bash
 npm run dev -w api
@@ -875,10 +876,10 @@ npm run dev -w api
 Expected output: `API running on http://localhost:3001`
 Stop with Ctrl+C.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
-git add api/src/ api/index.ts api/tests/setup.ts
+git add packages/api/src/ api/index.ts api/tests/setup.ts
 git commit -m "feat: add Express app with session middleware and error handler"
 ```
 
@@ -888,17 +889,17 @@ git commit -m "feat: add Express app with session middleware and error handler"
 
 **Files:**
 
-- Create: `web/package.json`
-- Create: `web/tsconfig.json`
-- Create: `web/next.config.ts`
-- Create: `web/playwright.config.ts`
-- Create: `web/.env.local` (gitignored)
+- Create: `packages/web/package.json`
+- Create: `packages/web/tsconfig.json`
+- Create: `packages/web/next.config.ts`
+- Create: `packages/web/playwright.config.ts`
+- Create: `packages/web/.env.local` (gitignored)
 
 **Interfaces:**
 
 - Produces: `npm run dev -w web` starts Next.js on port 3000
 
-- [ ] **Step 1: Create `web/package.json`**
+- [x] **Step 1: Create `packages/web/package.json`**
 
 ```json
 {
@@ -931,7 +932,7 @@ git commit -m "feat: add Express app with session middleware and error handler"
 }
 ```
 
-- [ ] **Step 2: Create `web/tsconfig.json`**
+- [x] **Step 2: Create `packages/web/tsconfig.json`**
 
 ```json
 {
@@ -960,7 +961,7 @@ git commit -m "feat: add Express app with session middleware and error handler"
 }
 ```
 
-- [ ] **Step 3: Create `web/next.config.ts`**
+- [x] **Step 3: Create `packages/web/next.config.ts`**
 
 ```typescript
 import type { NextConfig } from 'next';
@@ -978,7 +979,7 @@ export default nextConfig;
 
 > `transpilePackages` is required because `@marketplace/core` exports TypeScript source directly (no build step). Next.js will transpile it as part of its own build.
 
-- [ ] **Step 4: Create `web/playwright.config.ts`**
+- [x] **Step 4: Create `packages/web/playwright.config.ts`**
 
 ```typescript
 import { defineConfig, devices } from '@playwright/test';
@@ -1010,21 +1011,21 @@ export default defineConfig({
 });
 ```
 
-- [ ] **Step 5: Create `web/.env.local`**
+- [x] **Step 5: Create `packages/web/.env.local`**
 
 ```
 NEXT_PUBLIC_API_URL=http://localhost:3001
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_YOUR_KEY_HERE
 ```
 
-- [ ] **Step 6: Install web dependencies**
+- [x] **Step 6: Install web dependencies**
 
 ```bash
 npm install -w web
 npx playwright install --with-deps chromium -w web
 ```
 
-- [ ] **Step 7: Create `web/app/layout.tsx`** (minimal — will be expanded in Task 15)
+- [x] **Step 7: Create `packages/web/app/layout.tsx`** (minimal — will be expanded in Task 15)
 
 ```typescript
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -1036,7 +1037,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 }
 ```
 
-- [ ] **Step 8: Create `web/app/page.tsx`** (placeholder)
+- [x] **Step 8: Create `packages/web/app/page.tsx`** (placeholder)
 
 ```typescript
 export default function HomePage() {
@@ -1044,7 +1045,7 @@ export default function HomePage() {
 }
 ```
 
-- [ ] **Step 9: Verify Next.js starts**
+- [x] **Step 9: Verify Next.js starts**
 
 ```bash
 npm run dev -w web
@@ -1053,10 +1054,10 @@ npm run dev -w web
 Expected: `Ready on http://localhost:3000`
 Stop with Ctrl+C.
 
-- [ ] **Step 10: Commit**
+- [x] **Step 10: Commit**
 
 ```bash
-git add web/
+git add packages/web/
 git commit -m "chore: scaffold Next.js web project with Playwright"
 ```
 
@@ -1068,8 +1069,8 @@ git commit -m "chore: scaffold Next.js web project with Playwright"
 
 **Files:**
 
-- Create: `api/src/routes/products.ts`
-- Create: `api/tests/products.test.ts`
+- Create: `packages/api/src/routes/products.ts`
+- Create: `packages/api/tests/products.test.ts`
 
 **Interfaces:**
 
@@ -1078,7 +1079,7 @@ git commit -m "chore: scaffold Next.js web project with Playwright"
 
 - [ ] **Step 1: Write the failing test**
 
-Create `api/tests/products.test.ts`:
+Create `packages/api/tests/products.test.ts`:
 
 ```typescript
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
@@ -1140,7 +1141,7 @@ npm run test -w api -- --reporter=verbose
 
 Expected: FAIL — `Cannot find module '../src/routes/products.js'`
 
-- [ ] **Step 3: Create `api/src/routes/products.ts`**
+- [ ] **Step 3: Create `packages/api/src/routes/products.ts`**
 
 ```typescript
 import { Router } from 'express';
@@ -1185,7 +1186,7 @@ Expected: PASS — `GET /products > returns a results array with all products` �
 - [ ] **Step 5: Commit**
 
 ```bash
-git add api/src/routes/products.ts api/tests/products.test.ts
+git add packages/api/src/routes/products.ts api/tests/products.test.ts
 git commit -m "feat: add GET /products endpoint"
 ```
 
@@ -1195,8 +1196,8 @@ git commit -m "feat: add GET /products endpoint"
 
 **Files:**
 
-- Modify: `api/src/routes/products.ts`
-- Modify: `api/tests/products.test.ts`
+- Modify: `packages/api/src/routes/products.ts`
+- Modify: `packages/api/tests/products.test.ts`
 
 **Interfaces:**
 
@@ -1204,7 +1205,7 @@ git commit -m "feat: add GET /products endpoint"
 
 - [ ] **Step 1: Write the failing test**
 
-Add to `api/tests/products.test.ts`:
+Add to `packages/api/tests/products.test.ts`:
 
 ```typescript
 describe('GET /products/:id', () => {
@@ -1236,7 +1237,7 @@ npm run test -w api -- --reporter=verbose
 
 Expected: FAIL — `expected 404 to equal 200`
 
-- [ ] **Step 3: Add route to `api/src/routes/products.ts`**
+- [ ] **Step 3: Add route to `packages/api/src/routes/products.ts`**
 
 ```typescript
 router.get('/:id', async (req, res, next) => {
@@ -1272,7 +1273,7 @@ Expected: PASS — all product tests ✓
 - [ ] **Step 5: Commit**
 
 ```bash
-git add api/src/routes/products.ts api/tests/products.test.ts
+git add packages/api/src/routes/products.ts api/tests/products.test.ts
 git commit -m "feat: add GET /products/:id endpoint"
 ```
 
@@ -1284,8 +1285,8 @@ git commit -m "feat: add GET /products/:id endpoint"
 
 **Files:**
 
-- Create: `api/src/routes/cart.ts`
-- Create: `api/tests/cart.test.ts`
+- Create: `packages/api/src/routes/cart.ts`
+- Create: `packages/api/tests/cart.test.ts`
 
 **Interfaces:**
 
@@ -1309,7 +1310,7 @@ interface CartResponse {
 
 - [ ] **Step 1: Write the failing test**
 
-Create `api/tests/cart.test.ts`:
+Create `packages/api/tests/cart.test.ts`:
 
 ```typescript
 import { describe, it, expect, beforeEach, afterAll } from 'vitest';
@@ -1349,7 +1350,7 @@ npm run test -w api -- --reporter=verbose
 
 Expected: FAIL — `Cannot find module '../src/routes/cart.js'`
 
-- [ ] **Step 3: Create `api/src/routes/cart.ts`**
+- [ ] **Step 3: Create `packages/api/src/routes/cart.ts`**
 
 ```typescript
 import { Router } from 'express';
@@ -1425,7 +1426,7 @@ Expected: PASS ✓
 - [ ] **Step 5: Commit**
 
 ```bash
-git add api/src/routes/cart.ts api/tests/cart.test.ts
+git add packages/api/src/routes/cart.ts api/tests/cart.test.ts
 git commit -m "feat: add GET /cart endpoint"
 ```
 
@@ -1435,8 +1436,8 @@ git commit -m "feat: add GET /cart endpoint"
 
 **Files:**
 
-- Modify: `api/src/routes/cart.ts`
-- Modify: `api/tests/cart.test.ts`
+- Modify: `packages/api/src/routes/cart.ts`
+- Modify: `packages/api/tests/cart.test.ts`
 
 **Interfaces:**
 
@@ -1445,7 +1446,7 @@ git commit -m "feat: add GET /cart endpoint"
 
 - [ ] **Step 1: Write the failing test**
 
-Add to `api/tests/cart.test.ts`, after creating a product in `beforeAll`:
+Add to `packages/api/tests/cart.test.ts`, after creating a product in `beforeAll`:
 
 ```typescript
 let productId: number;
@@ -1528,7 +1529,7 @@ npm run test -w api -- --reporter=verbose
 
 Expected: FAIL — `POST /cart/products` tests fail with 404
 
-- [ ] **Step 3: Add `POST /cart/products` to `api/src/routes/cart.ts`**
+- [ ] **Step 3: Add `POST /cart/products` to `packages/api/src/routes/cart.ts`**
 
 Add the import at the top of the file:
 
@@ -1601,7 +1602,7 @@ Expected: PASS — all cart tests ✓
 - [ ] **Step 5: Commit**
 
 ```bash
-git add api/src/routes/cart.ts api/tests/cart.test.ts
+git add packages/api/src/routes/cart.ts api/tests/cart.test.ts
 git commit -m "feat: add POST /cart/products — add item to cart"
 ```
 
@@ -1611,8 +1612,8 @@ git commit -m "feat: add POST /cart/products — add item to cart"
 
 **Files:**
 
-- Modify: `api/src/routes/cart.ts`
-- Modify: `api/tests/cart.test.ts`
+- Modify: `packages/api/src/routes/cart.ts`
+- Modify: `packages/api/tests/cart.test.ts`
 
 **Interfaces:**
 
@@ -1621,7 +1622,7 @@ git commit -m "feat: add POST /cart/products — add item to cart"
 
 - [ ] **Step 1: Write the failing test**
 
-Add to `api/tests/cart.test.ts`:
+Add to `packages/api/tests/cart.test.ts`:
 
 ```typescript
 describe('PUT /cart/products/:productId', () => {
@@ -1666,7 +1667,7 @@ npm run test -w api -- --reporter=verbose
 
 Expected: FAIL
 
-- [ ] **Step 3: Add route to `api/src/routes/cart.ts`**
+- [ ] **Step 3: Add route to `packages/api/src/routes/cart.ts`**
 
 Add the import at the top of the file (alongside the `AddToCartSchema` import from Task 10):
 
@@ -1756,7 +1757,7 @@ Expected: PASS ✓
 - [ ] **Step 5: Commit**
 
 ```bash
-git add api/src/routes/cart.ts api/tests/cart.test.ts
+git add packages/api/src/routes/cart.ts api/tests/cart.test.ts
 git commit -m "feat: add PUT /cart/products/:productId — update item quantity"
 ```
 
@@ -1766,8 +1767,8 @@ git commit -m "feat: add PUT /cart/products/:productId — update item quantity"
 
 **Files:**
 
-- Modify: `api/src/routes/cart.ts`
-- Modify: `api/tests/cart.test.ts`
+- Modify: `packages/api/src/routes/cart.ts`
+- Modify: `packages/api/tests/cart.test.ts`
 
 **Interfaces:**
 
@@ -1775,7 +1776,7 @@ git commit -m "feat: add PUT /cart/products/:productId — update item quantity"
 
 - [ ] **Step 1: Write the failing test**
 
-Add to `api/tests/cart.test.ts`:
+Add to `packages/api/tests/cart.test.ts`:
 
 ```typescript
 describe('DELETE /cart/products/:productId', () => {
@@ -1802,7 +1803,7 @@ npm run test -w api -- --reporter=verbose
 
 Expected: FAIL
 
-- [ ] **Step 3: Add route to `api/src/routes/cart.ts`**
+- [ ] **Step 3: Add route to `packages/api/src/routes/cart.ts`**
 
 ```typescript
 router.delete('/products/:productId', async (req, res, next) => {
@@ -1848,7 +1849,7 @@ Expected: PASS — all product and cart tests ✓
 - [ ] **Step 5: Commit**
 
 ```bash
-git add api/src/routes/cart.ts api/tests/cart.test.ts
+git add packages/api/src/routes/cart.ts api/tests/cart.test.ts
 git commit -m "feat: add DELETE /cart/products/:productId — remove item from cart"
 ```
 
@@ -1860,8 +1861,8 @@ git commit -m "feat: add DELETE /cart/products/:productId — remove item from c
 
 **Files:**
 
-- Create: `api/src/routes/checkout.ts`
-- Create: `api/tests/orders.test.ts` (partial — setup for Tasks 12 & 13)
+- Create: `packages/api/src/routes/checkout.ts`
+- Create: `packages/api/tests/orders.test.ts` (partial — setup for Tasks 12 & 13)
 
 **Interfaces:**
 
@@ -1872,7 +1873,7 @@ git commit -m "feat: add DELETE /cart/products/:productId — remove item from c
 
 - [ ] **Step 1: Write the failing test**
 
-Create `api/tests/orders.test.ts`:
+Create `packages/api/tests/orders.test.ts`:
 
 ```typescript
 import { describe, it, expect, beforeEach, afterAll } from 'vitest';
@@ -1943,7 +1944,7 @@ npm run test -w api -- --reporter=verbose
 
 Expected: FAIL
 
-- [ ] **Step 3: Create `api/src/routes/checkout.ts`**
+- [ ] **Step 3: Create `packages/api/src/routes/checkout.ts`**
 
 ```typescript
 import { Router } from 'express';
@@ -2014,7 +2015,7 @@ Expected: PASS ✓ (this makes a real Stripe test API call — ensure `STRIPE_SE
 - [ ] **Step 5: Commit**
 
 ```bash
-git add api/src/routes/checkout.ts api/tests/orders.test.ts
+git add packages/api/src/routes/checkout.ts api/tests/orders.test.ts
 git commit -m "feat: add POST /checkout/payment-intent — create Stripe PaymentIntent"
 ```
 
@@ -2024,8 +2025,8 @@ git commit -m "feat: add POST /checkout/payment-intent — create Stripe Payment
 
 **Files:**
 
-- Create: `api/src/routes/orders.ts`
-- Modify: `api/tests/orders.test.ts`
+- Create: `packages/api/src/routes/orders.ts`
+- Modify: `packages/api/tests/orders.test.ts`
 
 **Interfaces:**
 
@@ -2070,7 +2071,7 @@ interface OrderResponse {
 
 - [ ] **Step 1: Write the failing test**
 
-Add to `api/tests/orders.test.ts`:
+Add to `packages/api/tests/orders.test.ts`:
 
 ```typescript
 import Stripe from 'stripe';
@@ -2157,7 +2158,7 @@ npm run test -w api -- --reporter=verbose
 
 Expected: FAIL
 
-- [ ] **Step 3: Create `api/src/routes/orders.ts`**
+- [ ] **Step 3: Create `packages/api/src/routes/orders.ts`**
 
 ```typescript
 import { Router } from 'express';
@@ -2289,7 +2290,7 @@ Expected: PASS — all product, cart, and order tests ✓
 - [ ] **Step 5: Commit**
 
 ```bash
-git add api/src/routes/orders.ts api/tests/orders.test.ts
+git add packages/api/src/routes/orders.ts api/tests/orders.test.ts
 git commit -m "feat: add POST /order — place order via Stripe PaymentIntent"
 ```
 
@@ -2301,8 +2302,8 @@ git commit -m "feat: add POST /order — place order via Stripe PaymentIntent"
 
 **Files:**
 
-- Create: `web/lib/api.ts`
-- Create: `web/lib/stripe.ts`
+- Create: `packages/web/lib/api.ts`
+- Create: `packages/web/lib/stripe.ts`
 
 **Interfaces:**
 
@@ -2311,7 +2312,7 @@ git commit -m "feat: add POST /order — place order via Stripe PaymentIntent"
 
 > Types live in `@marketplace/core`. This task only creates the fetch wrappers and Stripe loader — no type duplication.
 
-- [ ] **Step 1: Create `web/lib/api.ts`**
+- [ ] **Step 1: Create `packages/web/lib/api.ts`**
 
 ```typescript
 import type { Cart, Order, Product } from '@marketplace/core';
@@ -2395,7 +2396,7 @@ export function placeOrder(body: {
 }
 ```
 
-- [ ] **Step 3: Create `web/lib/stripe.ts`**
+- [ ] **Step 3: Create `packages/web/lib/stripe.ts`**
 
 ```typescript
 import { loadStripe } from '@stripe/stripe-js';
@@ -2408,7 +2409,7 @@ export const stripePromise = loadStripe(
 - [ ] **Step 3: Type-check**
 
 ```bash
-cd web && npx tsc --noEmit
+cd packages/web && npx tsc --noEmit
 ```
 
 Expected: no errors
@@ -2416,7 +2417,7 @@ Expected: no errors
 - [ ] **Step 4: Commit**
 
 ```bash
-git add web/lib/
+git add packages/web/lib/
 git commit -m "feat: add typed API client and Stripe loader for web"
 ```
 
@@ -2426,15 +2427,15 @@ git commit -m "feat: add typed API client and Stripe loader for web"
 
 **Files:**
 
-- Create: `web/components/nav.tsx`
-- Modify: `web/app/layout.tsx`
+- Create: `packages/web/components/nav.tsx`
+- Modify: `packages/web/app/layout.tsx`
 
 **Interfaces:**
 
 - Produces: `<Nav>` — server component that fetches cart and displays item count badge
-- Consumes: `fetchCart()` from `web/lib/api.ts`
+- Consumes: `fetchCart()` from `packages/web/lib/api.ts`
 
-- [ ] **Step 1: Create `web/components/nav.tsx`**
+- [ ] **Step 1: Create `packages/web/components/nav.tsx`**
 
 ```typescript
 import Link from 'next/link'
@@ -2467,7 +2468,7 @@ export async function Nav() {
 }
 ```
 
-- [ ] **Step 2: Update `web/app/layout.tsx`**
+- [ ] **Step 2: Update `packages/web/app/layout.tsx`**
 
 ```typescript
 import type { Metadata } from 'next'
@@ -2502,7 +2503,7 @@ npm run dev:web
 - [ ] **Step 4: Commit**
 
 ```bash
-git add web/components/nav.tsx web/app/layout.tsx
+git add packages/web/components/nav.tsx web/app/layout.tsx
 git commit -m "feat: add root layout with navigation and cart badge"
 ```
 
@@ -2514,15 +2515,15 @@ git commit -m "feat: add root layout with navigation and cart badge"
 
 **Files:**
 
-- Create: `web/components/product-card.tsx`
-- Modify: `web/app/page.tsx`
+- Create: `packages/web/components/product-card.tsx`
+- Modify: `packages/web/app/page.tsx`
 
 **Interfaces:**
 
 - Consumes: `fetchProducts()` → `{ results: Product[] }`
 - Produces: SSR page at `/` displaying a grid of product cards
 
-- [ ] **Step 1: Create `web/components/product-card.tsx`**
+- [ ] **Step 1: Create `packages/web/components/product-card.tsx`**
 
 ```typescript
 import Image from 'next/image'
@@ -2558,7 +2559,7 @@ export function ProductCard({ id, name, primary_image, unit_price, currency }: P
 }
 ```
 
-- [ ] **Step 2: Update `web/app/page.tsx`**
+- [ ] **Step 2: Update `packages/web/app/page.tsx`**
 
 ```typescript
 import type { Metadata } from 'next'
@@ -2603,7 +2604,7 @@ Visit `http://localhost:3000`. Expected: grid of 6 product cards with names and 
 - [ ] **Step 4: Commit**
 
 ```bash
-git add web/components/product-card.tsx web/app/page.tsx
+git add packages/web/components/product-card.tsx web/app/page.tsx
 git commit -m "feat: add Product Listing Page with SSR product grid"
 ```
 
@@ -2613,16 +2614,16 @@ git commit -m "feat: add Product Listing Page with SSR product grid"
 
 **Files:**
 
-- Create: `web/components/product-gallery.tsx`
-- Create: `web/components/add-to-cart-button.tsx`
-- Create: `web/app/products/[id]/page.tsx`
+- Create: `packages/web/components/product-gallery.tsx`
+- Create: `packages/web/components/add-to-cart-button.tsx`
+- Create: `packages/web/app/products/[id]/page.tsx`
 
 **Interfaces:**
 
 - Consumes: `fetchProduct(id)` → full `Product`
 - Produces: SSR page at `/products/:id` with image gallery, description, price, and add-to-cart button
 
-- [ ] **Step 1: Create `web/components/product-gallery.tsx`**
+- [ ] **Step 1: Create `packages/web/components/product-gallery.tsx`**
 
 ```typescript
 'use client'
@@ -2674,7 +2675,7 @@ export function ProductGallery({ images, productName }: Props) {
 }
 ```
 
-- [ ] **Step 2: Create `web/components/add-to-cart-button.tsx`**
+- [ ] **Step 2: Create `packages/web/components/add-to-cart-button.tsx`**
 
 ```typescript
 'use client'
@@ -2716,7 +2717,7 @@ export function AddToCartButton({ productId }: Props) {
 }
 ```
 
-- [ ] **Step 3: Create `web/app/products/[id]/page.tsx`**
+- [ ] **Step 3: Create `packages/web/app/products/[id]/page.tsx`**
 
 ```typescript
 import type { Metadata } from 'next'
@@ -2773,7 +2774,7 @@ Visit `http://localhost:3000/products/1`. Expected: product image gallery, name,
 - [ ] **Step 5: Commit**
 
 ```bash
-git add web/components/product-gallery.tsx web/components/add-to-cart-button.tsx web/app/products/
+git add packages/web/components/product-gallery.tsx web/components/add-to-cart-button.tsx web/app/products/
 git commit -m "feat: add Product Detail Page with image gallery and add-to-cart"
 ```
 
@@ -2785,15 +2786,15 @@ git commit -m "feat: add Product Detail Page with image gallery and add-to-cart"
 
 **Files:**
 
-- Create: `web/components/cart-item-row.tsx`
-- Create: `web/app/cart/page.tsx`
+- Create: `packages/web/components/cart-item-row.tsx`
+- Create: `packages/web/app/cart/page.tsx`
 
 **Interfaces:**
 
 - Consumes: `fetchCart()`, `updateCartItem(productId, quantity)`, `removeFromCart(productId)`
 - Produces: SSR cart page at `/cart` showing items with quantity controls and order total
 
-- [ ] **Step 1: Create `web/components/cart-item-row.tsx`**
+- [ ] **Step 1: Create `packages/web/components/cart-item-row.tsx`**
 
 ```typescript
 'use client'
@@ -2870,7 +2871,7 @@ export function CartItemRow({ item }: Props) {
 }
 ```
 
-- [ ] **Step 2: Create `web/app/cart/page.tsx`**
+- [ ] **Step 2: Create `packages/web/app/cart/page.tsx`**
 
 ```typescript
 import type { Metadata } from 'next'
@@ -2921,7 +2922,7 @@ Add a product to cart via a PDP page. Visit `http://localhost:3000/cart`. Expect
 - [ ] **Step 4: Commit**
 
 ```bash
-git add web/components/cart-item-row.tsx web/app/cart/
+git add packages/web/components/cart-item-row.tsx web/app/cart/
 git commit -m "feat: add Cart page with quantity controls and remove"
 ```
 
@@ -2933,9 +2934,9 @@ git commit -m "feat: add Cart page with quantity controls and remove"
 
 **Files:**
 
-- Create: `web/components/address-form.tsx`
-- Create: `web/components/stripe-payment-form.tsx`
-- Create: `web/app/checkout/page.tsx`
+- Create: `packages/web/components/address-form.tsx`
+- Create: `packages/web/components/stripe-payment-form.tsx`
+- Create: `packages/web/app/checkout/page.tsx`
 
 **Interfaces:**
 
@@ -2945,7 +2946,7 @@ git commit -m "feat: add Cart page with quantity controls and remove"
 
 > `stripe.confirmCardPayment` is used (not `stripe.confirmPayment`) to avoid redirects. `allow_redirects: 'never'` was set on the PaymentIntent in Task 12.
 
-- [ ] **Step 1: Create `web/components/address-form.tsx`**
+- [ ] **Step 1: Create `packages/web/components/address-form.tsx`**
 
 ```typescript
 import type { UseFormRegister, FieldErrors } from 'react-hook-form'
@@ -3015,7 +3016,7 @@ export function AddressForm({ register, errors }: Props) {
 }
 ```
 
-- [ ] **Step 2: Create `web/components/stripe-payment-form.tsx`**
+- [ ] **Step 2: Create `packages/web/components/stripe-payment-form.tsx`**
 
 ```typescript
 'use client'
@@ -3043,7 +3044,7 @@ export function StripePaymentForm() {
 }
 ```
 
-- [ ] **Step 3: Create `web/app/checkout/page.tsx`**
+- [ ] **Step 3: Create `packages/web/app/checkout/page.tsx`**
 
 ```typescript
 'use client'
@@ -3162,7 +3163,7 @@ Add product to cart, go to `/cart`, click "Proceed to Checkout". Expected: form 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add web/components/address-form.tsx web/components/stripe-payment-form.tsx web/app/checkout/
+git add packages/web/components/address-form.tsx web/components/stripe-payment-form.tsx web/app/checkout/
 git commit -m "feat: add Checkout page with address form and Stripe payment"
 ```
 
@@ -3172,7 +3173,7 @@ git commit -m "feat: add Checkout page with address form and Stripe payment"
 
 **Files:**
 
-- Create: `web/app/order-confirmation/[id]/page.tsx`
+- Create: `packages/web/app/order-confirmation/[id]/page.tsx`
 
 **Interfaces:**
 
@@ -3181,7 +3182,7 @@ git commit -m "feat: add Checkout page with address form and Stripe payment"
 
 - [ ] **Step 1: Add `GET /order/:id` to the API**
 
-Add to `api/src/routes/orders.ts`:
+Add to `packages/api/src/routes/orders.ts`:
 
 ```typescript
 router.get('/:id', async (req, res, next) => {
@@ -3231,7 +3232,7 @@ router.get('/:id', async (req, res, next) => {
 });
 ```
 
-Also add `fetchOrder` to `web/lib/api.ts`:
+Also add `fetchOrder` to `packages/web/lib/api.ts`:
 
 ```typescript
 export function fetchOrder(id: number) {
@@ -3239,7 +3240,7 @@ export function fetchOrder(id: number) {
 }
 ```
 
-- [ ] **Step 2: Create `web/app/order-confirmation/[id]/page.tsx`**
+- [ ] **Step 2: Create `packages/web/app/order-confirmation/[id]/page.tsx`**
 
 ```typescript
 import type { Metadata } from 'next'
@@ -3307,7 +3308,7 @@ Complete a checkout. Expected: redirect to `/order-confirmation/:id` with order 
 - [ ] **Step 4: Commit**
 
 ```bash
-git add web/app/order-confirmation/ api/src/routes/orders.ts web/lib/api.ts
+git add packages/web/app/order-confirmation/ api/src/routes/orders.ts web/lib/api.ts
 git commit -m "feat: add Order Confirmation page and GET /order/:id endpoint"
 ```
 
@@ -3319,8 +3320,8 @@ git commit -m "feat: add Order Confirmation page and GET /order/:id endpoint"
 
 **Files:**
 
-- Modify: `web/next.config.ts` (add image formats — already done in Task 5)
-- Audit: `web/components/product-card.tsx`, `web/components/product-gallery.tsx`, `web/components/cart-item-row.tsx`
+- Modify: `packages/web/next.config.ts` (add image formats — already done in Task 5)
+- Audit: `packages/web/components/product-card.tsx`, `packages/web/components/product-gallery.tsx`, `packages/web/components/cart-item-row.tsx`
 
 > Next.js `<Image>` already handles AVIF/WebP via the `formats` config set in Task 5. This task verifies correct `sizes`, `priority`, and `loading` attributes are set on all images.
 
@@ -3332,7 +3333,7 @@ Check each file against these rules:
 - PDP (`product-gallery.tsx`): primary image has `priority` ✓ (set in Task 17)
 - Cart (`cart-item-row.tsx`): thumbnail images — add explicit `width/height` and no `priority`
 
-In `web/components/cart-item-row.tsx`, confirm the `<Image>` has:
+In `packages/web/components/cart-item-row.tsx`, confirm the `<Image>` has:
 
 ```typescript
 <Image
@@ -3346,7 +3347,7 @@ In `web/components/cart-item-row.tsx`, confirm the `<Image>` has:
 
 No `priority` needed here — cart thumbnails are not LCP candidates.
 
-- [ ] **Step 2: Add `sizes` to PDP gallery thumbnails in `web/components/product-gallery.tsx`**
+- [ ] **Step 2: Add `sizes` to PDP gallery thumbnails in `packages/web/components/product-gallery.tsx`**
 
 The thumbnail buttons currently have `width={80} height={80}`. Add `sizes="80px"` to prevent the browser fetching a larger image:
 
@@ -3368,7 +3369,7 @@ Start both servers. Open browser DevTools → Network → filter by `Img`. Reloa
 - [ ] **Step 4: Commit**
 
 ```bash
-git add web/components/product-gallery.tsx
+git add packages/web/components/product-gallery.tsx
 git commit -m "perf: add correct sizes attribute to PDP thumbnail images"
 ```
 
@@ -3378,16 +3379,16 @@ git commit -m "perf: add correct sizes attribute to PDP thumbnail images"
 
 **Files:**
 
-- Modify: `web/app/layout.tsx` (add base OG metadata)
-- Modify: `web/app/page.tsx` (already has metadata — add OG)
-- Modify: `web/app/products/[id]/page.tsx` (already has metadata + OG — add JSON-LD)
-- Create: `web/app/sitemap.ts`
+- Modify: `packages/web/app/layout.tsx` (add base OG metadata)
+- Modify: `packages/web/app/page.tsx` (already has metadata — add OG)
+- Modify: `packages/web/app/products/[id]/page.tsx` (already has metadata + OG — add JSON-LD)
+- Create: `packages/web/app/sitemap.ts`
 
 **Interfaces:**
 
 - Produces: `GET /sitemap.xml` — lists PLP and all PDP URLs for crawlers
 
-- [ ] **Step 1: Add base Open Graph metadata to `web/app/layout.tsx`**
+- [ ] **Step 1: Add base Open Graph metadata to `packages/web/app/layout.tsx`**
 
 Update the `metadata` export:
 
@@ -3403,7 +3404,7 @@ export const metadata: Metadata = {
 };
 ```
 
-- [ ] **Step 2: Add JSON-LD structured data to `web/app/products/[id]/page.tsx`**
+- [ ] **Step 2: Add JSON-LD structured data to `packages/web/app/products/[id]/page.tsx`**
 
 Add a `<script>` tag inside the returned JSX with Product schema:
 
@@ -3433,7 +3434,7 @@ Add inside the returned JSX (after `<article>`):
 />
 ```
 
-- [ ] **Step 3: Create `web/app/sitemap.ts`**
+- [ ] **Step 3: Create `packages/web/app/sitemap.ts`**
 
 ```typescript
 import type { MetadataRoute } from 'next';
@@ -3463,7 +3464,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 }
 ```
 
-Add `NEXT_PUBLIC_SITE_URL=http://localhost:3000` to `web/.env.local`.
+Add `NEXT_PUBLIC_SITE_URL=http://localhost:3000` to `packages/web/.env.local`.
 
 - [ ] **Step 4: Verify**
 
@@ -3476,7 +3477,7 @@ Expected: XML with URLs for `/` and `/products/1` through `/products/6`.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add web/app/layout.tsx web/app/page.tsx web/app/products/ web/app/sitemap.ts
+git add packages/web/app/layout.tsx web/app/page.tsx web/app/products/ web/app/sitemap.ts
 git commit -m "feat: add SEO metadata, JSON-LD structured data, and sitemap.xml"
 ```
 
@@ -3488,7 +3489,7 @@ git commit -m "feat: add SEO metadata, JSON-LD structured data, and sitemap.xml"
 
 **Files:**
 
-- Create: `web/tests/e2e/browse.spec.ts`
+- Create: `packages/web/tests/e2e/browse.spec.ts`
 
 - [ ] **Step 1: Write the test**
 
@@ -3553,7 +3554,7 @@ Expected: PASS — all 5 tests ✓
 - [ ] **Step 3: Commit**
 
 ```bash
-git add web/tests/e2e/browse.spec.ts
+git add packages/web/tests/e2e/browse.spec.ts
 git commit -m "test: add E2E tests for product browsing"
 ```
 
@@ -3563,7 +3564,7 @@ git commit -m "test: add E2E tests for product browsing"
 
 **Files:**
 
-- Create: `web/tests/e2e/cart.spec.ts`
+- Create: `packages/web/tests/e2e/cart.spec.ts`
 
 - [ ] **Step 1: Write the test**
 
@@ -3620,7 +3621,7 @@ Expected: PASS — all 5 tests ✓
 - [ ] **Step 3: Commit**
 
 ```bash
-git add web/tests/e2e/cart.spec.ts
+git add packages/web/tests/e2e/cart.spec.ts
 git commit -m "test: add E2E tests for cart flow"
 ```
 
@@ -3630,7 +3631,7 @@ git commit -m "test: add E2E tests for cart flow"
 
 **Files:**
 
-- Create: `web/tests/e2e/checkout.spec.ts`
+- Create: `packages/web/tests/e2e/checkout.spec.ts`
 
 > Uses Stripe test card `4242 4242 4242 4242`. Stripe's CardElement renders inside an iframe — use `page.frameLocator` to interact with it.
 
@@ -3727,7 +3728,7 @@ Expected: all API tests pass
 - [ ] **Step 5: Final commit**
 
 ```bash
-git add web/tests/e2e/checkout.spec.ts
+git add packages/web/tests/e2e/checkout.spec.ts
 git commit -m "test: add E2E tests for checkout and order confirmation flow"
 ```
 

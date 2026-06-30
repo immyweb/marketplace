@@ -14,6 +14,8 @@ app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 app.use(express.json());
 app.use(sessionMiddleware);
 
+app.get('/health', (_req, res) => res.json({ status: 'ok' }));
+
 app.use('/products', productsRouter);
 app.use('/cart', cartRouter);
 app.use('/checkout', checkoutRouter);
