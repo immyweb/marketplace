@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { prisma } from '../db/prisma.js';
-import { AddToCartSchema } from '@marketplace/core';
+import { AddToCartSchema, UpdateCartItemSchema } from '@marketplace/core';
 import type { Prisma } from '@prisma/client';
 
 const router = Router();
@@ -102,6 +102,73 @@ router.post('/products', async (req, res, next) => {
     });
 
     res.json(formatCart(updated));
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.put('/products/:productId', async (req, res, next) => {
+  try {
+    const productId = parseInt(req.params.productId, 10);
+    const parsed = UpdateCartItemSchema.safeParse(req.body);
+
+    if (isNaN(productId) || !parsed.success) {
+      res.status(400).json({
+        error: parsed.success
+          ? 'Invalid productId'
+          : parsed.error.errors[0].message,
+        code: 'INVALID_INPUT'
+      });
+      return;
+    }
+    const { quantity } = parsed.data;
+
+    if (!req.session.cartId) {
+      res.status(404).json({ error: 'Cart not found', code: 'NOT_FOUND' });
+      return;
+    }
+
+    const cartItem = await prisma.cartItem.findUnique({
+      where: {
+        cart_id_product_id: {
+          cart_id: req.session.cartId,
+          product_id: productId
+        }
+      }
+    });
+
+    if (!cartItem) {
+      res.status(404).json({ error: 'Item not in cart', code: 'NOT_FOUND' });
+      return;
+    }
+
+    if (quantity === 0) {
+      await prisma.cartItem.delete({
+        where: {
+          cart_id_product_id: {
+            cart_id: req.session.cartId,
+            product_id: productId
+          }
+        }
+      });
+    } else {
+      await prisma.cartItem.update({
+        where: {
+          cart_id_product_id: {
+            cart_id: req.session.cartId,
+            product_id: productId
+          }
+        },
+        data: { quantity }
+      });
+    }
+
+    const cart = await prisma.cart.findUniqueOrThrow({
+      where: { id: req.session.cartId },
+      include: cartInclude
+    });
+
+    res.json(formatCart(cart));
   } catch (err) {
     next(err);
   }

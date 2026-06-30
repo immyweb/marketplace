@@ -87,3 +87,36 @@ describe('POST /cart/products', () => {
     expect(res.body).toMatchObject({ error: expect.any(String) });
   });
 });
+
+describe('PUT /cart/products/:productId', () => {
+  it('updates the quantity of an item', async () => {
+    const ag = agent(app);
+    await ag.post('/cart/products').send({ productId, quantity: 1 });
+    const res = await ag
+      .put(`/cart/products/${productId}`)
+      .send({ quantity: 5 })
+      .expect(200);
+
+    expect(res.body.items[0].quantity).toBe(5);
+    expect(res.body.total_price).toBe(50);
+  });
+
+  it('removes the item when quantity is set to 0', async () => {
+    const ag = agent(app);
+    await ag.post('/cart/products').send({ productId, quantity: 2 });
+    const res = await ag
+      .put(`/cart/products/${productId}`)
+      .send({ quantity: 0 })
+      .expect(200);
+
+    expect(res.body.items).toHaveLength(0);
+    expect(res.body.total_price).toBe(0);
+  });
+
+  it('returns 404 when no cart exists', async () => {
+    await agent(app)
+      .put(`/cart/products/${productId}`)
+      .send({ quantity: 1 })
+      .expect(404);
+  });
+});
