@@ -1,8 +1,8 @@
-import { defineConfig } from 'prisma/config'
+import { defineConfig } from '@prisma/config'
 import { config } from 'dotenv'
 import { resolve } from 'node:path'
 
-// Prisma skips .env loading when prisma.config.ts is present, so load it here
+// Prisma 7 does not load .env automatically — load it here
 config({ path: resolve(__dirname, '.env') })
 
 export default defineConfig({
@@ -10,4 +10,4 @@ export default defineConfig({
   datasource: {
     url: process.env.DATABASE_URL!,
   },
-}))
+})

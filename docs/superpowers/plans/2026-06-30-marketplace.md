@@ -328,7 +328,7 @@ git commit -m "chore: scaffold API project with Express, Prisma, Vitest"
 - Produces: TypeScript interfaces for all domain objects
 - Produces: Zod schemas used by API routes for request validation and by the web checkout form
 
-- [ ] **Step 1: Create `core/package.json`**
+- [x] **Step 1: Create `core/package.json`**
 
 ```json
 {
@@ -345,7 +345,7 @@ git commit -m "chore: scaffold API project with Express, Prisma, Vitest"
 
 > `main` and `types` both point to the TypeScript source. `api` resolves it via tsx at dev time; `web` resolves it via Next.js's transpiler. No build step needed.
 
-- [ ] **Step 2: Create `core/tsconfig.json`**
+- [x] **Step 2: Create `core/tsconfig.json`**
 
 ```json
 {
@@ -363,7 +363,7 @@ git commit -m "chore: scaffold API project with Express, Prisma, Vitest"
 }
 ```
 
-- [ ] **Step 3: Create `core/src/types.ts`**
+- [x] **Step 3: Create `core/src/types.ts`**
 
 ```typescript
 export interface Product {
@@ -426,7 +426,7 @@ export interface ApiError {
 }
 ```
 
-- [ ] **Step 4: Create `core/src/schemas.ts`**
+- [x] **Step 4: Create `core/src/schemas.ts`**
 
 ```typescript
 import { z } from 'zod';
@@ -467,20 +467,20 @@ export type AddressInput = z.infer<typeof AddressSchema>;
 export type PlaceOrderInput = z.infer<typeof PlaceOrderSchema>;
 ```
 
-- [ ] **Step 5: Create `core/src/index.ts`**
+- [x] **Step 5: Create `core/src/index.ts`**
 
 ```typescript
 export * from './types.js';
 export * from './schemas.js';
 ```
 
-- [ ] **Step 6: Install core dependencies**
+- [x] **Step 6: Install core dependencies**
 
 ```bash
 npm install -w core
 ```
 
-- [ ] **Step 7: Type-check core**
+- [x] **Step 7: Type-check core**
 
 ```bash
 cd core && npx tsc --noEmit && cd ..
@@ -488,7 +488,7 @@ cd core && npx tsc --noEmit && cd ..
 
 Expected: no errors
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add core/
@@ -509,7 +509,7 @@ git commit -m "feat: add @marketplace/core package with shared types and Zod sch
 
 - Produces: `prisma.product`, `prisma.cart`, `prisma.cartItem`, `prisma.order`, `prisma.orderItem` — all queryable
 
-- [ ] **Step 1: Create `api/prisma/schema.prisma`**
+- [x] **Step 1: Create `api/prisma/schema.prisma`**
 
 ```prisma
 generator client {
@@ -591,7 +591,7 @@ model OrderItem {
 > `CartItem` does not store `price` — it is computed from `product.unit_price * quantity` at query time so it always reflects current prices.
 > `OrderItem` does store `price` — it locks in the price at the moment of purchase.
 
-- [ ] **Step 2: Create `api/src/db/prisma.ts`**
+- [x] **Step 2: Create `api/src/db/prisma.ts`**
 
 ```typescript
 import { PrismaClient } from '@prisma/client';
@@ -603,7 +603,7 @@ export const prisma = globalForPrisma.prisma ?? new PrismaClient();
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 ```
 
-- [ ] **Step 3: Run migration against both databases**
+- [x] **Step 3: Run migration against both databases**
 
 ```bash
 cd api && npx prisma migrate dev --name init
@@ -613,7 +613,7 @@ cd ..
 
 Expected: `migrations/` folder created, both databases have tables
 
-- [ ] **Step 4: Create `api/prisma/seed.ts`**
+- [x] **Step 4: Create `api/prisma/seed.ts`**
 
 ```typescript
 import { PrismaClient } from '@prisma/client';
@@ -711,7 +711,7 @@ main()
   .finally(() => prisma.$disconnect());
 ```
 
-- [ ] **Step 5: Add seed script to `api/package.json`**
+- [x] **Step 5: Add seed script to `api/package.json`**
 
 In `api/package.json`, the `db:seed` script already exists. Also add this to the package.json so Prisma knows the seed file:
 
@@ -721,7 +721,7 @@ In `api/package.json`, the `db:seed` script already exists. Also add this to the
 }
 ```
 
-- [ ] **Step 6: Run seed**
+- [x] **Step 6: Run seed**
 
 ```bash
 npm run db:seed -w api
@@ -729,7 +729,7 @@ npm run db:seed -w api
 
 Expected: `Seeded 6 products`
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add api/prisma/ api/src/db/
