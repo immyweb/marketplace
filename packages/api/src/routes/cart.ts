@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { prisma } from '../db/prisma.js';
+import { AddToCartSchema } from '@marketplace/core';
 import type { Prisma } from '@prisma/client';
 
 const router = Router();
@@ -51,6 +52,56 @@ router.get('/', async (req, res, next) => {
     }
 
     res.json(formatCart(cart));
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/products', async (req, res, next) => {
+  try {
+    const parsed = AddToCartSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res
+        .status(400)
+        .json({ error: parsed.error.errors[0].message, code: 'INVALID_INPUT' });
+      return;
+    }
+    const { productId, quantity } = parsed.data;
+
+    const product = await prisma.product.findUnique({
+      where: { id: productId }
+    });
+    if (!product) {
+      res.status(404).json({ error: 'Product not found', code: 'NOT_FOUND' });
+      return;
+    }
+
+    let cart;
+    if (req.session.cartId) {
+      cart = await prisma.cart.findUnique({
+        where: { id: req.session.cartId }
+      });
+    }
+
+    if (!cart) {
+      cart = await prisma.cart.create({ data: { session_id: req.session.id } });
+      req.session.cartId = cart.id;
+    }
+
+    await prisma.cartItem.upsert({
+      where: {
+        cart_id_product_id: { cart_id: cart.id, product_id: productId }
+      },
+      update: { quantity: { increment: quantity } },
+      create: { cart_id: cart.id, product_id: productId, quantity }
+    });
+
+    const updated = await prisma.cart.findUniqueOrThrow({
+      where: { id: cart.id },
+      include: cartInclude
+    });
+
+    res.json(formatCart(updated));
   } catch (err) {
     next(err);
   }
