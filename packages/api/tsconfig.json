@@ -8,10 +8,7 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "resolveJsonModule": true,
-    "paths": {
-      "@marketplace/core": ["../core/src/index.ts"]
-    }
+    "resolveJsonModule": true
   },
   "include": ["src", "prisma", "tests", "index.ts"],
   "exclude": ["node_modules", "dist"]

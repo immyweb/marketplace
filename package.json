@@ -8,5 +8,9 @@
     "dev:web": "bun run --filter web dev",
     "test:api": "bun run --filter api test",
     "test:e2e": "bun run --filter web test:e2e"
+  },
+  "devDependencies": {
+    "eslint": "^10.6.0",
+    "typescript-eslint": "^8.62.1"
   }
 }
