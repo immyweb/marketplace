@@ -63,10 +63,13 @@ router.post('/', async (req, res, next) => {
     const totalPrice = orderItems.reduce((sum, item) => sum + item.price, 0);
 
     const pm = paymentIntent.payment_method;
-    const cardLastFour =
-      pm && typeof pm === 'object' && pm.type === 'card' && pm.card?.last4
-        ? pm.card.last4
-        : '0000';
+
+    if (!pm || typeof pm !== 'object' || pm.type !== 'card' || !pm.card?.last4) {
+      res.status(500).json({ error: 'Could not read card details from payment', code: 'PAYMENT_FAILED' });
+      return;
+    }
+
+    const cardLastFour = pm.card.last4;
 
     // Use a transaction so order creation and cart deletion are atomic.
     // If the process crashes between these two steps, we'd otherwise end
