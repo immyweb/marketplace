@@ -134,4 +134,8 @@ describe('DELETE /cart/products/:productId', () => {
   it('returns 404 when no cart exists', async () => {
     await agent(app).delete(`/cart/products/${productId}`).expect(404);
   });
+
+  it('returns 400 when productId is not a number', async () => {
+    await agent(app).delete('/cart/products/not-a-number').expect(400);
+  });
 });
