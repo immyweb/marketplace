@@ -269,6 +269,7 @@ Visit `http://localhost:3000/products/1`. Expected: product image gallery, name,
 
 - Create: `packages/web/postcss.config.mjs`
 - Create: `packages/web/app/globals.css`
+- Create: `packages/web/global.d.ts`
 - Modify: `packages/web/app/layout.tsx`
 - Create: `packages/web/components.json`
 - Create: `packages/web/lib/utils.ts`
@@ -393,9 +394,9 @@ export default config;
 - [ ] **Step 4: Import `globals.css` in `packages/web/app/layout.tsx`**
 
 ```typescript
+import './globals.css'
 import type { Metadata } from 'next'
 import { Nav } from '@/components/nav'
-import './globals.css'
 
 export const metadata: Metadata = {
   title: { default: 'Marketplace', template: '%s | Marketplace' },
@@ -413,6 +414,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   )
 }
 ```
+
+> Global CSS import goes first, before other imports — Next.js convention for the root layout, keeps CSS chunk ordering predictable as more styles are added later.
 
 - [ ] **Step 5: Create `packages/web/components.json`**
 
@@ -514,7 +517,15 @@ function Button({
 export { Button, buttonVariants }
 ```
 
-- [ ] **Step 8: Verify**
+- [ ] **Step 8: Create `packages/web/global.d.ts`**
+
+```typescript
+declare module '*.css'
+```
+
+> Next.js's shipped types (`next/image-types/global.d.ts`) only declare `*.module.css` (CSS Modules) — not a plain, non-module `.css` side-effect import like `globals.css`. Without this declaration, `tsc` fails to resolve `import './globals.css'` with "Cannot find module './globals.css' or its corresponding type declarations" (or, under `noUncheckedSideEffectImports`, the side-effect-import variant of that message). `next build`'s own type-checking pass can be more lenient about this than a direct `tsc` invocation, so the gap can go unnoticed until someone runs `tsc` directly or their editor's TypeScript server flags it.
+
+- [ ] **Step 9: Verify**
 
 ```bash
 cd packages/web && bunx tsc --noEmit && bun run build
@@ -596,9 +607,9 @@ export async function Nav() {
 - [ ] **Step 2: Update `packages/web/app/layout.tsx`**
 
 ```typescript
+import './globals.css'
 import type { Metadata } from 'next'
 import { Nav } from '@/components/nav'
-import './globals.css'
 
 export const metadata: Metadata = {
   title: { default: 'Marketplace', template: '%s | Marketplace' },

@@ -17,13 +17,13 @@
     "@marketplace/core": "*",
     "@prisma/adapter-pg": "^7.0.0",
     "@prisma/client": "^7.0.0",
-    "connect-pg-simple": "^9.0.0",
+    "connect-pg-simple": "^10.0.0",
     "pg": "^8.0.0",
     "cors": "^2.8.5",
-    "dotenv": "^16.0.0",
+    "dotenv": "^17.0.0",
     "express": "^5.0.0",
     "express-session": "^1.18.0",
-    "stripe": "^17.0.0",
+    "stripe": "^22.3.0",
     "zod": "^3.23.0"
   },
   "devDependencies": {
@@ -33,10 +33,10 @@
     "@types/express": "^5.0.0",
     "@types/express-session": "^1.18.0",
     "@types/node": "^22.0.0",
-    "@types/supertest": "^6.0.0",
+    "@types/supertest": "^7.0.0",
     "prisma": "^7.0.0",
     "supertest": "^7.0.0",
-    "typescript": "^5.0.0",
-    "vitest": "^2.0.0"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
   }
 }

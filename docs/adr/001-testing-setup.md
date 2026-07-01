@@ -17,7 +17,7 @@ The project is a Bun monorepo with three packages: `core` (shared types/schemas)
 `packages/api` uses Vitest (`vitest run`) with `supertest` for HTTP-layer assertions.
 
 - **No mocks.** Tests hit a real PostgreSQL instance on port 5433 (`marketplace_test`), connected via the same Prisma client used in production.
-- **Single fork, serialized.** `pool: 'forks'` with `singleFork: true` prevents parallel test files from racing on shared DB state.
+- **Single fork, serialized.** `pool: 'forks'` with `fileParallelism: false` prevents parallel test files from racing on shared DB state (Vitest 4 replaced the old `poolOptions.forks.singleFork` option with this top-level flag).
 - **Setup/teardown** is in `tests/setup.ts`: connects before the suite, disconnects after.
 
 ### E2E: Playwright against live dev servers

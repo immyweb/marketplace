@@ -4,7 +4,7 @@ import { PlaceOrderSchema } from '@marketplace/core';
 import { prisma } from '../db/prisma.js';
 
 const router = Router();
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2026-06-24.dahlia' });
 
 router.post('/', async (req, res, next) => {
   try {
