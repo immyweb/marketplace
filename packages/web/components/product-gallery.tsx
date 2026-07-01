@@ -1,17 +1,20 @@
-'use client'
+'use client';
 
-import Image from 'next/image'
-import { useState } from 'react'
+import Image from 'next/image';
+import { useState } from 'react';
+import { cn } from '@/lib/utils';
 
 interface Props {
-  images: string[]
-  productName: string
+  images: string[];
+  productName: string;
 }
 
 export function ProductGallery({ images, productName }: Props) {
-  const [selected, setSelected] = useState(0)
+  const [selected, setSelected] = useState(0);
 
-  if (images.length === 0) return null
+  if (images.length === 0) {
+    return <p>No images to display</p>;
+  }
 
   return (
     <div>
@@ -21,10 +24,14 @@ export function ProductGallery({ images, productName }: Props) {
         width={800}
         height={800}
         priority
-        style={{ width: '100%', height: 'auto', objectFit: 'cover' }}
+        sizes="(max-width: 1024px) 100vw, 50vw"
+        className="aspect-square w-full rounded-md object-cover"
       />
       {images.length > 1 && (
-        <div role="list" aria-label="Product images">
+        <div
+          role="list"
+          aria-label="Product images"
+          className="mt-3 flex gap-2">
           {images.map((src, i) => (
             <button
               key={src}
@@ -32,18 +39,21 @@ export function ProductGallery({ images, productName }: Props) {
               onClick={() => setSelected(i)}
               aria-label={`View image ${i + 1}`}
               aria-pressed={selected === i}
-            >
+              className={cn(
+                'overflow-hidden rounded-md border-2',
+                selected === i ? 'border-primary' : 'border-transparent'
+              )}>
               <Image
                 src={src}
                 alt={`${productName} view ${i + 1}`}
                 width={80}
                 height={80}
-                style={{ objectFit: 'cover' }}
+                className="aspect-square object-cover"
               />
             </button>
           ))}
         </div>
       )}
     </div>
-  )
+  );
 }
