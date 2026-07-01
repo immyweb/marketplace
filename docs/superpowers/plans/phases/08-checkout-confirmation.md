@@ -8,7 +8,7 @@
 
 ## Phase 8 — Checkout & Confirmation
 
-### Task 20: Checkout Page
+### Task 22: Checkout Page
 
 **Files:**
 
@@ -240,7 +240,7 @@ Add product to cart, go to `/cart`, click "Proceed to Checkout". Expected: form 
 
 ---
 
-### Task 21: Order Confirmation Page
+### Task 23: Order Confirmation Page
 
 **Files:**
 

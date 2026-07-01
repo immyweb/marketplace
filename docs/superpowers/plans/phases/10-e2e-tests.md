@@ -8,7 +8,7 @@
 
 ## Phase 10 — End-to-End Tests
 
-### Task 24: E2E — Browse Products
+### Task 26: E2E — Browse Products
 
 **Files:**
 
@@ -83,7 +83,7 @@ git commit -m "test: add E2E tests for product browsing"
 
 ---
 
-### Task 25: E2E — Cart Flow
+### Task 27: E2E — Cart Flow
 
 **Files:**
 
@@ -143,7 +143,7 @@ Expected: PASS — all 5 tests ✓
 
 ---
 
-### Task 26: E2E — Checkout Flow
+### Task 28: E2E — Checkout Flow
 
 **Files:**
 

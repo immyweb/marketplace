@@ -6,7 +6,7 @@
 
 **Architecture:** Next.js 15 App Router (SSR) frontend talks to an Express REST API. Cart state lives server-side, tied to anonymous session cookies backed by PostgreSQL via `connect-pg-simple`. Stripe handles payments in test mode — client collects card details via Stripe CardElement, backend creates and confirms the PaymentIntent server-side, then creates the order on success.
 
-**Tech Stack:** Next.js 15 (App Router), Express 5, PostgreSQL 16 (Docker), Prisma 6, TypeScript 5, Bun, express-session + connect-pg-simple, Stripe (test mode), React Hook Form + Zod, Vitest + supertest, Playwright
+**Tech Stack:** Next.js 15 (App Router), Express 5, PostgreSQL 16 (Docker), Prisma 6, TypeScript 5, Bun, express-session + connect-pg-simple, Stripe (test mode), React Hook Form + Zod, Tailwind CSS 4 + shadcn/ui, Vitest + supertest, Playwright
 
 ## Global Constraints
 
@@ -57,6 +57,7 @@ marketplace/
 │   │   └── vitest.config.ts
 │   ├── web/
 │   │   ├── app/
+│   │   │   ├── globals.css              # Tailwind v4 import + shadcn/ui theme variables
 │   │   │   ├── layout.tsx               # Root layout: <html>, <Nav>
 │   │   │   ├── page.tsx                 # PLP — server component, fetches /products
 │   │   │   ├── products/[id]/
@@ -68,6 +69,8 @@ marketplace/
 │   │   │   └── order-confirmation/[id]/
 │   │   │       └── page.tsx             # Confirmation — server component
 │   │   ├── components/
+│   │   │   ├── ui/
+│   │   │   │   └── button.tsx           # shadcn/ui Button (cva variants)
 │   │   │   ├── nav.tsx                  # Header + cart item count badge
 │   │   │   ├── product-card.tsx         # Card for PLP grid
 │   │   │   ├── product-gallery.tsx      # Image switcher for PDP
@@ -77,7 +80,10 @@ marketplace/
 │   │   │   └── stripe-payment-form.tsx  # Stripe CardElement wrapper
 │   │   ├── lib/
 │   │   │   ├── api.ts                   # Typed fetch wrapper for all API calls
-│   │   │   └── stripe.ts                # loadStripe singleton
+│   │   │   ├── stripe.ts                # loadStripe singleton
+│   │   │   └── utils.ts                 # cn() — clsx + tailwind-merge, used by shadcn/ui components
+│   │   ├── components.json              # shadcn/ui CLI config (style, aliases, base color)
+│   │   ├── postcss.config.mjs           # @tailwindcss/postcss plugin
 │   │   ├── tests/e2e/
 │   │   │   ├── browse.spec.ts
 │   │   │   ├── cart.spec.ts
@@ -108,11 +114,11 @@ marketplace/
 | 3 — Cart API                | [phases/03-cart-api.md](phases/03-cart-api.md)                           | 9–12  | `GET/POST/PUT/DELETE /cart/products` with session-tied carts                                                          |
 | 4 — Checkout & Order API    | [phases/04-checkout-order-api.md](phases/04-checkout-order-api.md)       | 13–14 | Stripe PaymentIntent, `POST /order`                                                                                   |
 | 5 — Frontend Foundation     | [phases/05-frontend-foundation.md](phases/05-frontend-foundation.md)     | 15–16 | API client, layout, nav with cart badge                                                                               |
-| 6 — Product Pages           | [phases/06-product-pages.md](phases/06-product-pages.md)                 | 17–18 | PLP grid, PDP with gallery and add-to-cart                                                                            |
-| 7 — Cart Page               | [phases/07-cart-page.md](phases/07-cart-page.md)                         | 19    | Cart with qty controls and remove                                                                                     |
-| 8 — Checkout & Confirmation | [phases/08-checkout-confirmation.md](phases/08-checkout-confirmation.md) | 20–21 | Checkout form + Stripe, order confirmation                                                                            |
-| 9 — SEO & Images            | [phases/09-seo-images.md](phases/09-seo-images.md)                       | 22–23 | AVIF/WebP, metadata, JSON-LD, sitemap.xml                                                                             |
-| 10 — E2E Tests              | [phases/10-e2e-tests.md](phases/10-e2e-tests.md)                         | 24–26 | Browse, cart, and full checkout flows                                                                                 |
+| 6 — Product Pages           | [phases/06-product-pages.md](phases/06-product-pages.md)                 | 17–20 | PLP grid, PDP with gallery and add-to-cart, Tailwind CSS + shadcn/ui setup and retrofit                                |
+| 7 — Cart Page               | [phases/07-cart-page.md](phases/07-cart-page.md)                         | 21    | Cart with qty controls and remove                                                                                     |
+| 8 — Checkout & Confirmation | [phases/08-checkout-confirmation.md](phases/08-checkout-confirmation.md) | 22–23 | Checkout form + Stripe, order confirmation                                                                            |
+| 9 — SEO & Images            | [phases/09-seo-images.md](phases/09-seo-images.md)                       | 24–25 | AVIF/WebP, metadata, JSON-LD, sitemap.xml                                                                             |
+| 10 — E2E Tests              | [phases/10-e2e-tests.md](phases/10-e2e-tests.md)                         | 26–28 | Browse, cart, and full checkout flows                                                                                 |
 
 ---
 
@@ -125,8 +131,8 @@ marketplace/
 | 3 — Cart API                | 9–12  | `GET/POST/PUT/DELETE /cart/products` with session-tied carts                                                          |
 | 4 — Checkout & Order API    | 13–14 | Stripe PaymentIntent, `POST /order`                                                                                   |
 | 5 — Frontend Foundation     | 15–16 | API client, layout, nav with cart badge                                                                               |
-| 6 — Product Pages           | 17–18 | PLP grid, PDP with gallery and add-to-cart                                                                            |
-| 7 — Cart Page               | 19    | Cart with qty controls and remove                                                                                     |
-| 8 — Checkout & Confirmation | 20–21 | Checkout form + Stripe, order confirmation                                                                            |
-| 9 — SEO & Images            | 22–23 | AVIF/WebP, metadata, JSON-LD, sitemap.xml                                                                             |
-| 10 — E2E Tests              | 24–26 | Browse, cart, and full checkout flows                                                                                 |
+| 6 — Product Pages           | 17–20 | PLP grid, PDP with gallery and add-to-cart, Tailwind CSS + shadcn/ui setup and retrofit                                |
+| 7 — Cart Page               | 21    | Cart with qty controls and remove                                                                                     |
+| 8 — Checkout & Confirmation | 22–23 | Checkout form + Stripe, order confirmation                                                                            |
+| 9 — SEO & Images            | 24–25 | AVIF/WebP, metadata, JSON-LD, sitemap.xml                                                                             |
+| 10 — E2E Tests              | 26–28 | Browse, cart, and full checkout flows                                                                                 |

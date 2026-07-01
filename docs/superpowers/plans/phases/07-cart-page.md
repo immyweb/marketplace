@@ -8,7 +8,7 @@
 
 ## Phase 7 — Cart Page
 
-### Task 19: Cart Page
+### Task 21: Cart Page
 
 **Files:**
 
@@ -102,13 +102,17 @@ export function CartItemRow({ item }: Props) {
 ```typescript
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { headers } from 'next/headers'
 import { fetchCart } from '@/lib/api'
 import { CartItemRow } from '@/components/cart-item-row'
 
 export const metadata: Metadata = { title: 'Your Cart' }
 
 export default async function CartPage() {
-  const cart = await fetchCart()
+  // SSR fetches have no browser cookie jar — forward the incoming
+  // request's Cookie header so the API sees the visitor's session.
+  const cookie = (await headers()).get('cookie')
+  const cart = await fetchCart(cookie ? { headers: { Cookie: cookie } } : undefined)
 
   if (cart.items.length === 0) {
     return (

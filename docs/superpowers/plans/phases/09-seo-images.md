@@ -8,7 +8,7 @@
 
 ## Phase 9 — SEO & Images
 
-### Task 22: Image Optimization
+### Task 24: Image Optimization
 
 **Files:**
 
@@ -67,7 +67,7 @@ git commit -m "perf: add correct sizes attribute to PDP thumbnail images"
 
 ---
 
-### Task 23: SEO — Metadata, JSON-LD, and Sitemap
+### Task 25: SEO — Metadata, JSON-LD, and Sitemap
 
 **Files:**
 
