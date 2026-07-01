@@ -1,6 +1,17 @@
-import type { Cart, Order, Product } from '@marketplace/core';
+import type { AddressDetails, Cart, Order, Product } from '@marketplace/core';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
+
+export class ApiRequestError extends Error {
+  code?: string;
+  status: number;
+
+  constructor(message: string, status: number, code?: string) {
+    super(message);
+    this.code = code;
+    this.status = status;
+  }
+}
 
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {
@@ -11,10 +22,7 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({ error: 'Request failed' }));
-    throw Object.assign(new Error(body.error ?? 'Request failed'), {
-      code: body.code,
-      status: res.status
-    });
+    throw new ApiRequestError(body.error ?? 'Request failed', res.status, body.code);
   }
 
   return res.json() as Promise<T>;
@@ -65,12 +73,7 @@ export function createPaymentIntent(cartId: number) {
 export function placeOrder(body: {
   cartId: number;
   paymentIntentId: string;
-  address_details: {
-    name: string;
-    street: string;
-    city: string;
-    postcode: string;
-  };
+  address_details: AddressDetails;
 }) {
   return apiFetch<Order>('/order', {
     method: 'POST',
