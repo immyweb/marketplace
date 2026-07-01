@@ -38,8 +38,8 @@ export function fetchProduct(id: number) {
   return apiFetch<Product>(`/products/${id}`);
 }
 
-export function fetchCart() {
-  return apiFetch<Cart>('/cart');
+export function fetchCart(init?: RequestInit) {
+  return apiFetch<Cart>('/cart', init);
 }
 
 export function addToCart(productId: number, quantity: number) {

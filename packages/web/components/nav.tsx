@@ -1,10 +1,14 @@
 import Link from 'next/link'
+import { headers } from 'next/headers'
 import { fetchCart } from '@/lib/api'
 
 export async function Nav() {
   let itemCount = 0
   try {
-    const cart = await fetchCart()
+    // SSR fetches have no browser cookie jar — forward the incoming
+    // request's Cookie header so the API sees the visitor's session.
+    const cookie = (await headers()).get('cookie')
+    const cart = await fetchCart(cookie ? { headers: { Cookie: cookie } } : undefined)
     itemCount = cart.items.reduce((sum, item) => sum + item.quantity, 0)
   } catch {
     // cart fetch fails gracefully — show 0
