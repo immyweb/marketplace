@@ -98,13 +98,6 @@ bun run --filter api db:seed
 
 Visit `http://localhost:3000`. Expected: grid of 6 product cards with names and prices.
 
-- [ ] **Step 4: Commit**
-
-```bash
-git add packages/web/components/product-card.tsx web/app/page.tsx
-git commit -m "feat: add Product Listing Page with SSR product grid"
-```
-
 ---
 
 ### Task 18: Product Detail Page (PDP)
@@ -267,10 +260,3 @@ export default async function ProductDetailPage({ params }: Props) {
 - [ ] **Step 4: Verify in browser**
 
 Visit `http://localhost:3000/products/1`. Expected: product image gallery, name, description, price, "Add to Cart" button. Clicking "Add to Cart" updates the nav badge.
-
-- [ ] **Step 5: Commit**
-
-```bash
-git add packages/web/components/product-gallery.tsx web/components/add-to-cart-button.tsx web/app/products/
-git commit -m "feat: add Product Detail Page with image gallery and add-to-cart"
-```

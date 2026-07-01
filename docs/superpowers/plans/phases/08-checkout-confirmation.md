@@ -238,13 +238,6 @@ export default function CheckoutPage() {
 
 Add product to cart, go to `/cart`, click "Proceed to Checkout". Expected: form with address fields and Stripe card input. Fill with test card `4242 4242 4242 4242`, any future date, any CVC, any postcode in format `SW1A 2AA`. Submit. Expected: redirect to `/order-confirmation/:id`.
 
-- [ ] **Step 5: Commit**
-
-```bash
-git add packages/web/components/address-form.tsx web/components/stripe-payment-form.tsx web/app/checkout/
-git commit -m "feat: add Checkout page with address form and Stripe payment"
-```
-
 ---
 
 ### Task 21: Order Confirmation Page
@@ -382,10 +375,3 @@ export default async function OrderConfirmationPage({ params }: Props) {
 - [ ] **Step 3: Verify in browser**
 
 Complete a checkout. Expected: redirect to `/order-confirmation/:id` with order ID, item list, address, and last 4 card digits shown.
-
-- [ ] **Step 4: Commit**
-
-```bash
-git add packages/web/app/order-confirmation/ api/src/routes/orders.ts web/lib/api.ts
-git commit -m "feat: add Order Confirmation page and GET /order/:id endpoint"
-```

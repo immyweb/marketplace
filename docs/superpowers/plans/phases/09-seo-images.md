@@ -165,10 +165,3 @@ curl http://localhost:3000/sitemap.xml
 ```
 
 Expected: XML with URLs for `/` and `/products/1` through `/products/6`.
-
-- [ ] **Step 5: Commit**
-
-```bash
-git add packages/web/app/layout.tsx web/app/page.tsx web/app/products/ web/app/sitemap.ts
-git commit -m "feat: add SEO metadata, JSON-LD structured data, and sitemap.xml"
-```

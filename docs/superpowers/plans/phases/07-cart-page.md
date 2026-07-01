@@ -144,10 +144,3 @@ export default async function CartPage() {
 - [ ] **Step 3: Verify in browser**
 
 Add a product to cart via a PDP page. Visit `http://localhost:3000/cart`. Expected: item listed with quantity controls, total, and "Proceed to Checkout" link.
-
-- [ ] **Step 4: Commit**
-
-```bash
-git add packages/web/components/cart-item-row.tsx web/app/cart/
-git commit -m "feat: add Cart page with quantity controls and remove"
-```

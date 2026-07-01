@@ -124,13 +124,6 @@ cd packages/web && npx tsc --noEmit
 
 Expected: no errors
 
-- [ ] **Step 4: Commit**
-
-```bash
-git add packages/web/lib/
-git commit -m "feat: add typed API client and Stripe loader for web"
-```
-
 ---
 
 ### Task 16: Root Layout + Navigation
@@ -208,11 +201,4 @@ Start both servers and visit `http://localhost:3000`. Expected: page renders wit
 ```bash
 bun run --filter api dev &
 bun run --filter web dev
-```
-
-- [ ] **Step 4: Commit**
-
-```bash
-git add packages/web/components/nav.tsx web/app/layout.tsx
-git commit -m "feat: add root layout with navigation and cart badge"
 ```

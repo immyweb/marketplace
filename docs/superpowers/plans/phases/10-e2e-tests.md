@@ -141,13 +141,6 @@ bun run --filter web test:e2e -- cart.spec.ts
 
 Expected: PASS — all 5 tests ✓
 
-- [ ] **Step 3: Commit**
-
-```bash
-git add packages/web/tests/e2e/cart.spec.ts
-git commit -m "test: add E2E tests for cart flow"
-```
-
 ---
 
 ### Task 26: E2E — Checkout Flow
@@ -247,10 +240,3 @@ bun run --filter api test
 ```
 
 Expected: all API tests pass
-
-- [ ] **Step 5: Final commit**
-
-```bash
-git add packages/web/tests/e2e/checkout.spec.ts
-git commit -m "test: add E2E tests for checkout and order confirmation flow"
-```
