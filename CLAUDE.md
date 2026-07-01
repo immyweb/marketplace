@@ -84,8 +84,9 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 - Use Typescript throughout.
 - Every feature must have unit tests.
 - Avoid mocking: test against real implementations. If a dependency is hard to use in tests, that's a design signal — fix the design, don't add a mock.
-- After any significant UI change or new feature that touches the user interface: create a new end-to-end test covering the feature, or update an existing one if it already covers the affected flow. Then run those E2E tests and confirm they pass before considering the work done.
-- Use context7 MCP server to fetch up-to-date documentation for libraries.
+- For UI: favour component tests (Vitest + React Testing Library, `packages/web/tests/component`) over end-to-end tests. Network calls are mocked with MSW in component tests — a deliberate exception to the no-mocking rule above, so they stay fast and isolated. See [ADR 001](docs/adr/001-testing-setup.md).
+- Reserve E2E (Playwright) for critical flows only (checkout, cart, payment) — full cross-page journeys a component test can't cover. After any significant UI change or new feature: add or update a component test by default; only add/update an E2E test if the change affects a critical flow. Run the relevant tests and confirm they pass before considering the work done.
+- Use context7 MCP server to fetch up-to-date documentation when installing libraries or debugging.
 
 ## 8. Architecture Decision Records
 

@@ -7,6 +7,7 @@
     "dev:api": "bun run --filter api dev",
     "dev:web": "bun run --filter web dev",
     "test:api": "bun run --filter api test",
+    "test:web": "bun run --filter web test",
     "test:e2e": "bun run --filter web test:e2e"
   },
   "devDependencies": {

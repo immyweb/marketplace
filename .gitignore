@@ -3,3 +3,5 @@ dist/
 .env
 .env.test
 .env.local
+
+.playwright-mcp/

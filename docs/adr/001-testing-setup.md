@@ -1,14 +1,15 @@
 # ADR 001: Testing Setup — Vitest + Playwright
 
 **Status:** Accepted  
-**Date:** 2026-06-30
+**Date:** 2026-06-30 (amended 2026-07-01)
 
 ## Context
 
-The project is a Bun monorepo with three packages: `core` (shared types/schemas), `api` (Express + Prisma), and `web` (Next.js). Two distinct testing concerns exist:
+The project is a Bun monorepo with three packages: `core` (shared types/schemas), `api` (Express + Prisma), and `web` (Next.js). Three distinct testing concerns exist:
 
 1. **API correctness** — routes, business logic, database interactions
-2. **Browser behaviour** — full user flows across the running stack
+2. **UI component behaviour** — rendering, props, interaction, accessible markup for individual pages/components
+3. **Critical user flows** — full end-to-end journeys across the running stack
 
 ## Decision
 
@@ -20,9 +21,19 @@ The project is a Bun monorepo with three packages: `core` (shared types/schemas)
 - **Single fork, serialized.** `pool: 'forks'` with `fileParallelism: false` prevents parallel test files from racing on shared DB state (Vitest 4 replaced the old `poolOptions.forks.singleFork` option with this top-level flag).
 - **Setup/teardown** is in `tests/setup.ts`: connects before the suite, disconnects after.
 
+### UI: Vitest + React Testing Library, mocked network via MSW
+
+`packages/web` uses Vitest (`vitest run`) with `@testing-library/react` for component-level tests, config in `vitest.config.ts`. Test files live in `tests/component/**/*.test.tsx`.
+
+- **jsdom environment**, React plugin via `@vitejs/plugin-react`, `@/*` path aliases resolved natively via Vite 8's `resolve.tsconfigPaths` (no separate plugin needed).
+- **Network is mocked with MSW** (`msw/node`), configured in `tests/component/setup.ts`. This is a deliberate exception to the project's usual "no mocks" stance (see ADR context in `CLAUDE.md`): component tests should stay fast and isolated from the API/DB, and real integration is still covered by the API's own Vitest suite and by Playwright e2e.
+- **RTL cleanup runs after every test** (`cleanup()` in `afterEach`) — without it, `screen` queries see markup left over from the previous test's render, since `screen` queries the whole `document.body` rather than a per-test container.
+- **Async Server Components can be tested directly** by calling the exported page function and awaiting it before passing the result to `render()` (e.g. `render(await ProductListingPage())`). Next.js's own docs say Vitest "does not support" async Server Components, but that caveat is about components using request-scoped APIs (`headers()`, `cookies()`, `draftMode()`) which rely on an `AsyncLocalStorage` store that only exists inside a real Next.js request. Pages that only `await` a data fetch or `params` — as `app/page.tsx` and `app/products/[id]/page.tsx` currently do — render fine outside that context. If a page adopts request-scoped APIs, it will need e2e coverage instead.
+- **Testing priority:** UI behaviour should be covered by component tests first. Playwright e2e is reserved for critical flows only (checkout, cart, payment) where a real cross-page, cross-service journey needs verifying — not for coverage that a component test can already provide.
+
 ### E2E: Playwright against live dev servers
 
-`packages/web` uses Playwright (`@playwright/test`), config in `playwright.config.ts`.
+`packages/web` also uses Playwright (`@playwright/test`), config in `playwright.config.ts`, for the critical flows called out above.
 
 - **Two browser targets:** Desktop Chrome and iPhone 13 (mobile viewport).
 - **Two `webServer` entries:** Playwright starts (or reuses) both the API on `:3001` and the web on `:3000` before running tests.
@@ -31,7 +42,9 @@ The project is a Bun monorepo with three packages: `core` (shared types/schemas)
 
 ## Consequences
 
-- Tests are slower than mock-based approaches but catch real integration failures (DB schema drift, query bugs, network behaviour).
+- API tests are slower than mock-based approaches but catch real integration failures (DB schema drift, query bugs, network behaviour).
 - A running Postgres instance on port 5433 is required for API tests. See `docker-compose.yml`.
+- Component tests trade real-network coverage for speed and isolation; a component test passing does not guarantee the real API contract matches — that gap is covered by the API's own Vitest suite plus the critical-flow e2e tests, not by component tests.
 - E2E tests require both servers healthy before assertions begin; the `webServer` config handles this automatically.
 - Adding parallelism to either suite requires solving shared-state isolation first (e.g., per-test DB transactions or separate schemas).
+- Because e2e is now scoped to critical flows only, new UI work should default to adding/extending a component test; only add an e2e test when the change affects a critical cross-page flow.
