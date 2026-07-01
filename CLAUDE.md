@@ -102,3 +102,11 @@ When making changes:
 - Document the _why_ behind non-obvious decisions, not just the _what_.
 - If you add something significant, note the reasoning in a comment or here.
 - Treat missing context as a bug — surface it rather than silently working around it.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
+
+<!-- END:nextjs-agent-rules -->
