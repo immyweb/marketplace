@@ -23,6 +23,31 @@ export const productListing = {
   currency: product.currency
 };
 
+export const cart = {
+  id: 1,
+  items: [
+    {
+      quantity: 2,
+      price: 37.98,
+      currency: 'GBP',
+      product: {
+        id: product.id,
+        name: product.name,
+        primary_image: product.primary_image
+      }
+    }
+  ],
+  total_price: 37.98,
+  currency: 'GBP'
+};
+
+export const emptyCart = {
+  id: null,
+  items: [],
+  total_price: 0,
+  currency: 'GBP'
+};
+
 export const handlers = [
   http.get(`${API_URL}/products`, () => {
     return HttpResponse.json({ results: [productListing] });
@@ -32,5 +57,8 @@ export const handlers = [
       return HttpResponse.json({ error: 'Product not found' }, { status: 404 });
     }
     return HttpResponse.json(product);
+  }),
+  http.get(`${API_URL}/cart`, () => {
+    return HttpResponse.json(cart);
   })
 ];
