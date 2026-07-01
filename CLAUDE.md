@@ -61,7 +61,23 @@ For multi-step tasks, state a brief plan:
 
 Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
 
-## 5. Tech Stack & Testing
+## 5. Use Superpowers for Implementation
+
+**Implementing a plan task means using the superpowers workflow — don't ask, just do it.**
+
+- When implementing a task from a written plan (e.g. `docs/superpowers/plans/`), use the `superpowers:subagent-driven-development` skill (or `superpowers:executing-plans` for a separate session) by default — the user does not need to say "using superpowers" each time.
+- Follow that skill's process: task brief, dispatched implementer subagent, task reviewer subagent, ledger update — scaled sensibly for the size of the task.
+- This is subject to Rule 6 below: implementers must leave work uncommitted for user review.
+
+## 6. Never Auto-Commit
+
+**Implement, then stop. The user reviews before anything is committed.**
+
+- After implementing a task (whether done directly or via a dispatched subagent), leave changes uncommitted in the working tree.
+- Do not `git add` or `git commit` until the user has reviewed the diff and explicitly asks you to commit.
+- This overrides any plan or skill instruction that says to commit after every task — always defer to this file.
+
+## 7. Tech Stack & Testing
 
 **Always use TypeScript. Always test with real dependencies.**
 
@@ -71,11 +87,11 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 - After any significant UI change or new feature that touches the user interface: create a new end-to-end test covering the feature, or update an existing one if it already covers the affected flow. Then run those E2E tests and confirm they pass before considering the work done.
 - Use context7 MCP server to fetch up-to-date documentation for libraries.
 
-## 6. Architecture Decision Records
+## 8. Architecture Decision Records
 
 Before changing testing, auth, data layer, or agent setup, read [docs/adr/README.md](docs/adr/README.md) first.
 
-## 7. Project Context
+## 9. Project Context
 
 **The current state of this codebase:**
 

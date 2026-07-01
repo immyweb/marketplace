@@ -19,7 +19,6 @@
 - Server is source of truth for cart totals and prices (computed from current `unit_price`, never stored on `CartItem`)
 - Tests use real PostgreSQL (test database `marketplace_test`) and real Stripe test-mode keys — no mocking
 - All API errors return `{ error: string, code?: string }`
-- Commit after every task
 - Runtime and package manager: Bun — no npm scripts, no tsx
 
 ---
@@ -102,18 +101,18 @@ marketplace/
 
 ## Phases
 
-| Phase | File | Tasks | Key Deliverables |
-|-------|------|-------|-----------------|
-| 1 — Infrastructure | [phases/01-infrastructure.md](phases/01-infrastructure.md) | 1–6 | Docker/PG, API scaffold, `@marketplace/core` (shared types + schemas), Prisma schema+seed, sessions, Next.js scaffold |
-| 2 — Product API | [phases/02-product-api.md](phases/02-product-api.md) | 7–8 | `GET /products`, `GET /products/:id` |
-| 3 — Cart API | [phases/03-cart-api.md](phases/03-cart-api.md) | 9–12 | `GET/POST/PUT/DELETE /cart/products` with session-tied carts |
-| 4 — Checkout & Order API | [phases/04-checkout-order-api.md](phases/04-checkout-order-api.md) | 13–14 | Stripe PaymentIntent, `POST /order` |
-| 5 — Frontend Foundation | [phases/05-frontend-foundation.md](phases/05-frontend-foundation.md) | 15–16 | API client, layout, nav with cart badge |
-| 6 — Product Pages | [phases/06-product-pages.md](phases/06-product-pages.md) | 17–18 | PLP grid, PDP with gallery and add-to-cart |
-| 7 — Cart Page | [phases/07-cart-page.md](phases/07-cart-page.md) | 19 | Cart with qty controls and remove |
-| 8 — Checkout & Confirmation | [phases/08-checkout-confirmation.md](phases/08-checkout-confirmation.md) | 20–21 | Checkout form + Stripe, order confirmation |
-| 9 — SEO & Images | [phases/09-seo-images.md](phases/09-seo-images.md) | 22–23 | AVIF/WebP, metadata, JSON-LD, sitemap.xml |
-| 10 — E2E Tests | [phases/10-e2e-tests.md](phases/10-e2e-tests.md) | 24–26 | Browse, cart, and full checkout flows |
+| Phase                       | File                                                                     | Tasks | Key Deliverables                                                                                                      |
+| --------------------------- | ------------------------------------------------------------------------ | ----- | --------------------------------------------------------------------------------------------------------------------- |
+| 1 — Infrastructure          | [phases/01-infrastructure.md](phases/01-infrastructure.md)               | 1–6   | Docker/PG, API scaffold, `@marketplace/core` (shared types + schemas), Prisma schema+seed, sessions, Next.js scaffold |
+| 2 — Product API             | [phases/02-product-api.md](phases/02-product-api.md)                     | 7–8   | `GET /products`, `GET /products/:id`                                                                                  |
+| 3 — Cart API                | [phases/03-cart-api.md](phases/03-cart-api.md)                           | 9–12  | `GET/POST/PUT/DELETE /cart/products` with session-tied carts                                                          |
+| 4 — Checkout & Order API    | [phases/04-checkout-order-api.md](phases/04-checkout-order-api.md)       | 13–14 | Stripe PaymentIntent, `POST /order`                                                                                   |
+| 5 — Frontend Foundation     | [phases/05-frontend-foundation.md](phases/05-frontend-foundation.md)     | 15–16 | API client, layout, nav with cart badge                                                                               |
+| 6 — Product Pages           | [phases/06-product-pages.md](phases/06-product-pages.md)                 | 17–18 | PLP grid, PDP with gallery and add-to-cart                                                                            |
+| 7 — Cart Page               | [phases/07-cart-page.md](phases/07-cart-page.md)                         | 19    | Cart with qty controls and remove                                                                                     |
+| 8 — Checkout & Confirmation | [phases/08-checkout-confirmation.md](phases/08-checkout-confirmation.md) | 20–21 | Checkout form + Stripe, order confirmation                                                                            |
+| 9 — SEO & Images            | [phases/09-seo-images.md](phases/09-seo-images.md)                       | 22–23 | AVIF/WebP, metadata, JSON-LD, sitemap.xml                                                                             |
+| 10 — E2E Tests              | [phases/10-e2e-tests.md](phases/10-e2e-tests.md)                         | 24–26 | Browse, cart, and full checkout flows                                                                                 |
 
 ---
 
