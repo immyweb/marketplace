@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { addToCart } from '@/lib/api';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import { addToCart } from "@/lib/api";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   productId: number;
@@ -21,7 +21,7 @@ export function AddToCartButton({ productId }: Props) {
       await addToCart(productId, 1);
       router.refresh(); // re-fetches Nav to update cart badge
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to add to cart');
+      setError(err instanceof Error ? err.message : "Failed to add to cart");
     } finally {
       setLoading(false);
     }
@@ -30,7 +30,7 @@ export function AddToCartButton({ productId }: Props) {
   return (
     <div className="mt-4">
       <Button onClick={handleClick} disabled={loading} aria-busy={loading}>
-        {loading ? 'Adding...' : 'Add to Cart'}
+        {loading ? "Adding..." : "Add to Cart"}
       </Button>
       {error && (
         <p role="alert" className="mt-2 text-sm text-destructive">

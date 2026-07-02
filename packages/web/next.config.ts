@@ -1,11 +1,11 @@
-import type { NextConfig } from 'next';
+import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  transpilePackages: ['@marketplace/core'],
+  transpilePackages: ["@marketplace/core"],
   images: {
-    formats: ['image/avif', 'image/webp'],
-    remotePatterns: [{ protocol: 'https', hostname: 'placehold.co' }]
-  }
+    formats: ["image/avif", "image/webp"],
+    remotePatterns: [{ protocol: "https", hostname: "placehold.co" }],
+  },
 };
 
 export default nextConfig;

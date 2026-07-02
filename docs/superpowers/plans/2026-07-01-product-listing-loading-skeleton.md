@@ -21,12 +21,14 @@
 ### Task 1: Skeleton primitive, product card skeleton, and loading.tsx
 
 **Files:**
+
 - Create: `packages/web/components/ui/skeleton.tsx`
 - Create: `packages/web/components/product-card-skeleton.tsx`
 - Create: `packages/web/app/loading.tsx`
 - Test: `packages/web/tests/component/product-listing-loading.test.tsx`
 
 **Interfaces:**
+
 - Consumes: `cn` from `@/lib/utils` (existing, see `packages/web/lib/utils.ts`).
 - Produces:
   - `Skeleton` — React component, `packages/web/components/ui/skeleton.tsx`, props `React.ComponentProps<'div'>`, renders a `div` with `data-slot="skeleton"`.
@@ -38,23 +40,23 @@
 Create `packages/web/tests/component/product-listing-loading.test.tsx`:
 
 ```tsx
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import Loading from '@/app/loading';
+import { describe, it, expect } from "vitest";
+import { render, screen } from "@testing-library/react";
+import Loading from "@/app/loading";
 
-describe('Loading (product listing)', () => {
-  it('shows an accessible loading status', () => {
+describe("Loading (product listing)", () => {
+  it("shows an accessible loading status", () => {
     render(<Loading />);
 
     expect(
-      screen.getByRole('status', { name: 'Loading products' })
+      screen.getByRole("status", { name: "Loading products" }),
     ).toBeInTheDocument();
   });
 
-  it('renders 6 skeleton product cards, each with an image, title, and price placeholder', () => {
+  it("renders 6 skeleton product cards, each with an image, title, and price placeholder", () => {
     const { container } = render(<Loading />);
 
-    const cards = container.querySelectorAll('li');
+    const cards = container.querySelectorAll("li");
     expect(cards).toHaveLength(6);
 
     cards.forEach((card) => {
@@ -74,13 +76,13 @@ Expected: FAIL — `Cannot find module '@/app/loading'` (or similar module-not-f
 Create `packages/web/components/ui/skeleton.tsx`:
 
 ```tsx
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
-function Skeleton({ className, ...props }: React.ComponentProps<'div'>) {
+function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="skeleton"
-      className={cn('animate-pulse rounded-md bg-muted', className)}
+      className={cn("animate-pulse rounded-md bg-muted", className)}
       {...props}
     />
   );
@@ -94,7 +96,7 @@ export { Skeleton };
 Create `packages/web/components/product-card-skeleton.tsx`:
 
 ```tsx
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function ProductCardSkeleton() {
   return (
@@ -112,7 +114,7 @@ export function ProductCardSkeleton() {
 Create `packages/web/app/loading.tsx`:
 
 ```tsx
-import { ProductCardSkeleton } from '@/components/product-card-skeleton';
+import { ProductCardSkeleton } from "@/components/product-card-skeleton";
 
 export default function Loading() {
   return (
@@ -121,7 +123,8 @@ export default function Loading() {
       <ul
         role="status"
         aria-label="Loading products"
-        className="mt-6 grid list-none grid-cols-2 gap-6 p-0 sm:grid-cols-3">
+        className="mt-6 grid list-none grid-cols-2 gap-6 p-0 sm:grid-cols-3"
+      >
         {Array.from({ length: 6 }).map((_, i) => (
           <li key={i}>
             <ProductCardSkeleton />

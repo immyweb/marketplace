@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { updateCartItem, removeFromCart } from '@/lib/api';
-import { Button } from '@/components/ui/button';
-import type { CartItem } from '@marketplace/core';
+import Image from "next/image";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { updateCartItem, removeFromCart } from "@/lib/api";
+import { Button } from "@/components/ui/button";
+import type { CartItem } from "@marketplace/core";
 
 interface Props {
   item: CartItem;
@@ -48,7 +48,8 @@ export function CartItemRow({ item }: Props) {
         <p className="text-sm font-medium">{item.product.name}</p>
         <p
           aria-label={`Item total: £${item.price.toFixed(2)}`}
-          className="text-sm text-muted-foreground">
+          className="text-sm text-muted-foreground"
+        >
           £{item.price.toFixed(2)}
         </p>
         <div className="flex items-center gap-2">
@@ -57,10 +58,14 @@ export function CartItemRow({ item }: Props) {
             size="icon"
             onClick={() => handleQuantityChange(item.quantity - 1)}
             disabled={loading || item.quantity <= 1}
-            aria-label="Decrease quantity">
+            aria-label="Decrease quantity"
+          >
             −
           </Button>
-          <span aria-label={`Quantity: ${item.quantity}`} className="w-6 text-center text-sm">
+          <span
+            aria-label={`Quantity: ${item.quantity}`}
+            className="w-6 text-center text-sm"
+          >
             {item.quantity}
           </span>
           <Button
@@ -68,7 +73,8 @@ export function CartItemRow({ item }: Props) {
             size="icon"
             onClick={() => handleQuantityChange(item.quantity + 1)}
             disabled={loading}
-            aria-label="Increase quantity">
+            aria-label="Increase quantity"
+          >
             +
           </Button>
         </div>
@@ -78,7 +84,8 @@ export function CartItemRow({ item }: Props) {
           onClick={handleRemove}
           disabled={loading}
           aria-label={`Remove ${item.product.name}`}
-          className="w-fit text-destructive hover:text-destructive">
+          className="w-fit text-destructive hover:text-destructive"
+        >
           Remove
         </Button>
       </div>

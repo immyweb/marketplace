@@ -19,11 +19,11 @@ No version pin file (`.nvmrc`, `.tool-versions`) is present; the lockfile format
 
 Three packages are declared as workspaces in the root `package.json`:
 
-| Package | Name | Role |
-|---------|------|------|
+| Package         | Name                | Role                                    |
+| --------------- | ------------------- | --------------------------------------- |
 | `packages/core` | `@marketplace/core` | Shared Zod schemas and TypeScript types |
-| `packages/api` | `api` | Express 5 HTTP API |
-| `packages/web` | `web` | Next.js 15 / React 19 frontend |
+| `packages/api`  | `api`               | Express 5 HTTP API                      |
+| `packages/web`  | `web`               | Next.js 15 / React 19 frontend          |
 
 Workspace filtering (`bun run --filter <name> <script>`) is used in root scripts to target individual packages. The root `package.json` has no dependencies of its own — it is a workspace orchestrator only.
 
@@ -41,11 +41,11 @@ The `tsc` build script exists in the API package but is not used in the dev or t
 
 ### Module formats
 
-| Package | `module` (tsconfig) | Reason |
-|---------|---------------------|--------|
-| `core` | `CommonJS` | Consumed by both API and Next.js |
-| `api` | `CommonJS` | Standard Node-compatible output |
-| `web` | `esnext` + `moduleResolution: bundler` | Next.js handles compilation via its own bundler |
+| Package | `module` (tsconfig)                    | Reason                                          |
+| ------- | -------------------------------------- | ----------------------------------------------- |
+| `core`  | `CommonJS`                             | Consumed by both API and Next.js                |
+| `api`   | `CommonJS`                             | Standard Node-compatible output                 |
+| `web`   | `esnext` + `moduleResolution: bundler` | Next.js handles compilation via its own bundler |
 
 ### Next.js runs under Node, not Bun
 

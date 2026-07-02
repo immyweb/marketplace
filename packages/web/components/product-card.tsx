@@ -1,5 +1,5 @@
-import Image from 'next/image';
-import Link from 'next/link';
+import Image from "next/image";
+import Link from "next/link";
 
 interface Props {
   id: number;
@@ -14,7 +14,7 @@ export function ProductCard({
   name,
   primary_image,
   unit_price,
-  currency
+  currency,
 }: Props) {
   return (
     <article>
@@ -30,8 +30,9 @@ export function ProductCard({
         <h2 className="mt-3 text-sm font-medium">{name}</h2>
         <p
           aria-label={`Price: ${currency} ${unit_price.toFixed(2)}`}
-          className="mt-1 text-sm text-muted-foreground">
-          {currency === 'GBP' ? '£' : currency}
+          className="mt-1 text-sm text-muted-foreground"
+        >
+          {currency === "GBP" ? "£" : currency}
           {unit_price.toFixed(2)}
         </p>
       </Link>

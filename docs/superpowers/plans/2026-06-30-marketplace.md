@@ -114,7 +114,7 @@ marketplace/
 | 3 — Cart API                | [phases/03-cart-api.md](phases/03-cart-api.md)                           | 9–12  | `GET/POST/PUT/DELETE /cart/products` with session-tied carts                                                          |
 | 4 — Checkout & Order API    | [phases/04-checkout-order-api.md](phases/04-checkout-order-api.md)       | 13–14 | Stripe PaymentIntent, `POST /order`                                                                                   |
 | 5 — Frontend Foundation     | [phases/05-frontend-foundation.md](phases/05-frontend-foundation.md)     | 15–16 | API client, layout, nav with cart badge                                                                               |
-| 6 — Product Pages           | [phases/06-product-pages.md](phases/06-product-pages.md)                 | 17–20 | PLP grid, PDP with gallery and add-to-cart, Tailwind CSS + shadcn/ui setup and retrofit                                |
+| 6 — Product Pages           | [phases/06-product-pages.md](phases/06-product-pages.md)                 | 17–20 | PLP grid, PDP with gallery and add-to-cart, Tailwind CSS + shadcn/ui setup and retrofit                               |
 | 7 — Cart Page               | [phases/07-cart-page.md](phases/07-cart-page.md)                         | 21    | Cart with qty controls and remove                                                                                     |
 | 8 — Checkout & Confirmation | [phases/08-checkout-confirmation.md](phases/08-checkout-confirmation.md) | 22–23 | Checkout form + Stripe, order confirmation                                                                            |
 | 9 — SEO & Images            | [phases/09-seo-images.md](phases/09-seo-images.md)                       | 24–25 | AVIF/WebP, metadata, JSON-LD, sitemap.xml                                                                             |
@@ -131,7 +131,7 @@ marketplace/
 | 3 — Cart API                | 9–12  | `GET/POST/PUT/DELETE /cart/products` with session-tied carts                                                          |
 | 4 — Checkout & Order API    | 13–14 | Stripe PaymentIntent, `POST /order`                                                                                   |
 | 5 — Frontend Foundation     | 15–16 | API client, layout, nav with cart badge                                                                               |
-| 6 — Product Pages           | 17–20 | PLP grid, PDP with gallery and add-to-cart, Tailwind CSS + shadcn/ui setup and retrofit                                |
+| 6 — Product Pages           | 17–20 | PLP grid, PDP with gallery and add-to-cart, Tailwind CSS + shadcn/ui setup and retrofit                               |
 | 7 — Cart Page               | 21    | Cart with qty controls and remove                                                                                     |
 | 8 — Checkout & Confirmation | 22–23 | Checkout form + Stripe, order confirmation                                                                            |
 | 9 — SEO & Images            | 24–25 | AVIF/WebP, metadata, JSON-LD, sitemap.xml                                                                             |

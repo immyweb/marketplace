@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import { useState } from 'react';
-import { cn } from '@/lib/utils';
+import Image from "next/image";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface Props {
   images: string[];
@@ -31,7 +31,8 @@ export function ProductGallery({ images, productName }: Props) {
         <div
           role="list"
           aria-label="Product images"
-          className="mt-3 flex gap-2">
+          className="mt-3 flex gap-2"
+        >
           {images.map((src, i) => (
             <button
               key={src}
@@ -40,9 +41,10 @@ export function ProductGallery({ images, productName }: Props) {
               aria-label={`View image ${i + 1}`}
               aria-pressed={selected === i}
               className={cn(
-                'overflow-hidden rounded-md border-2',
-                selected === i ? 'border-primary' : 'border-transparent'
-              )}>
+                "overflow-hidden rounded-md border-2",
+                selected === i ? "border-primary" : "border-transparent",
+              )}
+            >
               <Image
                 src={src}
                 alt={`${productName} view ${i + 1}`}

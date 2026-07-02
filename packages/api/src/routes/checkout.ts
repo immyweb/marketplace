@@ -1,61 +1,66 @@
-import { Router } from 'express';
-import Stripe from 'stripe';
-import { prisma } from '../db/prisma.js';
+import { Router } from "express";
+import Stripe from "stripe";
+import { prisma } from "../db/prisma.js";
 
 const router = Router();
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2026-06-24.dahlia' });
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: "2026-06-24.dahlia",
+});
 
-router.post('/payment-intent', async (req, res, next) => {
+router.post("/payment-intent", async (req, res, next) => {
   try {
     const { cartId } = req.body as { cartId?: unknown };
 
-    if (typeof cartId !== 'number') {
+    if (typeof cartId !== "number") {
       res
         .status(400)
-        .json({ error: 'cartId is required', code: 'INVALID_INPUT' });
+        .json({ error: "cartId is required", code: "INVALID_INPUT" });
       return;
     }
 
     if (cartId !== req.session.cartId) {
-      res.status(403).json({ error: 'Cart does not belong to this session', code: 'FORBIDDEN' });
+      res.status(403).json({
+        error: "Cart does not belong to this session",
+        code: "FORBIDDEN",
+      });
       return;
     }
 
     const cart = await prisma.cart.findUnique({
       where: { id: cartId },
-      include: { items: { include: { product: true } } }
+      include: { items: { include: { product: true } } },
     });
 
     if (!cart || cart.items.length === 0) {
       res
         .status(404)
-        .json({ error: 'Cart not found or empty', code: 'NOT_FOUND' });
+        .json({ error: "Cart not found or empty", code: "NOT_FOUND" });
       return;
     }
 
     const totalPence = Math.round(
       cart.items.reduce(
         (sum, item) => sum + Number(item.product.unit_price) * item.quantity,
-        0
-      ) * 100
+        0,
+      ) * 100,
     );
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount: totalPence,
-      currency: 'gbp',
-      automatic_payment_methods: { enabled: true, allow_redirects: 'never' },
-      metadata: { cartId: String(cartId) }
+      currency: "gbp",
+      automatic_payment_methods: { enabled: true, allow_redirects: "never" },
+      metadata: { cartId: String(cartId) },
     });
 
     if (!paymentIntent.client_secret) {
-      next(new Error('Stripe did not return a client_secret'));
+      next(new Error("Stripe did not return a client_secret"));
       return;
     }
 
     res.json({
       clientSecret: paymentIntent.client_secret,
-      amount: totalPence / 100
+      amount: totalPence / 100,
     });
   } catch (err) {
     next(err);

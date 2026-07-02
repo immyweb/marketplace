@@ -1,17 +1,25 @@
 {
   "name": "marketplace",
   "private": true,
-  "workspaces": ["packages/core", "packages/api", "packages/web"],
+  "workspaces": [
+    "packages/core",
+    "packages/api",
+    "packages/web"
+  ],
   "scripts": {
     "dev": "bun run --filter api dev & bun run --filter web dev",
     "dev:api": "bun run --filter api dev",
     "dev:web": "bun run --filter web dev",
     "test:api": "bun run --filter api test",
     "test:web": "bun run --filter web test",
-    "test:e2e": "bun run --filter web test:e2e"
+    "test:e2e": "bun run --filter web test:e2e",
+    "format": "prettier --write .",
+    "prepare": "husky"
   },
   "devDependencies": {
     "eslint": "^10.6.0",
+    "husky": "^9.1.7",
+    "prettier": "^3.9.4",
     "typescript-eslint": "^8.62.1"
   }
 }

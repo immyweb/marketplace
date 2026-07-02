@@ -86,13 +86,13 @@ Update the `metadata` export:
 
 ```typescript
 export const metadata: Metadata = {
-  title: { default: 'Marketplace', template: '%s | Marketplace' },
-  description: 'Quality clothing and accessories, delivered to your door.',
+  title: { default: "Marketplace", template: "%s | Marketplace" },
+  description: "Quality clothing and accessories, delivered to your door.",
   openGraph: {
-    siteName: 'Marketplace',
-    locale: 'en_GB',
-    type: 'website'
-  }
+    siteName: "Marketplace",
+    locale: "en_GB",
+    type: "website",
+  },
 };
 ```
 
@@ -102,18 +102,18 @@ Add a `<script>` tag inside the returned JSX with Product schema:
 
 ```typescript
 const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Product',
+  "@context": "https://schema.org",
+  "@type": "Product",
   name: product.name,
   description: product.description,
   image: product.image_urls,
   offers: {
-    '@type': 'Offer',
+    "@type": "Offer",
     priceCurrency: product.currency,
     price: product.unit_price.toFixed(2),
-    availability: 'https://schema.org/InStock',
-    seller: { '@type': 'Organization', name: 'Marketplace' }
-  }
+    availability: "https://schema.org/InStock",
+    seller: { "@type": "Organization", name: "Marketplace" },
+  },
 };
 ```
 
@@ -129,29 +129,29 @@ Add inside the returned JSX (after `<article>`):
 - [ ] **Step 3: Create `packages/web/app/sitemap.ts`**
 
 ```typescript
-import type { MetadataRoute } from 'next';
-import { fetchProducts } from '@/lib/api';
+import type { MetadataRoute } from "next";
+import { fetchProducts } from "@/lib/api";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+  const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
   const { results } = await fetchProducts();
 
   const productUrls: MetadataRoute.Sitemap = results.map((product) => ({
     url: `${BASE_URL}/products/${product.id}`,
     lastModified: new Date(),
-    changeFrequency: 'weekly',
-    priority: 0.8
+    changeFrequency: "weekly",
+    priority: 0.8,
   }));
 
   return [
     {
       url: BASE_URL,
       lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 1
+      changeFrequency: "daily",
+      priority: 1,
     },
-    ...productUrls
+    ...productUrls,
   ];
 }
 ```

@@ -296,8 +296,8 @@ bun add @radix-ui/react-slot class-variance-authority clsx tailwind-merge
 ```javascript
 const config = {
   plugins: {
-    '@tailwindcss/postcss': {}
-  }
+    "@tailwindcss/postcss": {},
+  },
 };
 
 export default config;
@@ -306,7 +306,7 @@ export default config;
 - [ ] **Step 3: Create `packages/web/app/globals.css`**
 
 ```css
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -448,11 +448,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 - [ ] **Step 6: Create `packages/web/lib/utils.ts`**
 
 ```typescript
-import { clsx, type ClassValue } from 'clsx'
-import { twMerge } from 'tailwind-merge'
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 ```
 
@@ -520,7 +520,7 @@ export { Button, buttonVariants }
 - [ ] **Step 8: Create `packages/web/global.d.ts`**
 
 ```typescript
-declare module '*.css'
+declare module "*.css";
 ```
 
 > Next.js's shipped types (`next/image-types/global.d.ts`) only declare `*.module.css` (CSS Modules) — not a plain, non-module `.css` side-effect import like `globals.css`. Without this declaration, `tsc` fails to resolve `import './globals.css'` with "Cannot find module './globals.css' or its corresponding type declarations" (or, under `noUncheckedSideEffectImports`, the side-effect-import variant of that message). `next build`'s own type-checking pass can be more lenient about this than a direct `tsc` invocation, so the gap can go unnoticed until someone runs `tsc` directly or their editor's TypeScript server flags it.

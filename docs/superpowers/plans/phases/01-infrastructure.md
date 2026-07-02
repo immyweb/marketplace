@@ -30,7 +30,7 @@ services:
       POSTGRES_PASSWORD: marketplace
       POSTGRES_DB: marketplace
     ports:
-      - '5433:5432'
+      - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -164,16 +164,16 @@ git commit -m "chore: add Docker Compose with PostgreSQL and test database"
 - [x] **Step 3: Create `packages/api/vitest.config.ts`**
 
 ```typescript
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
     globals: true,
-    environment: 'node',
-    setupFiles: ['./tests/setup.ts'],
-    pool: 'forks',
-    poolOptions: { forks: { singleFork: true } }
-  }
+    environment: "node",
+    setupFiles: ["./tests/setup.ts"],
+    pool: "forks",
+    poolOptions: { forks: { singleFork: true } },
+  },
 });
 ```
 
@@ -339,36 +339,36 @@ export interface ApiError {
 - [x] **Step 4: Create `packages/core/src/schemas.ts`**
 
 ```typescript
-import { z } from 'zod';
+import { z } from "zod";
 
 export const AddToCartSchema = z.object({
   productId: z
-    .number({ required_error: 'productId is required' })
+    .number({ required_error: "productId is required" })
     .int()
     .positive(),
   quantity: z
-    .number({ required_error: 'quantity is required' })
+    .number({ required_error: "quantity is required" })
     .int()
-    .min(1, 'Quantity must be at least 1')
+    .min(1, "Quantity must be at least 1"),
 });
 
 export const UpdateCartItemSchema = z.object({
-  quantity: z.number({ required_error: 'quantity is required' }).int().min(0)
+  quantity: z.number({ required_error: "quantity is required" }).int().min(0),
 });
 
 export const AddressSchema = z.object({
-  name: z.string().min(1, 'Full name is required'),
-  street: z.string().min(1, 'Street address is required'),
-  city: z.string().min(1, 'City is required'),
+  name: z.string().min(1, "Full name is required"),
+  street: z.string().min(1, "Street address is required"),
+  city: z.string().min(1, "City is required"),
   postcode: z
     .string()
-    .regex(/^[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2}$/i, 'Enter a valid UK postcode')
+    .regex(/^[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2}$/i, "Enter a valid UK postcode"),
 });
 
 export const PlaceOrderSchema = z.object({
-  cartId: z.number({ required_error: 'cartId is required' }).int().positive(),
-  paymentIntentId: z.string().min(1, 'paymentIntentId is required'),
-  address_details: AddressSchema
+  cartId: z.number({ required_error: "cartId is required" }).int().positive(),
+  paymentIntentId: z.string().min(1, "paymentIntentId is required"),
+  address_details: AddressSchema,
 });
 
 export type AddToCartInput = z.infer<typeof AddToCartSchema>;
@@ -380,8 +380,8 @@ export type PlaceOrderInput = z.infer<typeof PlaceOrderSchema>;
 - [x] **Step 5: Create `packages/core/src/index.ts`**
 
 ```typescript
-export * from './types.js';
-export * from './schemas.js';
+export * from "./types.js";
+export * from "./schemas.js";
 ```
 
 - [x] **Step 6: Install core dependencies**
@@ -504,13 +504,13 @@ model OrderItem {
 - [x] **Step 2: Create `packages/api/src/db/prisma.ts`**
 
 ```typescript
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
 export const prisma = globalForPrisma.prisma ?? new PrismaClient();
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 ```
 
 - [x] **Step 3: Run migration against both databases**
@@ -526,7 +526,7 @@ Expected: `migrations/` folder created, both databases have tables
 - [x] **Step 4: Create `packages/api/prisma/seed.ts`**
 
 ```typescript
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -535,85 +535,85 @@ async function main() {
   await prisma.product.createMany({
     data: [
       {
-        name: 'Classic White T-Shirt',
+        name: "Classic White T-Shirt",
         description:
-          'A wardrobe essential. 100% organic cotton, preshrunk, relaxed fit.',
+          "A wardrobe essential. 100% organic cotton, preshrunk, relaxed fit.",
         primary_image:
-          'https://placehold.co/800x800/f5f5f5/333?text=White+T-Shirt',
+          "https://placehold.co/800x800/f5f5f5/333?text=White+T-Shirt",
         image_urls: [
-          'https://placehold.co/800x800/f5f5f5/333?text=White+T-Shirt',
-          'https://placehold.co/800x800/f5f5f5/333?text=White+T-Shirt+Back'
+          "https://placehold.co/800x800/f5f5f5/333?text=White+T-Shirt",
+          "https://placehold.co/800x800/f5f5f5/333?text=White+T-Shirt+Back",
         ],
         unit_price: 18.99,
-        currency: 'GBP'
+        currency: "GBP",
       },
       {
-        name: 'Navy Chino Trousers',
+        name: "Navy Chino Trousers",
         description:
-          'Slim fit chinos in a versatile navy. Suitable for smart-casual occasions.',
+          "Slim fit chinos in a versatile navy. Suitable for smart-casual occasions.",
         primary_image:
-          'https://placehold.co/800x800/1a2744/f5f5f5?text=Navy+Chinos',
+          "https://placehold.co/800x800/1a2744/f5f5f5?text=Navy+Chinos",
         image_urls: [
-          'https://placehold.co/800x800/1a2744/f5f5f5?text=Navy+Chinos',
-          'https://placehold.co/800x800/1a2744/f5f5f5?text=Navy+Chinos+Detail'
+          "https://placehold.co/800x800/1a2744/f5f5f5?text=Navy+Chinos",
+          "https://placehold.co/800x800/1a2744/f5f5f5?text=Navy+Chinos+Detail",
         ],
         unit_price: 42.0,
-        currency: 'GBP'
+        currency: "GBP",
       },
       {
-        name: 'Merino Wool Jumper',
+        name: "Merino Wool Jumper",
         description:
-          'Fine merino wool. Temperature-regulating and machine washable.',
+          "Fine merino wool. Temperature-regulating and machine washable.",
         primary_image:
-          'https://placehold.co/800x800/8b4513/f5f5f5?text=Merino+Jumper',
+          "https://placehold.co/800x800/8b4513/f5f5f5?text=Merino+Jumper",
         image_urls: [
-          'https://placehold.co/800x800/8b4513/f5f5f5?text=Merino+Jumper',
-          'https://placehold.co/800x800/8b4513/f5f5f5?text=Merino+Detail'
+          "https://placehold.co/800x800/8b4513/f5f5f5?text=Merino+Jumper",
+          "https://placehold.co/800x800/8b4513/f5f5f5?text=Merino+Detail",
         ],
         unit_price: 65.0,
-        currency: 'GBP'
+        currency: "GBP",
       },
       {
-        name: 'Leather Chelsea Boots',
+        name: "Leather Chelsea Boots",
         description:
-          'Full-grain leather upper, elastic side panels, leather sole.',
+          "Full-grain leather upper, elastic side panels, leather sole.",
         primary_image:
-          'https://placehold.co/800x800/2c1810/f5f5f5?text=Chelsea+Boots',
+          "https://placehold.co/800x800/2c1810/f5f5f5?text=Chelsea+Boots",
         image_urls: [
-          'https://placehold.co/800x800/2c1810/f5f5f5?text=Chelsea+Boots',
-          'https://placehold.co/800x800/2c1810/f5f5f5?text=Boots+Side'
+          "https://placehold.co/800x800/2c1810/f5f5f5?text=Chelsea+Boots",
+          "https://placehold.co/800x800/2c1810/f5f5f5?text=Boots+Side",
         ],
         unit_price: 120.0,
-        currency: 'GBP'
+        currency: "GBP",
       },
       {
-        name: 'Canvas Tote Bag',
+        name: "Canvas Tote Bag",
         description:
-          'Heavy-duty canvas tote with internal zip pocket. 20L capacity.',
-        primary_image: 'https://placehold.co/800x800/d4c5a9/333?text=Tote+Bag',
+          "Heavy-duty canvas tote with internal zip pocket. 20L capacity.",
+        primary_image: "https://placehold.co/800x800/d4c5a9/333?text=Tote+Bag",
         image_urls: [
-          'https://placehold.co/800x800/d4c5a9/333?text=Tote+Bag',
-          'https://placehold.co/800x800/d4c5a9/333?text=Tote+Interior'
+          "https://placehold.co/800x800/d4c5a9/333?text=Tote+Bag",
+          "https://placehold.co/800x800/d4c5a9/333?text=Tote+Interior",
         ],
         unit_price: 24.99,
-        currency: 'GBP'
+        currency: "GBP",
       },
       {
-        name: 'Slim Leather Belt',
+        name: "Slim Leather Belt",
         description:
-          'Vegetable-tanned leather belt. 30mm width. Solid brass buckle.',
+          "Vegetable-tanned leather belt. 30mm width. Solid brass buckle.",
         primary_image:
-          'https://placehold.co/800x800/5c3d2e/f5f5f5?text=Leather+Belt',
+          "https://placehold.co/800x800/5c3d2e/f5f5f5?text=Leather+Belt",
         image_urls: [
-          'https://placehold.co/800x800/5c3d2e/f5f5f5?text=Leather+Belt',
-          'https://placehold.co/800x800/5c3d2e/f5f5f5?text=Belt+Buckle'
+          "https://placehold.co/800x800/5c3d2e/f5f5f5?text=Leather+Belt",
+          "https://placehold.co/800x800/5c3d2e/f5f5f5?text=Belt+Buckle",
         ],
         unit_price: 34.99,
-        currency: 'GBP'
-      }
-    ]
+        currency: "GBP",
+      },
+    ],
   });
-  console.log('Seeded 6 products');
+  console.log("Seeded 6 products");
 }
 
 main()
@@ -666,9 +666,9 @@ git commit -m "chore: add Prisma schema, migration, and product seed data"
 - [x] **Step 1: Create `packages/api/src/types/session.d.ts`**
 
 ```typescript
-import 'express-session';
+import "express-session";
 
-declare module 'express-session' {
+declare module "express-session" {
   interface SessionData {
     cartId?: number;
   }
@@ -678,9 +678,9 @@ declare module 'express-session' {
 - [x] **Step 2: Create `packages/api/src/middleware/session.ts`**
 
 ```typescript
-import session from 'express-session';
-import connectPg from 'connect-pg-simple';
-import pg from 'pg';
+import session from "express-session";
+import connectPg from "connect-pg-simple";
+import pg from "pg";
 
 const PgSession = connectPg(session);
 
@@ -689,60 +689,60 @@ const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
 export const sessionMiddleware = session({
   store: new PgSession({
     pool,
-    createTableIfMissing: true
+    createTableIfMissing: true,
   }),
-  secret: process.env.SESSION_SECRET ?? 'fallback-dev-secret',
+  secret: process.env.SESSION_SECRET ?? "fallback-dev-secret",
   resave: false,
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 30 * 24 * 60 * 60 * 1000
-  }
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+  },
 });
 ```
 
 - [x] **Step 3: Create `packages/api/src/middleware/error.ts`**
 
 ```typescript
-import type { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from "express";
 
 export function errorHandler(
   err: Error,
   _req: Request,
   res: Response,
-  _next: NextFunction
+  _next: NextFunction,
 ) {
   console.error(err);
   res
     .status(500)
-    .json({ error: 'Internal server error', code: 'INTERNAL_ERROR' });
+    .json({ error: "Internal server error", code: "INTERNAL_ERROR" });
 }
 ```
 
 - [x] **Step 4: Create `packages/api/src/app.ts`**
 
 ```typescript
-import 'dotenv/config';
-import express from 'express';
-import cors from 'cors';
-import { sessionMiddleware } from './middleware/session.js';
-import { errorHandler } from './middleware/error.js';
-import productsRouter from './routes/products.js';
-import cartRouter from './routes/cart.js';
-import checkoutRouter from './routes/checkout.js';
-import ordersRouter from './routes/orders.js';
+import "dotenv/config";
+import express from "express";
+import cors from "cors";
+import { sessionMiddleware } from "./middleware/session.js";
+import { errorHandler } from "./middleware/error.js";
+import productsRouter from "./routes/products.js";
+import cartRouter from "./routes/cart.js";
+import checkoutRouter from "./routes/checkout.js";
+import ordersRouter from "./routes/orders.js";
 
 export const app = express();
 
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(express.json());
 app.use(sessionMiddleware);
 
-app.use('/products', productsRouter);
-app.use('/cart', cartRouter);
-app.use('/checkout', checkoutRouter);
-app.use('/order', ordersRouter);
+app.use("/products", productsRouter);
+app.use("/cart", cartRouter);
+app.use("/checkout", checkoutRouter);
+app.use("/order", ordersRouter);
 
 app.use(errorHandler);
 ```
@@ -750,7 +750,7 @@ app.use(errorHandler);
 - [x] **Step 5: Create `packages/api/index.ts`**
 
 ```typescript
-import { app } from './src/app.js';
+import { app } from "./src/app.js";
 
 const PORT = process.env.PORT ?? 3001;
 
@@ -762,12 +762,12 @@ app.listen(PORT, () => {
 - [x] **Step 6: Create `packages/api/tests/setup.ts`**
 
 ```typescript
-import { afterAll, beforeAll } from 'vitest';
-import { prisma } from '../src/db/prisma.js';
+import { afterAll, beforeAll } from "vitest";
+import { prisma } from "../src/db/prisma.js";
 
 beforeAll(async () => {
   process.env.DATABASE_URL =
-    'postgresql://marketplace:marketplace@localhost:5433/marketplace_test';
+    "postgresql://marketplace:marketplace@localhost:5433/marketplace_test";
   await prisma.$connect();
 });
 
@@ -873,14 +873,14 @@ git commit -m "feat: add Express app with session middleware and error handler"
 - [x] **Step 3: Create `packages/web/next.config.ts`**
 
 ```typescript
-import type { NextConfig } from 'next';
+import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  transpilePackages: ['@marketplace/core'],
+  transpilePackages: ["@marketplace/core"],
   images: {
-    formats: ['image/avif', 'image/webp'],
-    remotePatterns: [{ protocol: 'https', hostname: 'placehold.co' }]
-  }
+    formats: ["image/avif", "image/webp"],
+    remotePatterns: [{ protocol: "https", hostname: "placehold.co" }],
+  },
 };
 
 export default nextConfig;
@@ -891,32 +891,32 @@ export default nextConfig;
 - [x] **Step 4: Create `packages/web/playwright.config.ts`**
 
 ```typescript
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
-  testDir: './tests/e2e',
+  testDir: "./tests/e2e",
   fullyParallel: false,
   retries: 0,
   use: {
-    baseURL: 'http://localhost:3000',
-    trace: 'on-first-retry'
+    baseURL: "http://localhost:3000",
+    trace: "on-first-retry",
   },
   projects: [
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
-    { name: 'mobile', use: { ...devices['iPhone 13'] } }
+    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
+    { name: "mobile", use: { ...devices["iPhone 13"] } },
   ],
   webServer: [
     {
-      command: 'bun run --filter api dev',
-      url: 'http://localhost:3001/products',
-      reuseExistingServer: true
+      command: "bun run --filter api dev",
+      url: "http://localhost:3001/products",
+      reuseExistingServer: true,
     },
     {
-      command: 'bun run --filter web dev',
-      url: 'http://localhost:3000',
-      reuseExistingServer: true
-    }
-  ]
+      command: "bun run --filter web dev",
+      url: "http://localhost:3000",
+      reuseExistingServer: true,
+    },
+  ],
 });
 ```
 

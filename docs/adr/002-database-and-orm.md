@@ -23,13 +23,13 @@ A `prisma.config.ts` file exists at the package root because Prisma 7 no longer 
 
 Five models across four tables (names snake_cased via `@@map`):
 
-| Model | Table | Notes |
-|-------|-------|-------|
-| `Product` | `products` | Prices as `Decimal(10,2)` |
-| `Cart` | `carts` | Keyed to `session_id` (unique); tied to express-session |
-| `CartItem` | `cart_items` | Unique on `(cart_id, product_id)`; cascades delete from Cart |
-| `Order` | `orders` | Stores Stripe payment ID and card/address snapshot at time of purchase |
-| `OrderItem` | `order_items` | Captures price at time of order (not live product price) |
+| Model       | Table         | Notes                                                                  |
+| ----------- | ------------- | ---------------------------------------------------------------------- |
+| `Product`   | `products`    | Prices as `Decimal(10,2)`                                              |
+| `Cart`      | `carts`       | Keyed to `session_id` (unique); tied to express-session                |
+| `CartItem`  | `cart_items`  | Unique on `(cart_id, product_id)`; cascades delete from Cart           |
+| `Order`     | `orders`      | Stores Stripe payment ID and card/address snapshot at time of purchase |
+| `OrderItem` | `order_items` | Captures price at time of order (not live product price)               |
 
 ### Migrations
 

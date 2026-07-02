@@ -27,10 +27,10 @@
 Create `packages/api/tests/orders.test.ts`:
 
 ```typescript
-import { describe, it, expect, beforeEach, afterAll } from 'vitest';
-import { agent } from 'supertest';
-import { app } from '../src/app.js';
-import { prisma } from '../src/db/prisma.js';
+import { describe, it, expect, beforeEach, afterAll } from "vitest";
+import { agent } from "supertest";
+import { app } from "../src/app.js";
+import { prisma } from "../src/db/prisma.js";
 
 let productId: number;
 
@@ -43,13 +43,13 @@ beforeEach(async () => {
 
   const product = await prisma.product.create({
     data: {
-      name: 'Test Product',
-      description: 'desc',
-      primary_image: 'img.jpg',
+      name: "Test Product",
+      description: "desc",
+      primary_image: "img.jpg",
       image_urls: [],
       unit_price: 15.0,
-      currency: 'GBP'
-    }
+      currency: "GBP",
+    },
   });
   productId = product.id;
 });
@@ -62,15 +62,15 @@ afterAll(async () => {
   await prisma.product.deleteMany();
 });
 
-describe('POST /checkout/payment-intent', () => {
-  it('creates a Stripe PaymentIntent and returns clientSecret', async () => {
+describe("POST /checkout/payment-intent", () => {
+  it("creates a Stripe PaymentIntent and returns clientSecret", async () => {
     const ag = agent(app);
-    await ag.post('/cart/products').send({ productId, quantity: 2 });
-    const cartRes = await ag.get('/cart');
+    await ag.post("/cart/products").send({ productId, quantity: 2 });
+    const cartRes = await ag.get("/cart");
     const cartId = cartRes.body.id;
 
     const res = await ag
-      .post('/checkout/payment-intent')
+      .post("/checkout/payment-intent")
       .send({ cartId })
       .expect(200);
 
@@ -78,9 +78,9 @@ describe('POST /checkout/payment-intent', () => {
     expect(res.body.amount).toBe(30); // 15.00 × 2
   });
 
-  it('returns 404 when cart is empty or does not exist', async () => {
+  it("returns 404 when cart is empty or does not exist", async () => {
     await agent(app)
-      .post('/checkout/payment-intent')
+      .post("/checkout/payment-intent")
       .send({ cartId: 999999 })
       .expect(404);
   });
@@ -98,54 +98,54 @@ Expected: FAIL
 - [ ] **Step 3: Create `packages/api/src/routes/checkout.ts`**
 
 ```typescript
-import { Router } from 'express';
-import Stripe from 'stripe';
-import { prisma } from '../db/prisma.js';
+import { Router } from "express";
+import Stripe from "stripe";
+import { prisma } from "../db/prisma.js";
 
 const router = Router();
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
-router.post('/payment-intent', async (req, res, next) => {
+router.post("/payment-intent", async (req, res, next) => {
   try {
     const { cartId } = req.body as { cartId?: unknown };
 
-    if (typeof cartId !== 'number') {
+    if (typeof cartId !== "number") {
       res
         .status(400)
-        .json({ error: 'cartId is required', code: 'INVALID_INPUT' });
+        .json({ error: "cartId is required", code: "INVALID_INPUT" });
       return;
     }
 
     const cart = await prisma.cart.findUnique({
       where: { id: cartId },
-      include: { items: { include: { product: true } } }
+      include: { items: { include: { product: true } } },
     });
 
     if (!cart || cart.items.length === 0) {
       res
         .status(404)
-        .json({ error: 'Cart not found or empty', code: 'NOT_FOUND' });
+        .json({ error: "Cart not found or empty", code: "NOT_FOUND" });
       return;
     }
 
     const totalPence = Math.round(
       cart.items.reduce(
         (sum, item) => sum + Number(item.product.unit_price) * item.quantity,
-        0
-      ) * 100
+        0,
+      ) * 100,
     );
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount: totalPence,
-      currency: 'gbp',
-      automatic_payment_methods: { enabled: true, allow_redirects: 'never' },
-      metadata: { cartId: String(cartId) }
+      currency: "gbp",
+      automatic_payment_methods: { enabled: true, allow_redirects: "never" },
+      metadata: { cartId: String(cartId) },
     });
 
     res.json({
       clientSecret: paymentIntent.client_secret,
-      amount: totalPence / 100
+      amount: totalPence / 100,
     });
   } catch (err) {
     next(err);
@@ -225,74 +225,74 @@ interface OrderResponse {
 Add to `packages/api/tests/orders.test.ts`:
 
 ```typescript
-import Stripe from 'stripe';
+import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 async function createConfirmedPaymentIntent(amountGbp: number) {
   const pi = await stripe.paymentIntents.create({
     amount: Math.round(amountGbp * 100),
-    currency: 'gbp',
-    automatic_payment_methods: { enabled: true, allow_redirects: 'never' },
-    payment_method: 'pm_card_visa',
-    confirm: true
+    currency: "gbp",
+    automatic_payment_methods: { enabled: true, allow_redirects: "never" },
+    payment_method: "pm_card_visa",
+    confirm: true,
   });
   return pi;
 }
 
-describe('POST /order', () => {
-  it('creates an order from a confirmed payment intent', async () => {
+describe("POST /order", () => {
+  it("creates an order from a confirmed payment intent", async () => {
     const ag = agent(app);
-    await ag.post('/cart/products').send({ productId, quantity: 2 });
-    const cartRes = await ag.get('/cart');
+    await ag.post("/cart/products").send({ productId, quantity: 2 });
+    const cartRes = await ag.get("/cart");
     const cartId = cartRes.body.id;
 
     const pi = await createConfirmedPaymentIntent(30);
 
     const res = await ag
-      .post('/order')
+      .post("/order")
       .send({
         cartId,
         paymentIntentId: pi.id,
         address_details: {
-          name: 'Jane Smith',
-          street: '10 Downing Street',
-          city: 'London',
-          postcode: 'SW1A 2AA'
-        }
+          name: "Jane Smith",
+          street: "10 Downing Street",
+          city: "London",
+          postcode: "SW1A 2AA",
+        },
       })
       .expect(201);
 
     expect(res.body).toMatchObject({
       total_price: 30,
-      currency: 'GBP',
-      status: 'confirmed',
-      address_details: { name: 'Jane Smith', city: 'London' }
+      currency: "GBP",
+      status: "confirmed",
+      address_details: { name: "Jane Smith", city: "London" },
     });
     expect(res.body.payment_details.card_last_four_digits).toHaveLength(4);
     expect(res.body.items).toHaveLength(1);
 
     // Cart should be cleared after order
-    const cartAfter = await ag.get('/cart');
+    const cartAfter = await ag.get("/cart");
     expect(cartAfter.body.items).toHaveLength(0);
   });
 
-  it('returns 400 when paymentIntentId does not exist or is not succeeded', async () => {
+  it("returns 400 when paymentIntentId does not exist or is not succeeded", async () => {
     const ag = agent(app);
-    await ag.post('/cart/products').send({ productId, quantity: 1 });
-    const cartRes = await ag.get('/cart');
+    await ag.post("/cart/products").send({ productId, quantity: 1 });
+    const cartRes = await ag.get("/cart");
 
     const res = await ag
-      .post('/order')
+      .post("/order")
       .send({
         cartId: cartRes.body.id,
-        paymentIntentId: 'pi_fake_id',
+        paymentIntentId: "pi_fake_id",
         address_details: {
-          name: 'Jane',
-          street: '1 St',
-          city: 'London',
-          postcode: 'SW1A 1AA'
-        }
+          name: "Jane",
+          street: "1 St",
+          city: "London",
+          postcode: "SW1A 1AA",
+        },
       })
       .expect(400);
 
@@ -312,21 +312,21 @@ Expected: FAIL
 - [ ] **Step 3: Create `packages/api/src/routes/orders.ts`**
 
 ```typescript
-import { Router } from 'express';
-import Stripe from 'stripe';
-import { PlaceOrderSchema } from '@marketplace/core';
-import { prisma } from '../db/prisma.js';
+import { Router } from "express";
+import Stripe from "stripe";
+import { PlaceOrderSchema } from "@marketplace/core";
+import { prisma } from "../db/prisma.js";
 
 const router = Router();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
-router.post('/', async (req, res, next) => {
+router.post("/", async (req, res, next) => {
   try {
     const parsed = PlaceOrderSchema.safeParse(req.body);
     if (!parsed.success) {
       res
         .status(400)
-        .json({ error: parsed.error.errors[0].message, code: 'INVALID_INPUT' });
+        .json({ error: parsed.error.errors[0].message, code: "INVALID_INPUT" });
       return;
     }
     const { cartId, paymentIntentId, address_details } = parsed.data;
@@ -334,47 +334,47 @@ router.post('/', async (req, res, next) => {
     let paymentIntent: Stripe.PaymentIntent;
     try {
       paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId, {
-        expand: ['payment_method']
+        expand: ["payment_method"],
       });
     } catch {
       res
         .status(400)
-        .json({ error: 'Invalid payment intent', code: 'PAYMENT_FAILED' });
+        .json({ error: "Invalid payment intent", code: "PAYMENT_FAILED" });
       return;
     }
 
-    if (paymentIntent.status !== 'succeeded') {
+    if (paymentIntent.status !== "succeeded") {
       res
         .status(400)
-        .json({ error: 'Payment not completed', code: 'PAYMENT_FAILED' });
+        .json({ error: "Payment not completed", code: "PAYMENT_FAILED" });
       return;
     }
 
     const cart = await prisma.cart.findUnique({
       where: { id: cartId },
-      include: { items: { include: { product: true } } }
+      include: { items: { include: { product: true } } },
     });
 
     if (!cart || cart.items.length === 0) {
       res
         .status(404)
-        .json({ error: 'Cart not found or empty', code: 'NOT_FOUND' });
+        .json({ error: "Cart not found or empty", code: "NOT_FOUND" });
       return;
     }
 
     const orderItems = cart.items.map((item) => ({
       product_id: item.product_id,
       quantity: item.quantity,
-      price: Number(item.product.unit_price) * item.quantity
+      price: Number(item.product.unit_price) * item.quantity,
     }));
 
     const totalPrice = orderItems.reduce((sum, item) => sum + item.price, 0);
 
     const pm = paymentIntent.payment_method;
     const cardLastFour =
-      pm && typeof pm === 'object' && pm.type === 'card' && pm.card?.last4
+      pm && typeof pm === "object" && pm.type === "card" && pm.card?.last4
         ? pm.card.last4
-        : '0000';
+        : "0000";
 
     const order = await prisma.order.create({
       data: {
@@ -386,10 +386,10 @@ router.post('/', async (req, res, next) => {
         address_city: address_details.city,
         address_postcode: address_details.postcode,
         items: {
-          create: orderItems
-        }
+          create: orderItems,
+        },
       },
-      include: { items: { include: { product: true } } }
+      include: { items: { include: { product: true } } },
     });
 
     await prisma.cart.delete({ where: { id: cartId } });
@@ -403,22 +403,22 @@ router.post('/', async (req, res, next) => {
       items: order.items.map((item) => ({
         quantity: item.quantity,
         price: Number(item.price),
-        currency: 'GBP',
+        currency: "GBP",
         product: {
           id: item.product.id,
           name: item.product.name,
-          primary_image: item.product.primary_image
-        }
+          primary_image: item.product.primary_image,
+        },
       })),
       address_details: {
         name: order.address_name,
         street: order.address_street,
         city: order.address_city,
-        postcode: order.address_postcode
+        postcode: order.address_postcode,
       },
       payment_details: {
-        card_last_four_digits: order.card_last_four
-      }
+        card_last_four_digits: order.card_last_four,
+      },
     };
 
     res.status(201).json(response);

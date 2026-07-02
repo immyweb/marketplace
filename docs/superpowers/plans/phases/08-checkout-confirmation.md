@@ -256,21 +256,21 @@ Add product to cart, go to `/cart`, click "Proceed to Checkout". Expected: form 
 Add to `packages/api/src/routes/orders.ts`:
 
 ```typescript
-router.get('/:id', async (req, res, next) => {
+router.get("/:id", async (req, res, next) => {
   try {
     const id = parseInt(req.params.id, 10);
     if (isNaN(id)) {
-      res.status(404).json({ error: 'Order not found', code: 'NOT_FOUND' });
+      res.status(404).json({ error: "Order not found", code: "NOT_FOUND" });
       return;
     }
 
     const order = await prisma.order.findUnique({
       where: { id },
-      include: { items: { include: { product: true } } }
+      include: { items: { include: { product: true } } },
     });
 
     if (!order) {
-      res.status(404).json({ error: 'Order not found', code: 'NOT_FOUND' });
+      res.status(404).json({ error: "Order not found", code: "NOT_FOUND" });
       return;
     }
 
@@ -282,20 +282,20 @@ router.get('/:id', async (req, res, next) => {
       items: order.items.map((item) => ({
         quantity: item.quantity,
         price: Number(item.price),
-        currency: 'GBP',
+        currency: "GBP",
         product: {
           id: item.product.id,
           name: item.product.name,
-          primary_image: item.product.primary_image
-        }
+          primary_image: item.product.primary_image,
+        },
       })),
       address_details: {
         name: order.address_name,
         street: order.address_street,
         city: order.address_city,
-        postcode: order.address_postcode
+        postcode: order.address_postcode,
       },
-      payment_details: { card_last_four_digits: order.card_last_four }
+      payment_details: { card_last_four_digits: order.card_last_four },
     });
   } catch (err) {
     next(err);

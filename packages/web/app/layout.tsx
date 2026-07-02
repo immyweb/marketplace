@@ -1,14 +1,14 @@
-import './globals.css';
-import type { Metadata } from 'next';
-import { Nav } from '@/components/nav';
+import "./globals.css";
+import type { Metadata } from "next";
+import { Nav } from "@/components/nav";
 
 export const metadata: Metadata = {
-  title: { default: 'Marketplace', template: '%s | Marketplace' },
-  description: 'Quality clothing and accessories.'
+  title: { default: "Marketplace", template: "%s | Marketplace" },
+  description: "Quality clothing and accessories.",
 };
 
 export default function RootLayout({
-  children
+  children,
 }: {
   children: React.ReactNode;
 }) {

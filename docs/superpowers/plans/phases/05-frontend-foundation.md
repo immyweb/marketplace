@@ -25,22 +25,22 @@
 - [ ] **Step 1: Create `packages/web/lib/api.ts`**
 
 ```typescript
-import type { Cart, Order, Product } from '@marketplace/core';
+import type { Cart, Order, Product } from "@marketplace/core";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {
     ...init,
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json', ...init?.headers }
+    credentials: "include",
+    headers: { "Content-Type": "application/json", ...init?.headers },
   });
 
   if (!res.ok) {
-    const body = await res.json().catch(() => ({ error: 'Request failed' }));
-    throw Object.assign(new Error(body.error ?? 'Request failed'), {
+    const body = await res.json().catch(() => ({ error: "Request failed" }));
+    throw Object.assign(new Error(body.error ?? "Request failed"), {
       code: body.code,
-      status: res.status
+      status: res.status,
     });
   }
 
@@ -48,8 +48,8 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export function fetchProducts() {
-  return apiFetch<{ results: Omit<Product, 'description' | 'image_urls'>[] }>(
-    '/products'
+  return apiFetch<{ results: Omit<Product, "description" | "image_urls">[] }>(
+    "/products",
   );
 }
 
@@ -58,34 +58,34 @@ export function fetchProduct(id: number) {
 }
 
 export function fetchCart() {
-  return apiFetch<Cart>('/cart');
+  return apiFetch<Cart>("/cart");
 }
 
 export function addToCart(productId: number, quantity: number) {
-  return apiFetch<Cart>('/cart/products', {
-    method: 'POST',
-    body: JSON.stringify({ productId, quantity })
+  return apiFetch<Cart>("/cart/products", {
+    method: "POST",
+    body: JSON.stringify({ productId, quantity }),
   });
 }
 
 export function updateCartItem(productId: number, quantity: number) {
   return apiFetch<Cart>(`/cart/products/${productId}`, {
-    method: 'PUT',
-    body: JSON.stringify({ quantity })
+    method: "PUT",
+    body: JSON.stringify({ quantity }),
   });
 }
 
 export function removeFromCart(productId: number) {
-  return apiFetch<Cart>(`/cart/products/${productId}`, { method: 'DELETE' });
+  return apiFetch<Cart>(`/cart/products/${productId}`, { method: "DELETE" });
 }
 
 export function createPaymentIntent(cartId: number) {
   return apiFetch<{ clientSecret: string; amount: number }>(
-    '/checkout/payment-intent',
+    "/checkout/payment-intent",
     {
-      method: 'POST',
-      body: JSON.stringify({ cartId })
-    }
+      method: "POST",
+      body: JSON.stringify({ cartId }),
+    },
   );
 }
 
@@ -99,9 +99,9 @@ export function placeOrder(body: {
     postcode: string;
   };
 }) {
-  return apiFetch<Order>('/order', {
-    method: 'POST',
-    body: JSON.stringify(body)
+  return apiFetch<Order>("/order", {
+    method: "POST",
+    body: JSON.stringify(body),
   });
 }
 ```
@@ -109,10 +109,10 @@ export function placeOrder(body: {
 - [ ] **Step 3: Create `packages/web/lib/stripe.ts`**
 
 ```typescript
-import { loadStripe } from '@stripe/stripe-js';
+import { loadStripe } from "@stripe/stripe-js";
 
 export const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
 );
 ```
 

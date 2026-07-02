@@ -1,6 +1,6 @@
-import type { AddressDetails, Cart, Order, Product } from '@marketplace/core';
+import type { AddressDetails, Cart, Order, Product } from "@marketplace/core";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
 export class ApiRequestError extends Error {
   code?: string;
@@ -16,21 +16,25 @@ export class ApiRequestError extends Error {
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {
     ...init,
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json', ...init?.headers }
+    credentials: "include",
+    headers: { "Content-Type": "application/json", ...init?.headers },
   });
 
   if (!res.ok) {
-    const body = await res.json().catch(() => ({ error: 'Request failed' }));
-    throw new ApiRequestError(body.error ?? 'Request failed', res.status, body.code);
+    const body = await res.json().catch(() => ({ error: "Request failed" }));
+    throw new ApiRequestError(
+      body.error ?? "Request failed",
+      res.status,
+      body.code,
+    );
   }
 
   return res.json() as Promise<T>;
 }
 
 export function fetchProducts() {
-  return apiFetch<{ results: Omit<Product, 'description' | 'image_urls'>[] }>(
-    '/products'
+  return apiFetch<{ results: Omit<Product, "description" | "image_urls">[] }>(
+    "/products",
   );
 }
 
@@ -39,34 +43,34 @@ export function fetchProduct(id: number) {
 }
 
 export function fetchCart(init?: RequestInit) {
-  return apiFetch<Cart>('/cart', init);
+  return apiFetch<Cart>("/cart", init);
 }
 
 export function addToCart(productId: number, quantity: number) {
-  return apiFetch<Cart>('/cart/products', {
-    method: 'POST',
-    body: JSON.stringify({ productId, quantity })
+  return apiFetch<Cart>("/cart/products", {
+    method: "POST",
+    body: JSON.stringify({ productId, quantity }),
   });
 }
 
 export function updateCartItem(productId: number, quantity: number) {
   return apiFetch<Cart>(`/cart/products/${productId}`, {
-    method: 'PUT',
-    body: JSON.stringify({ quantity })
+    method: "PUT",
+    body: JSON.stringify({ quantity }),
   });
 }
 
 export function removeFromCart(productId: number) {
-  return apiFetch<Cart>(`/cart/products/${productId}`, { method: 'DELETE' });
+  return apiFetch<Cart>(`/cart/products/${productId}`, { method: "DELETE" });
 }
 
 export function createPaymentIntent(cartId: number) {
   return apiFetch<{ clientSecret: string; amount: number }>(
-    '/checkout/payment-intent',
+    "/checkout/payment-intent",
     {
-      method: 'POST',
-      body: JSON.stringify({ cartId })
-    }
+      method: "POST",
+      body: JSON.stringify({ cartId }),
+    },
   );
 }
 
@@ -75,8 +79,8 @@ export function placeOrder(body: {
   paymentIntentId: string;
   address_details: AddressDetails;
 }) {
-  return apiFetch<Order>('/order', {
-    method: 'POST',
-    body: JSON.stringify(body)
+  return apiFetch<Order>("/order", {
+    method: "POST",
+    body: JSON.stringify(body),
   });
 }
