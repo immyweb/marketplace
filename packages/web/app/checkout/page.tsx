@@ -1,0 +1,135 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AddressSchema, type AddressInput } from "@marketplace/core";
+import {
+  Elements,
+  useStripe,
+  useElements,
+  CardElement,
+} from "@stripe/react-stripe-js";
+import { stripePromise } from "@/lib/stripe";
+import { fetchCart, createPaymentIntent, placeOrder } from "@/lib/api";
+import { AddressForm } from "@/components/address-form";
+import { StripePaymentForm } from "@/components/stripe-payment-form";
+import { Button } from "@/components/ui/button";
+import type { Cart } from "@marketplace/core";
+
+export type CheckoutFormValues = AddressInput;
+
+function CheckoutForm({ cart }: { cart: Cart }) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const router = useRouter();
+  const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CheckoutFormValues>({
+    resolver: zodResolver(AddressSchema),
+  });
+
+  async function onSubmit(values: CheckoutFormValues) {
+    if (!stripe || !elements || !cart.id) return;
+    setSubmitting(true);
+    setFormError(null);
+
+    try {
+      const { clientSecret } = await createPaymentIntent(cart.id);
+
+      const cardElement = elements.getElement(CardElement);
+      if (!cardElement) throw new Error("Card element not mounted");
+
+      const { error, paymentIntent } = await stripe.confirmCardPayment(
+        clientSecret,
+        {
+          payment_method: {
+            card: cardElement,
+            billing_details: { name: values.name, address: { country: "GB" } },
+          },
+        },
+      );
+
+      if (error || !paymentIntent) {
+        setFormError(error?.message ?? "Payment failed. Please try again.");
+        return;
+      }
+
+      const order = await placeOrder({
+        cartId: cart.id,
+        paymentIntentId: paymentIntent.id,
+        address_details: values,
+      });
+
+      router.push(`/order-confirmation/${order.id}`);
+    } catch (err) {
+      setFormError(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      aria-label="Checkout form"
+      noValidate
+    >
+      <h1 className="text-2xl font-semibold">Checkout</h1>
+
+      <AddressForm register={register} errors={errors} />
+      <StripePaymentForm />
+
+      <div className="mt-6 flex items-center justify-between">
+        <p
+          aria-label={`Order total: £${cart.total_price.toFixed(2)}`}
+          className="text-lg font-medium"
+        >
+          Total: £{cart.total_price.toFixed(2)}
+        </p>
+        <Button
+          type="submit"
+          disabled={submitting || !stripe}
+          aria-busy={submitting}
+        >
+          {submitting ? "Processing..." : "Place Order"}
+        </Button>
+      </div>
+
+      {formError && (
+        <p role="alert" className="mt-4 text-sm text-destructive">
+          {formError}
+        </p>
+      )}
+    </form>
+  );
+}
+
+export default function CheckoutPage() {
+  const [cart, setCart] = useState<Cart | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    fetchCart().then((c) => {
+      if (!c.id || c.items.length === 0) {
+        router.push("/cart");
+        return;
+      }
+      setCart(c);
+    });
+  }, [router]);
+
+  if (!cart) return <p aria-busy="true">Loading...</p>;
+
+  return (
+    <Elements stripe={stripePromise}>
+      <CheckoutForm cart={cart} />
+    </Elements>
+  );
+}
