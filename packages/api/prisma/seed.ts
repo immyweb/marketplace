@@ -9,7 +9,10 @@ const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
+  await prisma.cartItem.deleteMany();
+  await prisma.orderItem.deleteMany();
   await prisma.product.deleteMany();
+  await prisma.$executeRaw`ALTER SEQUENCE products_id_seq RESTART WITH 1`;
   await prisma.product.createMany({
     data: [
       {
