@@ -146,4 +146,50 @@ router.post("/", async (req, res, next) => {
   }
 });
 
+router.get("/:id", async (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) {
+      res.status(404).json({ error: "Order not found", code: "NOT_FOUND" });
+      return;
+    }
+
+    const order = await prisma.order.findUnique({
+      where: { id },
+      include: { items: { include: { product: true } } },
+    });
+
+    if (!order) {
+      res.status(404).json({ error: "Order not found", code: "NOT_FOUND" });
+      return;
+    }
+
+    res.json({
+      id: order.id,
+      total_price: Number(order.total_price),
+      currency: order.currency,
+      status: order.status,
+      items: order.items.map((item) => ({
+        quantity: item.quantity,
+        price: Number(item.price),
+        currency: item.product.currency,
+        product: {
+          id: item.product.id,
+          name: item.product.name,
+          primary_image: item.product.primary_image,
+        },
+      })),
+      address_details: {
+        name: order.address_name,
+        street: order.address_street,
+        city: order.address_city,
+        postcode: order.address_postcode,
+      },
+      payment_details: { card_last_four_digits: order.card_last_four },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;

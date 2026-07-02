@@ -84,3 +84,7 @@ export function placeOrder(body: {
     body: JSON.stringify(body),
   });
 }
+
+export function fetchOrder(id: number) {
+  return apiFetch<Order>(`/order/${id}`);
+}

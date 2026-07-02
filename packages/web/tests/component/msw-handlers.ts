@@ -49,6 +49,32 @@ export const emptyCart = {
   currency: "GBP",
 };
 
+export const order = {
+  id: 42,
+  total_price: 37.98,
+  currency: "GBP",
+  status: "confirmed",
+  items: [
+    {
+      quantity: 2,
+      price: 37.98,
+      currency: "GBP",
+      product: {
+        id: product.id,
+        name: product.name,
+        primary_image: product.primary_image,
+      },
+    },
+  ],
+  address_details: {
+    name: "Ada Lovelace",
+    street: "12 Analytical Engine Ave",
+    city: "London",
+    postcode: "SW1A 2AA",
+  },
+  payment_details: { card_last_four_digits: "4242" },
+};
+
 export const handlers = [
   http.get(`${API_URL}/products`, () => {
     return HttpResponse.json({ results: [productListing] });
@@ -61,5 +87,11 @@ export const handlers = [
   }),
   http.get(`${API_URL}/cart`, () => {
     return HttpResponse.json(cart);
+  }),
+  http.get(`${API_URL}/order/:id`, ({ params }) => {
+    if (Number(params.id) !== order.id) {
+      return HttpResponse.json({ error: "Order not found" }, { status: 404 });
+    }
+    return HttpResponse.json(order);
   }),
 ];

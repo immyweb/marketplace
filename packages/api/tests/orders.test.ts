@@ -133,6 +133,65 @@ describe("POST /order", () => {
   });
 });
 
+describe("GET /order/:id", () => {
+  it("returns the order with items, address and payment details", async () => {
+    const order = await prisma.order.create({
+      data: {
+        total_price: 30,
+        stripe_payment_id: "pi_test_get_order",
+        card_last_four: "4242",
+        address_name: "Jane Smith",
+        address_street: "10 Downing Street",
+        address_city: "London",
+        address_postcode: "SW1A 2AA",
+        items: {
+          create: [{ product_id: productId, quantity: 2, price: 30 }],
+        },
+      },
+    });
+
+    const res = await agent(app).get(`/order/${order.id}`).expect(200);
+
+    expect(res.body).toMatchObject({
+      id: order.id,
+      total_price: 30,
+      currency: "GBP",
+      status: "confirmed",
+      address_details: {
+        name: "Jane Smith",
+        street: "10 Downing Street",
+        city: "London",
+        postcode: "SW1A 2AA",
+      },
+      payment_details: { card_last_four_digits: "4242" },
+    });
+    expect(res.body.items).toEqual([
+      {
+        quantity: 2,
+        price: 30,
+        currency: "GBP",
+        product: {
+          id: productId,
+          name: "Test Product",
+          primary_image: "img.jpg",
+        },
+      },
+    ]);
+  });
+
+  it("returns 404 for an order id that does not exist", async () => {
+    const res = await agent(app).get("/order/999999").expect(404);
+
+    expect(res.body).toMatchObject({ error: expect.any(String) });
+  });
+
+  it("returns 404 for a non-numeric order id", async () => {
+    const res = await agent(app).get("/order/not-a-number").expect(404);
+
+    expect(res.body).toMatchObject({ error: expect.any(String) });
+  });
+});
+
 describe("POST /checkout/payment-intent", () => {
   it("creates a Stripe PaymentIntent and returns clientSecret", async () => {
     const ag = agent(app);
