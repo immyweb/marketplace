@@ -47,6 +47,16 @@ describe("ProductDetailPage", () => {
     });
   });
 
+  it("renders Product JSON-LD structured data", async () => {
+    render(await renderPage(String(product.id)));
+
+    const script = document.querySelector('script[type="application/ld+json"]');
+    expect(script).not.toBeNull();
+    const jsonLd = JSON.parse(script!.innerHTML);
+    expect(jsonLd["@type"]).toBe("Product");
+    expect(jsonLd.name).toBeTruthy();
+  });
+
   it("throws a Next.js not-found error for an unknown product id", async () => {
     server.use(
       http.get("http://localhost:3001/products/:id", () =>

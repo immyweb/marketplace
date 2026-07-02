@@ -5,6 +5,10 @@ import { ProductCard } from "@/components/product-card";
 export const metadata: Metadata = {
   title: "Shop All Products",
   description: "Browse our full range of clothing and accessories.",
+  openGraph: {
+    title: "Shop All Products",
+    description: "Browse our full range of clothing and accessories.",
+  },
 };
 
 export default async function ProductListingPage() {

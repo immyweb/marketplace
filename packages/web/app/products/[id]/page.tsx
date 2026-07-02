@@ -38,21 +38,45 @@ export default async function ProductDetailPage({ params }: Props) {
 
   if (!product) notFound();
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.description,
+    image: product.image_urls,
+    offers: {
+      "@type": "Offer",
+      priceCurrency: product.currency,
+      price: product.unit_price.toFixed(2),
+      availability: "https://schema.org/InStock",
+      seller: { "@type": "Organization", name: "Marketplace" },
+    },
+  };
+
   return (
-    <article aria-label={product.name} className="grid gap-8 sm:grid-cols-2">
-      <ProductGallery images={product.image_urls} productName={product.name} />
-      <div>
-        <h1 className="text-2xl font-semibold">{product.name}</h1>
-        <p className="mt-2 text-muted-foreground">{product.description}</p>
-        <p
-          aria-label={`Price: ${product.currency} ${product.unit_price.toFixed(2)}`}
-          className="mt-4 text-lg font-medium"
-        >
-          {product.currency === "GBP" ? "£" : product.currency}
-          {product.unit_price.toFixed(2)}
-        </p>
-        <AddToCartButton productId={product.id} />
-      </div>
-    </article>
+    <>
+      <article aria-label={product.name} className="grid gap-8 sm:grid-cols-2">
+        <ProductGallery
+          images={product.image_urls}
+          productName={product.name}
+        />
+        <div>
+          <h1 className="text-2xl font-semibold">{product.name}</h1>
+          <p className="mt-2 text-muted-foreground">{product.description}</p>
+          <p
+            aria-label={`Price: ${product.currency} ${product.unit_price.toFixed(2)}`}
+            className="mt-4 text-lg font-medium"
+          >
+            {product.currency === "GBP" ? "£" : product.currency}
+            {product.unit_price.toFixed(2)}
+          </p>
+          <AddToCartButton productId={product.id} />
+        </div>
+      </article>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+    </>
   );
 }

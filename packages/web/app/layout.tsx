@@ -4,7 +4,12 @@ import { Nav } from "@/components/nav";
 
 export const metadata: Metadata = {
   title: { default: "Marketplace", template: "%s | Marketplace" },
-  description: "Quality clothing and accessories.",
+  description: "Quality clothing and accessories, delivered to your door.",
+  openGraph: {
+    siteName: "Marketplace",
+    locale: "en_GB",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
