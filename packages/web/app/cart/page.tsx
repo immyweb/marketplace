@@ -33,8 +33,12 @@ export default async function CartPage() {
     <>
       <h1 className="text-2xl font-semibold">Your Cart</h1>
       <ul aria-label="Cart items" className="mt-6 list-none p-0">
-        {cart.items.map((item) => (
-          <CartItemRow key={item.product.id} item={item} />
+        {cart.items.map((item, index) => (
+          <CartItemRow
+            key={item.product.id}
+            item={item}
+            isFirst={index === 0}
+          />
         ))}
       </ul>
       <div className="mt-6 flex items-center justify-between">

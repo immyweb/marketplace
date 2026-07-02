@@ -9,9 +9,10 @@ import type { CartItem } from "@marketplace/core";
 
 interface Props {
   item: CartItem;
+  isFirst?: boolean;
 }
 
-export function CartItemRow({ item }: Props) {
+export function CartItemRow({ item, isFirst }: Props) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -42,7 +43,8 @@ export function CartItemRow({ item }: Props) {
         alt={item.product.name}
         width={80}
         height={80}
-        className="aspect-square rounded-md object-cover"
+        loading={isFirst ? "eager" : "lazy"}
+        className="aspect-square self-start rounded-md object-cover"
       />
       <div className="flex flex-1 flex-col gap-2">
         <p className="text-sm font-medium">{item.product.name}</p>
