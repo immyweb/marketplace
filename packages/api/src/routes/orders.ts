@@ -1,12 +1,9 @@
 import { Router } from "express";
-import Stripe from "stripe";
 import { PlaceOrderSchema } from "@marketplace/core";
-import { prisma } from "../db/prisma.js";
+import { ForbiddenError } from "../errors.js";
+import { placeOrder, getOrderById } from "../services/orders.service.js";
 
 const router = Router();
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2026-06-24.dahlia",
-});
 
 router.post("/", async (req, res, next) => {
   try {
@@ -21,126 +18,17 @@ router.post("/", async (req, res, next) => {
 
     // Ensure the cart belongs to the current session to prevent IDOR
     if (cartId !== req.session.cartId) {
-      res.status(403).json({
-        error: "Cart does not belong to this session",
-        code: "FORBIDDEN",
-      });
-      return;
+      throw new ForbiddenError("Cart does not belong to this session");
     }
 
-    let paymentIntent: Stripe.PaymentIntent;
-    try {
-      paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId, {
-        expand: ["payment_method"],
-      });
-    } catch {
-      res
-        .status(400)
-        .json({ error: "Invalid payment intent", code: "PAYMENT_FAILED" });
-      return;
-    }
-
-    if (paymentIntent.status !== "succeeded") {
-      res
-        .status(400)
-        .json({ error: "Payment not completed", code: "PAYMENT_FAILED" });
-      return;
-    }
-
-    const cart = await prisma.cart.findUnique({
-      where: { id: cartId },
-      include: { items: { include: { product: true } } },
-    });
-
-    if (!cart || cart.items.length === 0) {
-      res
-        .status(404)
-        .json({ error: "Cart not found or empty", code: "NOT_FOUND" });
-      return;
-    }
-
-    const orderItems = cart.items.map((item) => ({
-      product_id: item.product_id,
-      quantity: item.quantity,
-      price: Number(item.product.unit_price) * item.quantity,
-    }));
-
-    const totalPrice = orderItems.reduce((sum, item) => sum + item.price, 0);
-
-    const pm = paymentIntent.payment_method;
-
-    if (
-      !pm ||
-      typeof pm !== "object" ||
-      pm.type !== "card" ||
-      !pm.card?.last4
-    ) {
-      console.error(
-        "[POST /order] ALERT: Stripe PaymentIntent succeeded but card last4 is unreadable. " +
-          `paymentIntentId=${paymentIntentId} cartId=${cartId} pm_type=${typeof pm === "object" && pm !== null ? (pm as Stripe.PaymentMethod).type : typeof pm}. ` +
-          "Customer has been charged but no order was created. Manual reconciliation required.",
-      );
-      res.status(500).json({
-        error: "Could not read card details from payment",
-        code: "PAYMENT_FAILED",
-      });
-      return;
-    }
-
-    const cardLastFour = pm.card.last4;
-
-    // Use a transaction so order creation and cart deletion are atomic.
-    // If the process crashes between these two steps, we'd otherwise end
-    // up with a dangling order and a cart that can be re-ordered.
-    const order = await prisma.$transaction(async (tx) => {
-      const created = await tx.order.create({
-        data: {
-          total_price: totalPrice,
-          stripe_payment_id: paymentIntentId,
-          card_last_four: cardLastFour,
-          address_name: address_details.name,
-          address_street: address_details.street,
-          address_city: address_details.city,
-          address_postcode: address_details.postcode,
-          items: {
-            create: orderItems,
-          },
-        },
-        include: { items: { include: { product: true } } },
-      });
-      await tx.cart.delete({ where: { id: cartId } });
-      return created;
+    const order = await placeOrder({
+      cartId,
+      paymentIntentId,
+      addressDetails: address_details,
     });
 
     req.session.cartId = undefined;
-
-    const response = {
-      id: order.id,
-      total_price: Number(order.total_price),
-      currency: order.currency,
-      status: order.status,
-      items: order.items.map((item) => ({
-        quantity: item.quantity,
-        price: Number(item.price),
-        currency: item.product.currency,
-        product: {
-          id: item.product.id,
-          name: item.product.name,
-          primary_image: item.product.primary_image,
-        },
-      })),
-      address_details: {
-        name: order.address_name,
-        street: order.address_street,
-        city: order.address_city,
-        postcode: order.address_postcode,
-      },
-      payment_details: {
-        card_last_four_digits: order.card_last_four,
-      },
-    };
-
-    res.status(201).json(response);
+    res.status(201).json(order);
   } catch (err) {
     next(err);
   }
@@ -154,39 +42,8 @@ router.get("/:id", async (req, res, next) => {
       return;
     }
 
-    const order = await prisma.order.findUnique({
-      where: { id },
-      include: { items: { include: { product: true } } },
-    });
-
-    if (!order) {
-      res.status(404).json({ error: "Order not found", code: "NOT_FOUND" });
-      return;
-    }
-
-    res.json({
-      id: order.id,
-      total_price: Number(order.total_price),
-      currency: order.currency,
-      status: order.status,
-      items: order.items.map((item) => ({
-        quantity: item.quantity,
-        price: Number(item.price),
-        currency: item.product.currency,
-        product: {
-          id: item.product.id,
-          name: item.product.name,
-          primary_image: item.product.primary_image,
-        },
-      })),
-      address_details: {
-        name: order.address_name,
-        street: order.address_street,
-        city: order.address_city,
-        postcode: order.address_postcode,
-      },
-      payment_details: { card_last_four_digits: order.card_last_four },
-    });
+    const order = await getOrderById(id);
+    res.json(order);
   } catch (err) {
     next(err);
   }

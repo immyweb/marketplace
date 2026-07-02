@@ -1,12 +1,8 @@
 import { Router } from "express";
-import Stripe from "stripe";
-import { prisma } from "../db/prisma.js";
+import { ForbiddenError } from "../errors.js";
+import { createPaymentIntent } from "../services/checkout.service.js";
 
 const router = Router();
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2026-06-24.dahlia",
-});
 
 router.post("/payment-intent", async (req, res, next) => {
   try {
@@ -20,48 +16,11 @@ router.post("/payment-intent", async (req, res, next) => {
     }
 
     if (cartId !== req.session.cartId) {
-      res.status(403).json({
-        error: "Cart does not belong to this session",
-        code: "FORBIDDEN",
-      });
-      return;
+      throw new ForbiddenError("Cart does not belong to this session");
     }
 
-    const cart = await prisma.cart.findUnique({
-      where: { id: cartId },
-      include: { items: { include: { product: true } } },
-    });
-
-    if (!cart || cart.items.length === 0) {
-      res
-        .status(404)
-        .json({ error: "Cart not found or empty", code: "NOT_FOUND" });
-      return;
-    }
-
-    const totalPence = Math.round(
-      cart.items.reduce(
-        (sum, item) => sum + Number(item.product.unit_price) * item.quantity,
-        0,
-      ) * 100,
-    );
-
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: totalPence,
-      currency: "gbp",
-      automatic_payment_methods: { enabled: true, allow_redirects: "never" },
-      metadata: { cartId: String(cartId) },
-    });
-
-    if (!paymentIntent.client_secret) {
-      next(new Error("Stripe did not return a client_secret"));
-      return;
-    }
-
-    res.json({
-      clientSecret: paymentIntent.client_secret,
-      amount: totalPence / 100,
-    });
+    const result = await createPaymentIntent(cartId);
+    res.json(result);
   } catch (err) {
     next(err);
   }

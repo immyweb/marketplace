@@ -1,26 +1,12 @@
 import { Router } from "express";
-import { prisma } from "../db/prisma.js";
+import { listProducts, getProductById } from "../services/products.service.js";
 
 const router = Router();
 
 router.get("/", async (_req, res, next) => {
   try {
-    const products = await prisma.product.findMany({
-      select: {
-        id: true,
-        name: true,
-        primary_image: true,
-        unit_price: true,
-        currency: true,
-      },
-    });
-
-    res.json({
-      results: products.map((p) => ({
-        ...p,
-        unit_price: Number(p.unit_price),
-      })),
-    });
+    const results = await listProducts();
+    res.json({ results });
   } catch (err) {
     next(err);
   }
@@ -34,14 +20,8 @@ router.get("/:id", async (req, res, next) => {
       return;
     }
 
-    const product = await prisma.product.findUnique({ where: { id } });
-
-    if (!product) {
-      res.status(404).json({ error: "Product not found", code: "NOT_FOUND" });
-      return;
-    }
-
-    res.json({ ...product, unit_price: Number(product.unit_price) });
+    const product = await getProductById(id);
+    res.json(product);
   } catch (err) {
     next(err);
   }

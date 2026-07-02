@@ -1,4 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
+import { AppError } from "../errors.js";
 
 export function errorHandler(
   err: Error,
@@ -6,6 +7,11 @@ export function errorHandler(
   res: Response,
   _next: NextFunction,
 ) {
+  if (err instanceof AppError) {
+    res.status(err.statusCode).json({ error: err.message, code: err.code });
+    return;
+  }
+
   console.error(err);
   res
     .status(500)
