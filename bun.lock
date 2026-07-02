@@ -47,6 +47,9 @@
       "dependencies": {
         "zod": "^3.23.0",
       },
+      "devDependencies": {
+        "typescript": "^6.0.3",
+      },
     },
     "packages/web": {
       "name": "web",

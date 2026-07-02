@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "predev": "bun run --filter @marketplace/core build",
     "dev": "bun --watch index.ts",
+    "prebuild": "bun run --filter @marketplace/core build",
     "build": "tsc",
+    "pretest": "bun run --filter @marketplace/core build",
     "test": "vitest run",
     "db:migrate": "prisma migrate dev",
     "db:migrate:test": "DATABASE_URL=$DATABASE_URL_TEST prisma migrate deploy",

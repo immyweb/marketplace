@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "predev": "bun run --filter @marketplace/core build",
     "dev": "next dev",
+    "prebuild": "bun run --filter @marketplace/core build",
     "build": "next build",
     "start": "next start",
+    "pretest": "bun run --filter @marketplace/core build",
     "test": "vitest run",
     "test:e2e": "playwright test"
   },
