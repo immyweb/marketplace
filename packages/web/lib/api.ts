@@ -32,10 +32,23 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-export function fetchProducts() {
-  return apiFetch<{ results: Omit<Product, "description" | "image_urls">[] }>(
-    "/products",
-  );
+export function fetchProducts(params?: {
+  page?: number;
+  sort?: string;
+  category?: string;
+}) {
+  const qs = new URLSearchParams();
+  if (params?.page) qs.set("page", String(params.page));
+  if (params?.sort) qs.set("sort", params.sort);
+  if (params?.category) qs.set("category", params.category);
+  const query = qs.toString();
+
+  return apiFetch<{
+    results: Omit<Product, "description" | "image_urls">[];
+    total: number;
+    page: number;
+    totalPages: number;
+  }>(`/products${query ? `?${query}` : ""}`);
 }
 
 export function fetchProduct(id: number) {

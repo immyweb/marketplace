@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PRODUCT_CATEGORIES } from "./types";
 
 export const AddToCartSchema = z.object({
   productId: z
@@ -34,3 +35,11 @@ export type AddToCartInput = z.infer<typeof AddToCartSchema>;
 export type UpdateCartItemInput = z.infer<typeof UpdateCartItemSchema>;
 export type AddressInput = z.infer<typeof AddressSchema>;
 export type PlaceOrderInput = z.infer<typeof PlaceOrderSchema>;
+
+export const ProductListQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).optional().default(1),
+  sort: z.enum(["category", "price_asc", "price_desc"]).optional(),
+  category: z.enum(PRODUCT_CATEGORIES).optional(),
+});
+
+export type ProductListQuery = z.infer<typeof ProductListQuerySchema>;

@@ -14,6 +14,7 @@ export const product = {
   ],
   unit_price: 18.99,
   currency: "GBP",
+  category: "Tops",
 };
 
 export const productListing = {
@@ -22,6 +23,7 @@ export const productListing = {
   primary_image: product.primary_image,
   unit_price: product.unit_price,
   currency: product.currency,
+  category: product.category,
 };
 
 export const cart = {
@@ -77,7 +79,12 @@ export const order = {
 
 export const handlers = [
   http.get(`${API_URL}/products`, () => {
-    return HttpResponse.json({ results: [productListing] });
+    return HttpResponse.json({
+      results: [productListing],
+      total: 1,
+      page: 1,
+      totalPages: 1,
+    });
   }),
   http.get(`${API_URL}/products/:id`, ({ params }) => {
     if (Number(params.id) !== product.id) {

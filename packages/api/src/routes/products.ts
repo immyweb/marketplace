@@ -1,12 +1,21 @@
 import { Router } from "express";
+import { ProductListQuerySchema } from "@marketplace/core";
 import { listProducts, getProductById } from "../services/products.service.js";
 
 const router = Router();
 
-router.get("/", async (_req, res, next) => {
+router.get("/", async (req, res, next) => {
   try {
-    const results = await listProducts();
-    res.json({ results });
+    const parsed = ProductListQuerySchema.safeParse(req.query);
+    if (!parsed.success) {
+      res
+        .status(400)
+        .json({ error: parsed.error.errors[0].message, code: "INVALID_INPUT" });
+      return;
+    }
+
+    const result = await listProducts(parsed.data);
+    res.json(result);
   } catch (err) {
     next(err);
   }
