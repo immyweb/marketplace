@@ -4,7 +4,7 @@ test.describe("Cart flow", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/products/1");
     await page.getByRole("button", { name: "Add to Cart" }).click();
-    await expect(page.getByRole("link", { name: /Cart/ })).toContainText("(");
+    await expect(page.getByRole("link", { name: /Cart/ })).toContainText("1");
   });
 
   test("added item appears in the cart", async ({ page }) => {

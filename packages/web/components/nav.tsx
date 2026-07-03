@@ -35,8 +35,11 @@ export async function Nav() {
           className="font-mono text-sm tracking-wide uppercase hover:text-accent"
         >
           Cart
-          <span aria-hidden="true" className="ml-1 text-accent">
-            ({itemCount})
+          <span
+            aria-hidden="true"
+            className="ml-1.5 rounded-sm bg-accent px-1.5 py-0.5 text-xs text-foreground"
+          >
+            {itemCount}
           </span>
         </Link>
       </nav>

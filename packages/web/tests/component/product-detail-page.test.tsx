@@ -1,13 +1,15 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { server } from "./setup";
 import { http, HttpResponse } from "msw";
 import { product } from "./msw-handlers";
 import ProductDetailPage from "@/app/products/[id]/page";
 
+const { push } = vi.hoisted(() => ({ push: vi.fn() }));
+
 vi.mock("next/navigation", async (importOriginal) => ({
   ...(await importOriginal<typeof import("next/navigation")>()),
-  useRouter: () => ({ refresh: vi.fn() }),
+  useRouter: () => ({ push, refresh: vi.fn() }),
 }));
 
 function renderPage(id: string) {
@@ -15,6 +17,10 @@ function renderPage(id: string) {
 }
 
 describe("ProductDetailPage", () => {
+  beforeEach(() => {
+    push.mockClear();
+  });
+
   it("renders product details for a known product", async () => {
     render(await renderPage(String(product.id)));
 
@@ -67,5 +73,52 @@ describe("ProductDetailPage", () => {
     await expect(renderPage("999999")).rejects.toMatchObject({
       digest: "NEXT_HTTP_ERROR_FALLBACK;404",
     });
+  });
+
+  it("opens a confirmation modal after successfully adding to cart", async () => {
+    render(await renderPage(String(product.id)));
+
+    fireEvent.click(screen.getByRole("button", { name: "Add to Cart" }));
+
+    expect(
+      await screen.findByRole("dialog", { name: "Added to Cart" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Successfully added to cart.")).toBeInTheDocument();
+  });
+
+  it("navigates to the catalog when Continue Shopping is clicked", async () => {
+    render(await renderPage(String(product.id)));
+
+    fireEvent.click(screen.getByRole("button", { name: "Add to Cart" }));
+    await screen.findByRole("dialog");
+    fireEvent.click(screen.getByRole("button", { name: "Continue Shopping" }));
+
+    await waitFor(() => expect(push).toHaveBeenCalledWith("/"));
+  });
+
+  it("navigates to checkout when Checkout is clicked", async () => {
+    render(await renderPage(String(product.id)));
+
+    fireEvent.click(screen.getByRole("button", { name: "Add to Cart" }));
+    await screen.findByRole("dialog");
+    fireEvent.click(screen.getByRole("button", { name: "Checkout" }));
+
+    await waitFor(() => expect(push).toHaveBeenCalledWith("/checkout"));
+  });
+
+  it("does not open the modal when adding to cart fails", async () => {
+    server.use(
+      http.post("http://localhost:3001/cart/products", () =>
+        HttpResponse.json({ error: "Something went wrong" }, { status: 500 }),
+      ),
+    );
+    render(await renderPage(String(product.id)));
+
+    fireEvent.click(screen.getByRole("button", { name: "Add to Cart" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Something went wrong",
+    );
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 });

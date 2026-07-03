@@ -88,6 +88,9 @@ export const handlers = [
   http.get(`${API_URL}/cart`, () => {
     return HttpResponse.json(cart);
   }),
+  http.post(`${API_URL}/cart/products`, () => {
+    return HttpResponse.json(cart);
+  }),
   http.get(`${API_URL}/order/:id`, ({ params }) => {
     if (Number(params.id) !== order.id) {
       return HttpResponse.json({ error: "Order not found" }, { status: 404 });
