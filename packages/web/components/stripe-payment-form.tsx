@@ -5,7 +5,9 @@ import { CardElement } from "@stripe/react-stripe-js";
 export function StripePaymentForm() {
   return (
     <fieldset className="mt-6">
-      <legend className="text-lg font-medium">Payment Details</legend>
+      <legend className="font-display text-sm font-bold tracking-wide text-muted-foreground uppercase">
+        Payment Details
+      </legend>
       <div className="mt-4">
         <label htmlFor="card-element" className="text-sm font-medium">
           Card details
@@ -14,7 +16,7 @@ export function StripePaymentForm() {
           id="card-element"
           role="group"
           aria-label="Credit or debit card"
-          className="mt-1 rounded-md border border-input bg-background px-3 py-2.5 shadow-xs"
+          className="mt-1 rounded-sm border border-input bg-card px-3 py-2.5 shadow-xs"
         >
           <CardElement
             options={{

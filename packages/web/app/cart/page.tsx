@@ -16,23 +16,26 @@ export default async function CartPage() {
 
   if (cart.items.length === 0) {
     return (
-      <>
-        <h1 className="text-2xl font-semibold">Your Cart</h1>
+      <div className="max-w-2xl">
+        <h1 className="text-2xl">Your Cart</h1>
         <p className="mt-4 text-muted-foreground">Your cart is empty.</p>
         <Link
           href="/"
-          className="mt-4 inline-block text-sm font-medium underline"
+          className="mt-4 inline-block font-mono text-sm tracking-wide text-secondary underline underline-offset-4"
         >
           Continue Shopping
         </Link>
-      </>
+      </div>
     );
   }
 
   return (
-    <>
-      <h1 className="text-2xl font-semibold">Your Cart</h1>
-      <ul aria-label="Cart items" className="mt-6 list-none p-0">
+    <div className="max-w-2xl">
+      <h1 className="text-2xl">Your Cart</h1>
+      <ul
+        aria-label="Cart items"
+        className="mt-6 list-none border-t border-dashed border-border p-0"
+      >
         {cart.items.map((item, index) => (
           <CartItemRow
             key={item.product.id}
@@ -41,20 +44,20 @@ export default async function CartPage() {
           />
         ))}
       </ul>
-      <div className="mt-6 flex items-center justify-between">
+      <div className="mt-6 flex items-center justify-between border-t-2 border-primary pt-4">
         <p
           aria-label={`Order total: £${cart.total_price.toFixed(2)}`}
-          className="text-lg font-medium"
+          className="font-display text-lg font-bold tracking-wide uppercase"
         >
           Total: £{cart.total_price.toFixed(2)}
         </p>
         <Link
           href="/checkout"
-          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-xs hover:bg-primary/90"
+          className="rounded-sm bg-primary px-5 py-2.5 font-mono text-sm tracking-wide text-primary-foreground uppercase hover:bg-primary/90"
         >
           Proceed to Checkout
         </Link>
       </div>
-    </>
+    </div>
   );
 }

@@ -25,49 +25,53 @@
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) * 1.4);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-heading);
+  --font-mono: var(--font-code);
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  /* Field Ledger — heritage workwear catalog palette */
+  --radius: 0.1875rem;
+  --background: #ede6d6; /* canvas */
+  --foreground: #26231f; /* ink */
+  --card: #f5f1e6; /* lighter canvas, for panels/rows */
+  --card-foreground: #26231f;
+  --popover: #f5f1e6;
+  --popover-foreground: #26231f;
+  --primary: #3c4a3a; /* loden */
+  --primary-foreground: #f5f1e6;
+  --secondary: #7a4b2e; /* tanned leather */
+  --secondary-foreground: #f5f1e6;
+  --muted: #ddd3bc;
+  --muted-foreground: #6b5f4e;
+  --accent: #b98a44; /* brass rivet */
+  --accent-foreground: #26231f;
+  --destructive: #a23b2e; /* rust */
+  --border: #d8ccae;
+  --input: #d8ccae;
+  --ring: #b98a44;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --background: #201d19;
+  --foreground: #ede6d6;
+  --card: #2a2620;
+  --card-foreground: #ede6d6;
+  --popover: #2a2620;
+  --popover-foreground: #ede6d6;
+  --primary: #a8bfa4;
+  --primary-foreground: #201d19;
+  --secondary: #c98a5e;
+  --secondary-foreground: #201d19;
+  --muted: #3a352c;
+  --muted-foreground: #b7ab90;
+  --accent: #d6a45c;
+  --accent-foreground: #201d19;
+  --destructive: #d9695a;
+  --border: #443e33;
+  --input: #443e33;
+  --ring: #d6a45c;
 }
 
 @layer base {
@@ -76,6 +80,12 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display font-bold tracking-wide uppercase;
   }
 }

@@ -7,12 +7,14 @@ interface Props {
 }
 
 const inputClassName =
-  "mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive";
+  "mt-1 block w-full rounded-sm border border-input bg-card px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive";
 
 export function AddressForm({ register, errors }: Props) {
   return (
     <fieldset className="mt-6">
-      <legend className="text-lg font-medium">Delivery Address</legend>
+      <legend className="font-display text-sm font-bold tracking-wide text-muted-foreground uppercase">
+        Delivery Address
+      </legend>
 
       <div className="mt-4">
         <label htmlFor="name" className="text-sm font-medium">

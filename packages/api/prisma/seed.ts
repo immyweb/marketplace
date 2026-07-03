@@ -93,9 +93,235 @@ async function main() {
         unit_price: 34.99,
         currency: "GBP",
       },
+      {
+        name: "Oxford Cotton Shirt",
+        description:
+          "Brushed cotton oxford weave. Button-down collar, regular fit.",
+        primary_image:
+          "https://placehold.co/800x800/b8cfe0/1a2744.png?text=Oxford+Shirt",
+        image_urls: [
+          "https://placehold.co/800x800/b8cfe0/1a2744.png?text=Oxford+Shirt",
+          "https://placehold.co/800x800/b8cfe0/1a2744.png?text=Oxford+Detail",
+        ],
+        unit_price: 38.0,
+        currency: "GBP",
+      },
+      {
+        name: "Merino Crew Socks (3-Pack)",
+        description:
+          "Cushioned sole, ribbed cuff. Three pairs in charcoal, navy, and oatmeal.",
+        primary_image:
+          "https://placehold.co/800x800/4a4a4a/f5f5f5.png?text=Wool+Socks",
+        image_urls: [
+          "https://placehold.co/800x800/4a4a4a/f5f5f5.png?text=Wool+Socks",
+          "https://placehold.co/800x800/4a4a4a/f5f5f5.png?text=Socks+Pack",
+        ],
+        unit_price: 14.99,
+        currency: "GBP",
+      },
+      {
+        name: "Waxed Cotton Jacket",
+        description:
+          "British waxed cotton, corduroy collar. Showerproof and windproof.",
+        primary_image:
+          "https://placehold.co/800x800/2f3b2c/f5f1e6.png?text=Waxed+Jacket",
+        image_urls: [
+          "https://placehold.co/800x800/2f3b2c/f5f1e6.png?text=Waxed+Jacket",
+          "https://placehold.co/800x800/2f3b2c/f5f1e6.png?text=Jacket+Collar",
+        ],
+        unit_price: 145.0,
+        currency: "GBP",
+      },
+      {
+        name: "Grey Marl Sweatshirt",
+        description: "Heavyweight loopback cotton. Ribbed hem and cuffs.",
+        primary_image:
+          "https://placehold.co/800x800/8a8a8a/f5f5f5.png?text=Grey+Sweatshirt",
+        image_urls: [
+          "https://placehold.co/800x800/8a8a8a/f5f5f5.png?text=Grey+Sweatshirt",
+          "https://placehold.co/800x800/8a8a8a/f5f5f5.png?text=Sweatshirt+Detail",
+        ],
+        unit_price: 32.0,
+        currency: "GBP",
+      },
+      {
+        name: "Selvedge Denim Jeans",
+        description: "13oz Japanese selvedge denim. Straight fit, button fly.",
+        primary_image:
+          "https://placehold.co/800x800/2c3e5c/f5f5f5.png?text=Denim+Jeans",
+        image_urls: [
+          "https://placehold.co/800x800/2c3e5c/f5f5f5.png?text=Denim+Jeans",
+          "https://placehold.co/800x800/2c3e5c/f5f5f5.png?text=Selvedge+Detail",
+        ],
+        unit_price: 78.0,
+        currency: "GBP",
+      },
+      {
+        name: "Suede Derby Shoes",
+        description: "Soft suede upper, leather sole. Five-eyelet lacing.",
+        primary_image:
+          "https://placehold.co/800x800/6b4423/f5f5f5.png?text=Derby+Shoes",
+        image_urls: [
+          "https://placehold.co/800x800/6b4423/f5f5f5.png?text=Derby+Shoes",
+          "https://placehold.co/800x800/6b4423/f5f5f5.png?text=Shoes+Side",
+        ],
+        unit_price: 110.0,
+        currency: "GBP",
+      },
+      {
+        name: "Cashmere Scarf",
+        description: "Pure cashmere, woven in Scotland. 180cm length.",
+        primary_image:
+          "https://placehold.co/800x800/c9a876/333.png?text=Cashmere+Scarf",
+        image_urls: [
+          "https://placehold.co/800x800/c9a876/333.png?text=Cashmere+Scarf",
+          "https://placehold.co/800x800/c9a876/333.png?text=Scarf+Weave",
+        ],
+        unit_price: 55.0,
+        currency: "GBP",
+      },
+      {
+        name: "Corduroy Trousers",
+        description:
+          "8-wale cotton corduroy. Tapered fit, side-adjuster waist.",
+        primary_image:
+          "https://placehold.co/800x800/6b5842/f5f5f5.png?text=Corduroy+Trousers",
+        image_urls: [
+          "https://placehold.co/800x800/6b5842/f5f5f5.png?text=Corduroy+Trousers",
+          "https://placehold.co/800x800/6b5842/f5f5f5.png?text=Corduroy+Detail",
+        ],
+        unit_price: 48.0,
+        currency: "GBP",
+      },
+      {
+        name: "Quilted Gilet",
+        description:
+          "Diamond-quilted shell, recycled fill. Zip and popper front.",
+        primary_image:
+          "https://placehold.co/800x800/3c4a3a/f5f1e6.png?text=Quilted+Gilet",
+        image_urls: [
+          "https://placehold.co/800x800/3c4a3a/f5f1e6.png?text=Quilted+Gilet",
+          "https://placehold.co/800x800/3c4a3a/f5f1e6.png?text=Gilet+Detail",
+        ],
+        unit_price: 68.0,
+        currency: "GBP",
+      },
+      {
+        name: "Linen Short-Sleeve Shirt",
+        description:
+          "European linen, garment-washed for softness. Relaxed fit.",
+        primary_image:
+          "https://placehold.co/800x800/e8e2d0/333.png?text=Linen+Shirt",
+        image_urls: [
+          "https://placehold.co/800x800/e8e2d0/333.png?text=Linen+Shirt",
+          "https://placehold.co/800x800/e8e2d0/333.png?text=Linen+Detail",
+        ],
+        unit_price: 36.0,
+        currency: "GBP",
+      },
+      {
+        name: "Leather Card Holder",
+        description: "Vegetable-tanned leather. Four card slots, slim profile.",
+        primary_image:
+          "https://placehold.co/800x800/4a2f1f/f5f5f5.png?text=Card+Holder",
+        image_urls: [
+          "https://placehold.co/800x800/4a2f1f/f5f5f5.png?text=Card+Holder",
+          "https://placehold.co/800x800/4a2f1f/f5f5f5.png?text=Card+Slots",
+        ],
+        unit_price: 22.0,
+        currency: "GBP",
+      },
+      {
+        name: "Wool Flat Cap",
+        description:
+          "Harris Tweed wool, satin lining. One size, adjustable band.",
+        primary_image:
+          "https://placehold.co/800x800/3d3d3d/f5f5f5.png?text=Flat+Cap",
+        image_urls: [
+          "https://placehold.co/800x800/3d3d3d/f5f5f5.png?text=Flat+Cap",
+          "https://placehold.co/800x800/3d3d3d/f5f5f5.png?text=Cap+Detail",
+        ],
+        unit_price: 28.0,
+        currency: "GBP",
+      },
+      {
+        name: "Cable Knit Cardigan",
+        description: "Lambswool cable knit. Horn buttons, ribbed collar.",
+        primary_image:
+          "https://placehold.co/800x800/9c7a3e/333.png?text=Cable+Cardigan",
+        image_urls: [
+          "https://placehold.co/800x800/9c7a3e/333.png?text=Cable+Cardigan",
+          "https://placehold.co/800x800/9c7a3e/333.png?text=Cardigan+Detail",
+        ],
+        unit_price: 72.0,
+        currency: "GBP",
+      },
+      {
+        name: "Canvas Weekender Bag",
+        description:
+          "Waxed canvas and leather trim. 45L capacity, detachable strap.",
+        primary_image:
+          "https://placehold.co/800x800/d4c5a9/333.png?text=Weekender+Bag",
+        image_urls: [
+          "https://placehold.co/800x800/d4c5a9/333.png?text=Weekender+Bag",
+          "https://placehold.co/800x800/d4c5a9/333.png?text=Bag+Interior",
+        ],
+        unit_price: 58.0,
+        currency: "GBP",
+      },
+      {
+        name: "Striped Breton Top",
+        description:
+          "Cotton jersey, Breton stripe. Boat neck, three-quarter sleeve.",
+        primary_image:
+          "https://placehold.co/800x800/f5f5f5/1a2744.png?text=Breton+Top",
+        image_urls: [
+          "https://placehold.co/800x800/f5f5f5/1a2744.png?text=Breton+Top",
+          "https://placehold.co/800x800/f5f5f5/1a2744.png?text=Breton+Detail",
+        ],
+        unit_price: 29.99,
+        currency: "GBP",
+      },
+      {
+        name: "Suede Chukka Boots",
+        description: "Suede upper, crepe sole. Two-eyelet chukka silhouette.",
+        primary_image:
+          "https://placehold.co/800x800/8b5a2b/f5f5f5.png?text=Chukka+Boots",
+        image_urls: [
+          "https://placehold.co/800x800/8b5a2b/f5f5f5.png?text=Chukka+Boots",
+          "https://placehold.co/800x800/8b5a2b/f5f5f5.png?text=Boots+Side",
+        ],
+        unit_price: 95.0,
+        currency: "GBP",
+      },
+      {
+        name: "Merino Beanie",
+        description: "Fine merino rib knit. Turn-up cuff, one size.",
+        primary_image:
+          "https://placehold.co/800x800/5c3d2e/f5f1e6.png?text=Merino+Beanie",
+        image_urls: [
+          "https://placehold.co/800x800/5c3d2e/f5f1e6.png?text=Merino+Beanie",
+          "https://placehold.co/800x800/5c3d2e/f5f1e6.png?text=Beanie+Detail",
+        ],
+        unit_price: 19.99,
+        currency: "GBP",
+      },
+      {
+        name: "Signet Cufflinks",
+        description:
+          "Brushed brass, engravable face. Presented in a canvas pouch.",
+        primary_image:
+          "https://placehold.co/800x800/b98a44/26231f.png?text=Cufflinks",
+        image_urls: [
+          "https://placehold.co/800x800/b98a44/26231f.png?text=Cufflinks",
+          "https://placehold.co/800x800/b98a44/26231f.png?text=Cufflinks+Case",
+        ],
+        unit_price: 26.0,
+        currency: "GBP",
+      },
     ],
   });
-  console.log("Seeded 6 products");
+  console.log("Seeded 24 products");
 }
 
 main()

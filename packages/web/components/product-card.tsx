@@ -7,6 +7,7 @@ interface Props {
   primary_image: string;
   unit_price: number;
   currency: string;
+  eager?: boolean;
 }
 
 export function ProductCard({
@@ -15,29 +16,31 @@ export function ProductCard({
   primary_image,
   unit_price,
   currency,
+  eager = false,
 }: Props) {
+  const price = `${currency === "GBP" ? "£" : currency}${unit_price.toFixed(2)}`;
+  const priceLabel = `Price: ${currency} ${unit_price.toFixed(2)}`;
+
   return (
     <article>
-      <Link href={`/products/${id}`}>
+      <Link href={`/products/${id}`} className="group block">
         <Image
           src={primary_image}
           alt={name}
           width={400}
           height={400}
-          // No pagination (all products render in one grid), so any card
-          // can end up being the browser's actual LCP element depending on
-          // load timing — eager-load them all rather than guess which.
-          loading="eager"
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="aspect-square w-full rounded-md object-cover"
+          loading={eager ? "eager" : "lazy"}
+          sizes="(max-width: 640px) 50vw, 33vw"
+          className="aspect-square w-full rounded-sm object-cover"
         />
-        <h2 className="mt-3 text-sm font-medium">{name}</h2>
+        <h2 className="mt-3 truncate font-sans text-sm font-medium normal-case tracking-normal group-hover:text-secondary">
+          {name}
+        </h2>
         <p
-          aria-label={`Price: ${currency} ${unit_price.toFixed(2)}`}
-          className="mt-1 text-sm text-muted-foreground"
+          aria-label={priceLabel}
+          className="mt-1 font-mono text-sm text-secondary"
         >
-          {currency === "GBP" ? "£" : currency}
-          {unit_price.toFixed(2)}
+          {price}
         </p>
       </Link>
     </article>

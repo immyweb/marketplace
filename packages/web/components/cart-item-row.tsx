@@ -37,20 +37,23 @@ export function CartItemRow({ item, isFirst }: Props) {
   }
 
   return (
-    <li aria-label={item.product.name} className="flex gap-4 border-b py-4">
+    <li
+      aria-label={item.product.name}
+      className="flex gap-4 border-b border-dashed border-border py-4"
+    >
       <Image
         src={item.product.primary_image}
         alt={item.product.name}
         width={80}
         height={80}
         loading={isFirst ? "eager" : "lazy"}
-        className="aspect-square self-start rounded-md object-cover"
+        className="aspect-square self-start rounded-sm object-cover"
       />
       <div className="flex flex-1 flex-col gap-2">
         <p className="text-sm font-medium">{item.product.name}</p>
         <p
           aria-label={`Item total: £${item.price.toFixed(2)}`}
-          className="text-sm text-muted-foreground"
+          className="font-mono text-sm text-secondary"
         >
           £{item.price.toFixed(2)}
         </p>

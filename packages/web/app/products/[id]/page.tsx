@@ -55,20 +55,22 @@ export default async function ProductDetailPage({ params }: Props) {
 
   return (
     <>
-      <article aria-label={product.name} className="grid gap-8 sm:grid-cols-2">
+      <article aria-label={product.name} className="grid gap-10 sm:grid-cols-2">
         <ProductGallery
           images={product.image_urls}
           productName={product.name}
         />
         <div>
-          <h1 className="text-2xl font-semibold">{product.name}</h1>
-          <p className="mt-2 text-muted-foreground">{product.description}</p>
+          <h1 className="text-2xl sm:text-3xl">{product.name}</h1>
           <p
             aria-label={`Price: ${product.currency} ${product.unit_price.toFixed(2)}`}
-            className="mt-4 text-lg font-medium"
+            className="mt-2 font-mono text-lg text-secondary"
           >
             {product.currency === "GBP" ? "£" : product.currency}
             {product.unit_price.toFixed(2)}
+          </p>
+          <p className="mt-6 border-t border-dashed border-border pt-6 leading-relaxed text-muted-foreground">
+            {product.description}
           </p>
           <AddToCartButton productId={product.id} />
         </div>

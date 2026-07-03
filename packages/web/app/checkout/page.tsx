@@ -80,16 +80,17 @@ function CheckoutForm({ cart }: { cart: Cart }) {
       onSubmit={handleSubmit(onSubmit)}
       aria-label="Checkout form"
       noValidate
+      className="max-w-2xl"
     >
-      <h1 className="text-2xl font-semibold">Checkout</h1>
+      <h1 className="text-2xl">Checkout</h1>
 
       <AddressForm register={register} errors={errors} />
       <StripePaymentForm />
 
-      <div className="mt-6 flex items-center justify-between">
+      <div className="mt-8 flex items-center justify-between border-t-2 border-primary pt-4">
         <p
           aria-label={`Order total: £${cart.total_price.toFixed(2)}`}
-          className="text-lg font-medium"
+          className="font-display text-lg font-bold tracking-wide uppercase"
         >
           Total: £{cart.total_price.toFixed(2)}
         </p>

@@ -25,7 +25,7 @@ export function ProductGallery({ images, productName }: Props) {
         height={800}
         loading="eager"
         sizes="(max-width: 1024px) 100vw, 50vw"
-        className="aspect-square w-full rounded-md object-cover"
+        className="aspect-square w-full rounded-sm object-cover"
       />
       {images.length > 1 && (
         <div
@@ -41,8 +41,8 @@ export function ProductGallery({ images, productName }: Props) {
               aria-label={`View image ${i + 1}`}
               aria-pressed={selected === i}
               className={cn(
-                "overflow-hidden rounded-md border-2",
-                selected === i ? "border-primary" : "border-transparent",
+                "overflow-hidden rounded-sm border-2",
+                selected === i ? "border-secondary" : "border-transparent",
               )}
             >
               <Image

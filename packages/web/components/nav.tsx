@@ -17,30 +17,27 @@ export async function Nav() {
   }
 
   return (
-    <header className="border-b">
+    <header className="bg-primary text-primary-foreground">
       <nav
         aria-label="Main navigation"
-        className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4"
+        className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6"
       >
         <Link
           href="/"
           aria-label="Marketplace home"
-          className="text-lg font-semibold"
+          className="font-display text-lg font-bold tracking-wide uppercase"
         >
-          Marketplace
+          Marketplace <span className="text-accent">·</span> Goods
         </Link>
         <Link
           href="/cart"
           aria-label={`Cart, ${itemCount} item${itemCount !== 1 ? "s" : ""}`}
-          className="text-sm font-medium"
+          className="font-mono text-sm tracking-wide uppercase hover:text-accent"
         >
           Cart
-          {itemCount > 0 && (
-            <span aria-hidden="true" className="ml-1 text-muted-foreground">
-              {" "}
-              ({itemCount})
-            </span>
-          )}
+          <span aria-hidden="true" className="ml-1 text-accent">
+            ({itemCount})
+          </span>
         </Link>
       </nav>
     </header>
