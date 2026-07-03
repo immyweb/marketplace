@@ -25,7 +25,7 @@ export function ProductFilters({ activeCategory, sort }: Props) {
           className={`rounded-full border px-3 py-1 text-sm ${
             !activeCategory
               ? "border-primary bg-primary text-primary-foreground"
-              : "border-border text-muted-foreground"
+              : "border-border text-muted-foreground hover:border-primary hover:bg-primary hover:text-primary-foreground"
           }`}
         >
           All
@@ -38,7 +38,7 @@ export function ProductFilters({ activeCategory, sort }: Props) {
             className={`rounded-full border px-3 py-1 text-sm ${
               activeCategory === category
                 ? "border-primary bg-primary text-primary-foreground"
-                : "border-border text-muted-foreground"
+                : "border-border text-muted-foreground hover:border-primary hover:bg-primary hover:text-primary-foreground"
             }`}
           >
             {category}

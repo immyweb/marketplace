@@ -66,7 +66,7 @@ describe("ProductListingPage", () => {
     render(await ProductListingPage({ searchParams: searchParams() }));
 
     expect(screen.getByRole("link", { name: "Tops" })).toBeInTheDocument();
-    expect(screen.getByLabelText("Sort products")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^Sort:/ })).toBeInTheDocument();
   });
 
   it("renders pagination when there is more than one page", async () => {

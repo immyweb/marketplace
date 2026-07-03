@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { ProductFilters } from "@/components/product-filters";
 
 const { push } = vi.hoisted(() => ({ push: vi.fn() }));
@@ -72,35 +73,39 @@ describe("ProductFilters", () => {
     );
   });
 
-  it("navigates with the chosen sort and clears page", () => {
+  it("navigates with the chosen sort and clears page", async () => {
     mockSearchParams = "page=3";
     render(<ProductFilters activeCategory={undefined} />);
 
-    fireEvent.change(screen.getByLabelText("Sort products"), {
-      target: { value: "price_asc" },
-    });
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: /^Sort:/ }));
+    await user.click(
+      screen.getByRole("menuitemradio", { name: "Price: Low to High" }),
+    );
 
     expect(push).toHaveBeenCalledWith("/?sort=price_asc");
   });
 
-  it("preserves the category param when changing sort", () => {
+  it("preserves the category param when changing sort", async () => {
     mockSearchParams = "category=Footwear";
     render(<ProductFilters activeCategory="Footwear" />);
 
-    fireEvent.change(screen.getByLabelText("Sort products"), {
-      target: { value: "price_desc" },
-    });
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: /^Sort:/ }));
+    await user.click(
+      screen.getByRole("menuitemradio", { name: "Price: High to Low" }),
+    );
 
     expect(push).toHaveBeenCalledWith("/?category=Footwear&sort=price_desc");
   });
 
-  it("removes the sort param when Featured is selected", () => {
+  it("removes the sort param when Featured is selected", async () => {
     mockSearchParams = "sort=price_asc";
     render(<ProductFilters activeCategory={undefined} />);
 
-    fireEvent.change(screen.getByLabelText("Sort products"), {
-      target: { value: "" },
-    });
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: /^Sort:/ }));
+    await user.click(screen.getByRole("menuitemradio", { name: "Featured" }));
 
     expect(push).toHaveBeenCalledWith("/");
   });

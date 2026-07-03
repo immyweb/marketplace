@@ -1,6 +1,15 @@
 "use client";
 
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { ChevronDownIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const SORT_OPTIONS = [
   { value: "", label: "Featured" },
@@ -13,12 +22,15 @@ export function SortSelect() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const currentSort = searchParams.get("sort") ?? "";
+  const currentLabel =
+    SORT_OPTIONS.find((o) => o.value === currentSort)?.label ?? "Featured";
 
-  function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
+  function handleChange(value: string) {
     const params = new URLSearchParams(searchParams);
     params.delete("page");
-    if (e.target.value) {
-      params.set("sort", e.target.value);
+    if (value) {
+      params.set("sort", value);
     } else {
       params.delete("sort");
     }
@@ -27,20 +39,29 @@ export function SortSelect() {
   }
 
   return (
-    <label className="flex items-center gap-2 text-sm">
-      <span className="text-muted-foreground">Sort by</span>
-      <select
-        aria-label="Sort products"
-        className="rounded-sm border border-border bg-background px-2 py-1 text-sm"
-        value={searchParams.get("sort") ?? ""}
-        onChange={handleChange}
-      >
-        {SORT_OPTIONS.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-    </label>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="outline"
+          size="sm"
+          className="rounded-full text-muted-foreground hover:bg-primary hover:text-primary-foreground"
+        >
+          Sort: {currentLabel}
+          <ChevronDownIcon />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuRadioGroup
+          value={currentSort}
+          onValueChange={handleChange}
+        >
+          {SORT_OPTIONS.map((option) => (
+            <DropdownMenuRadioItem key={option.value} value={option.value}>
+              {option.label}
+            </DropdownMenuRadioItem>
+          ))}
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

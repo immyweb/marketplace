@@ -1,6 +1,6 @@
 "use client";
 
-import * as Dialog from "@radix-ui/react-dialog";
+import { Dialog as Dialog } from "radix-ui";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
