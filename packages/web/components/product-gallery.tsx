@@ -29,14 +29,13 @@ export function ProductGallery({ images, productName }: Props) {
       />
       {images.length > 1 && (
         <div
-          role="list"
+          role="group"
           aria-label="Product images"
           className="mt-3 flex gap-2"
         >
           {images.map((src, i) => (
             <button
               key={src}
-              role="listitem"
               onClick={() => setSelected(i)}
               aria-label={`View image ${i + 1}`}
               aria-pressed={selected === i}

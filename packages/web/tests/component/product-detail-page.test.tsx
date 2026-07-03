@@ -44,11 +44,11 @@ describe("ProductDetailPage", () => {
   it("renders the gallery with all image_urls for the product", async () => {
     render(await renderPage(String(product.id)));
 
-    const thumbnails = screen.getByRole("list", { name: "Product images" });
+    const thumbnails = screen.getByRole("group", { name: "Product images" });
     expect(thumbnails).toBeInTheDocument();
     product.image_urls.forEach((_, i) => {
       expect(
-        screen.getByRole("listitem", { name: `View image ${i + 1}` }),
+        screen.getByRole("button", { name: `View image ${i + 1}` }),
       ).toBeInTheDocument();
     });
   });

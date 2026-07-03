@@ -24,7 +24,6 @@ export async function Nav() {
       >
         <Link
           href="/"
-          aria-label="Marketplace home"
           className="font-display text-lg font-bold tracking-wide uppercase"
         >
           Marketplace <span className="text-accent">·</span> Goods
