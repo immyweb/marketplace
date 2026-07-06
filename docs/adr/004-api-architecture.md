@@ -17,11 +17,11 @@ Originally, route handlers in `src/routes/*.ts` mixed HTTP concerns (parsing `re
 
 ### Sessions
 
-`src/middleware/session.ts` uses `express-session` with a `connect-pg-simple` store backed by a dedicated `pg.Pool`, independent of the Prisma client. Cart identity (`req.session.cartId`) is tracked via session rather than request auth.
+`src/shared/middleware/session.ts` uses `express-session` with a `connect-pg-simple` store backed by a dedicated `pg.Pool`, independent of the Prisma client. Cart identity (`req.session.cartId`) is tracked via session rather than request auth.
 
 ### Routes → Services layering
 
-Business logic lives in `src/services/*.service.ts`, one per resource, plus a shared `src/services/stripe.ts` client. Routes stay thin:
+Business logic lives in `src/features/<name>/<name>.service.ts`, one per resource (`products`, `cart`, `checkout`, `orders`), colocated with its route file (`<name>.routes.ts`) and, where one exists, its test (`<name>.test.ts` — checkout has no dedicated test file, a pre-existing gap) in `src/features/<name>/`. Cross-cutting code — `errors.ts`, the Prisma client, session/error middleware, the shared Stripe client, and session types — lives in `src/shared/`. This feature-based layout replaced the earlier flat `src/routes/` + `src/services/` split on 2026-07-06; see `docs/superpowers/specs/2026-07-06-api-feature-based-restructure-design.md` for the restructuring rationale. The routes-thin/services-hold-logic decision below is unchanged. Routes stay thin:
 
 - Zod schema and `parseInt` parsing, with their own 400 responses, stay in routes.
 - The cart-ownership session check (`cartId !== req.session.cartId`) stays in routes — it's a comparison against `req.session`, not a DB concern.
@@ -32,13 +32,13 @@ Services are plain exported functions (no class-based service objects), consiste
 
 ### Error handling
 
-`src/errors.ts` defines a typed error hierarchy: `AppError` (base, carries `statusCode` and `code`), with `NotFoundError` (404, `NOT_FOUND`), `ForbiddenError` (403, `FORBIDDEN`), and `PaymentFailedError` (`PAYMENT_FAILED`, defaults to 400, overridable). Services throw these directly.
+`src/shared/errors.ts` defines a typed error hierarchy: `AppError` (base, carries `statusCode` and `code`), with `NotFoundError` (404, `NOT_FOUND`), `ForbiddenError` (403, `FORBIDDEN`), and `PaymentFailedError` (`PAYMENT_FAILED`, defaults to 400, overridable). Services throw these directly.
 
-`src/middleware/error.ts` catches `AppError` instances and responds with `{ error: message, code }` at the error's `statusCode`; anything else is logged via `console.error` and returned as a generic 500 `{ error: "Internal server error", code: "INTERNAL_ERROR" }`. Routes forward errors to it via `next(err)` from their existing `try/catch` blocks.
+`src/shared/middleware/error.ts` catches `AppError` instances and responds with `{ error: message, code }` at the error's `statusCode`; anything else is logged via `console.error` and returned as a generic 500 `{ error: "Internal server error", code: "INTERNAL_ERROR" }`. Routes forward errors to it via `next(err)` from their existing `try/catch` blocks.
 
 ## Consequences
 
 - Route files are reduced to input parsing, one service call, and response shaping — business logic (Prisma queries, Stripe calls, calculations, formatting) lives solely in services.
 - New error cases should be modeled as `AppError` subclasses rather than ad-hoc `res.status(...).json(...)` calls in services, so they flow through the centralized handler.
 - Since routes still perform input validation and some session logic directly, "thin routes" here means no business logic, not zero logic — see `docs/superpowers/specs/2026-07-02-api-routes-services-design.md` for the exact split.
-- The existing `packages/api/tests/*.test.ts` supertest suite asserts on exact response bodies and status codes; any change to this layering must keep those responses byte-identical or update the tests deliberately.
+- The existing supertest suite (now colocated as `packages/api/src/features/*/*.test.ts` and `packages/api/src/shared/middleware/error.test.ts`) asserts on exact response bodies and status codes; any change to this layering must keep those responses byte-identical or update the tests deliberately.

@@ -1,9 +1,9 @@
 import type Stripe from "stripe";
 import type { Prisma } from "@prisma/client";
 import type { AddressInput } from "@marketplace/core";
-import { prisma } from "../db/prisma.js";
-import { NotFoundError, PaymentFailedError } from "../errors.js";
-import { stripe } from "./stripe.js";
+import { prisma } from "../../shared/db/prisma.js";
+import { NotFoundError, PaymentFailedError } from "../../shared/errors.js";
+import { stripe } from "../../shared/stripe.js";
 
 type OrderWithItems = Prisma.OrderGetPayload<{
   include: { items: { include: { product: true } } };

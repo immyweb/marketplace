@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { ProductListQuerySchema } from "@marketplace/core";
-import { listProducts, getProductById } from "../services/products.service.js";
+import { listProducts, getProductById } from "./products.service.js";
 
 const router = Router();
 

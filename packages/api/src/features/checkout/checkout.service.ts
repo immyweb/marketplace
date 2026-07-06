@@ -1,6 +1,6 @@
-import { prisma } from "../db/prisma.js";
-import { NotFoundError } from "../errors.js";
-import { stripe } from "./stripe.js";
+import { prisma } from "../../shared/db/prisma.js";
+import { NotFoundError } from "../../shared/errors.js";
+import { stripe } from "../../shared/stripe.js";
 
 export async function createPaymentIntent(
   cartId: number,

@@ -1,12 +1,12 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import { sessionMiddleware } from "./middleware/session.js";
-import { errorHandler } from "./middleware/error.js";
-import productsRouter from "./routes/products.js";
-import cartRouter from "./routes/cart.js";
-import checkoutRouter from "./routes/checkout.js";
-import ordersRouter from "./routes/orders.js";
+import { sessionMiddleware } from "./shared/middleware/session.js";
+import { errorHandler } from "./shared/middleware/error.js";
+import { productsRouter } from "./features/products/index.js";
+import { cartRouter } from "./features/cart/index.js";
+import { checkoutRouter } from "./features/checkout/index.js";
+import { ordersRouter } from "./features/orders/index.js";
 
 export const app = express();
 

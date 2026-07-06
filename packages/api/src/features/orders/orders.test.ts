@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, afterAll } from "vitest";
 import { agent } from "supertest";
 import Stripe from "stripe";
-import { app } from "../src/app.js";
-import { prisma } from "../src/db/prisma.js";
+import { app } from "../../app.js";
+import { prisma } from "../../shared/db/prisma.js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
