@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterAll } from "vitest";
 import { agent } from "supertest";
-import { app } from "../../app.js";
-import { prisma } from "../../shared/db/prisma.js";
+import { app } from "../../app";
+import { prisma } from "../../shared/db/prisma";
 
 let productId: number;
 

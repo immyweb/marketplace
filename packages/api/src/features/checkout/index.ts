@@ -1,2 +1,2 @@
-export { default as checkoutRouter } from "./checkout.routes.js";
-export * from "./checkout.service.js";
+export { default as checkoutRouter } from "./checkout.routes";
+export * from "./checkout.service";

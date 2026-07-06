@@ -1,2 +1,2 @@
-export { default as cartRouter } from "./cart.routes.js";
-export * from "./cart.service.js";
+export { default as cartRouter } from "./cart.routes";
+export * from "./cart.service";

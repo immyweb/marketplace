@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { ForbiddenError } from "../../shared/errors.js";
-import { createPaymentIntent } from "./checkout.service.js";
+import { ForbiddenError } from "../../shared/errors";
+import { createPaymentIntent } from "./checkout.service";
 
 const router = Router();
 

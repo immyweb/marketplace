@@ -1,5 +1,5 @@
 import { afterAll, beforeAll } from "vitest";
-import { prisma } from "../src/shared/db/prisma.js";
+import { prisma } from "../src/shared/db/prisma";
 
 beforeAll(async () => {
   process.env.DATABASE_URL =

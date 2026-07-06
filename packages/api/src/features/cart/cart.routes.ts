@@ -5,7 +5,7 @@ import {
   addProductToCart,
   updateCartItemQuantity,
   removeCartItem,
-} from "./cart.service.js";
+} from "./cart.service";
 
 const router = Router();
 

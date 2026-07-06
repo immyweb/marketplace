@@ -1,2 +1,2 @@
-export { default as productsRouter } from "./products.routes.js";
-export * from "./products.service.js";
+export { default as productsRouter } from "./products.routes";
+export * from "./products.service";

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { PlaceOrderSchema } from "@marketplace/core";
-import { ForbiddenError } from "../../shared/errors.js";
-import { placeOrder, getOrderById } from "./orders.service.js";
+import { ForbiddenError } from "../../shared/errors";
+import { placeOrder, getOrderById } from "./orders.service";
 
 const router = Router();
 
