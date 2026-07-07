@@ -46,9 +46,8 @@ export function SignUpForm() {
         onSubmit={handleSubmit(onSubmit)}
         aria-label="Sign up form"
         noValidate
-        className="max-w-md"
       >
-        <h1 className="text-2xl">Sign Up</h1>
+        <h2 className="text-lg">Sign Up</h2>
 
         <div className="mt-6">
           <label htmlFor="name" className="text-sm font-medium">
