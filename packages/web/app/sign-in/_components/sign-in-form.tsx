@@ -37,6 +37,7 @@ export function SignInForm() {
     }
 
     router.push(searchParams.get("redirect") ?? "/");
+    router.refresh();
   }
 
   return (

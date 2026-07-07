@@ -37,6 +37,7 @@ export function SignUpForm() {
     }
 
     router.push(searchParams.get("redirect") ?? "/");
+    router.refresh();
   }
 
   return (

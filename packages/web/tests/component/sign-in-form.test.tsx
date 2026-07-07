@@ -3,12 +3,15 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { SignInForm } from "@/app/sign-in/_components";
 import { authClient } from "@/lib/auth-client";
 
-const { push } = vi.hoisted(() => ({ push: vi.fn() }));
+const { push, refresh } = vi.hoisted(() => ({
+  push: vi.fn(),
+  refresh: vi.fn(),
+}));
 let mockSearchParams = "";
 
 vi.mock("next/navigation", async (importOriginal) => ({
   ...(await importOriginal<typeof import("next/navigation")>()),
-  useRouter: () => ({ push, refresh: vi.fn() }),
+  useRouter: () => ({ push, refresh }),
   useSearchParams: () => new URLSearchParams(mockSearchParams),
 }));
 
@@ -35,6 +38,7 @@ function fillForm(
 describe("SignInForm", () => {
   beforeEach(() => {
     push.mockClear();
+    refresh.mockClear();
     mockSearchParams = "";
     vi.mocked(authClient.signIn.email).mockReset();
   });
@@ -72,6 +76,9 @@ describe("SignInForm", () => {
       email: "ada@example.com",
       password: "password123",
     });
+    // Without this, the destination route's cached layout (e.g. the nav's
+    // signed-in state) would keep rendering stale post-navigation.
+    expect(refresh).toHaveBeenCalled();
   });
 
   it("redirects to the ?redirect target when present", async () => {
