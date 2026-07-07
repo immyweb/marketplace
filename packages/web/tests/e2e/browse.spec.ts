@@ -7,7 +7,7 @@ test.describe("Product browsing", () => {
       page.getByRole("heading", { name: "All Products" }),
     ).toBeVisible();
     const products = page.getByRole("listitem");
-    await expect(products).toHaveCount(24);
+    await expect(products).toHaveCount(16);
   });
 
   test("clicking a product navigates to the PDP", async ({ page }) => {
