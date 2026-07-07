@@ -9,6 +9,12 @@
 
 ## Decision
 
+### Feature code colocation under `app/`
+
+Components and lib code used by exactly one route live in that route's private `_components`/`_lib` folders (e.g. `app/checkout/_components/stripe-payment-form.tsx`, `app/checkout/_lib/stripe.ts`) rather than the top-level `components/`/`lib/`. The leading underscore opts these folders out of routing (Next.js's private-folder convention). Each such folder exposes a single barrel `index.ts` re-exporting its public members, mirroring the feature-folder/barrel pattern in `packages/api/src/features/*` (e.g. `features/cart/index.ts`). A route's `page.tsx` imports from the barrel (`./_components`); files inside the same folder import each other directly by sibling path (e.g. `add-to-cart-button.tsx` imports `./added-to-cart-modal`, not through the barrel) to avoid a self-referential circular import.
+
+Code shared by two or more routes — `components/nav.tsx`, `components/ui/*`, `lib/api.ts`, `lib/utils.ts` — stays at the top level, imported via the `@/` alias.
+
 ### Server Components fetch data directly
 
 Pages under `app/` (`app/page.tsx`, `app/cart/page.tsx`) are `async` Server Components that call `lib/api.ts` functions directly (`fetchProducts`, `fetchCart`) and render the result — no client-side data-fetching library or loading state for the initial page load.
@@ -31,7 +37,7 @@ Components needing state, event handlers, or browser-only APIs are explicit Clie
 
 ### Payments: Stripe Elements, card details never touch app state
 
-`CheckoutPage` wraps the form in Stripe's `<Elements>` provider (`lib/stripe.ts`'s `loadStripe` promise). `StripePaymentForm` renders Stripe's hosted `<CardElement>`; `CheckoutForm` calls `stripe.confirmCardPayment` directly with the element reference, then calls the API's `placeOrder` with the resulting `paymentIntentId` — raw card data never passes through the app's own state or API.
+`CheckoutPage` wraps the form in Stripe's `<Elements>` provider (`app/checkout/_lib/stripe.ts`'s `loadStripe` promise). `StripePaymentForm` renders Stripe's hosted `<CardElement>`; `CheckoutForm` calls `stripe.confirmCardPayment` directly with the element reference, then calls the API's `placeOrder` with the resulting `paymentIntentId` — raw card data never passes through the app's own state or API.
 
 ### Styling: Tailwind CSS v4 + cva component variants
 
@@ -47,3 +53,4 @@ Covered by [ADR 001](001-testing-setup.md): component tests (Vitest + RTL, MSW-m
 - Any new SSR page that reads session-scoped data must remember to forward the `Cookie` header manually, as `next/headers` fetches don't do this automatically.
 - Shared Zod schemas in `@marketplace/core` are the single source of truth for validation shape; changing a schema affects both API request validation and frontend form validation simultaneously.
 - Stripe's `<CardElement>` is Stripe-hosted UI, not styled Tailwind markup — only its container is themed via `options.style.base` in `StripePaymentForm`.
+- A component colocated under one route's `_components` folder that later needs to be used by a second route must be promoted back to the shared top-level `components/` (or `lib/`) — colocation trades cross-route reuse for keeping route-specific code out of the shared namespace.

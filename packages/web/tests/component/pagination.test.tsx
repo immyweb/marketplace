@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { Pagination } from "@/components/pagination";
+import { Pagination } from "@/app/_components";
 
 describe("Pagination", () => {
   it("renders nothing when there is only one page", () => {

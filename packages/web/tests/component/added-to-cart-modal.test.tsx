@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { AddedToCartModal } from "@/components/added-to-cart-modal";
+import { AddedToCartModal } from "@/app/products/[id]/_components";
 
 const { push } = vi.hoisted(() => ({ push: vi.fn() }));
 

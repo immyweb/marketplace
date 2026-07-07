@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { addToCart } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { AddedToCartModal } from "@/components/added-to-cart-modal";
+import { AddedToCartModal } from "./added-to-cart-modal";
 
 interface Props {
   productId: number;

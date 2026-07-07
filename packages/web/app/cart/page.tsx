@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { headers } from "next/headers";
 import { fetchCart } from "@/lib/api";
-import { CartItemRow } from "@/components/cart-item-row";
+import { CartItemRow } from "@/app/cart/_components";
 
 export const metadata: Metadata = { title: "Your Cart" };
 

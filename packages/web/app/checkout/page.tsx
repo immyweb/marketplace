@@ -11,10 +11,9 @@ import {
   useElements,
   CardElement,
 } from "@stripe/react-stripe-js";
-import { stripePromise } from "@/lib/stripe";
+import { stripePromise } from "@/app/checkout/_lib";
 import { fetchCart, createPaymentIntent, placeOrder } from "@/lib/api";
-import { AddressForm } from "@/components/address-form";
-import { StripePaymentForm } from "@/components/stripe-payment-form";
+import { AddressForm, StripePaymentForm } from "@/app/checkout/_components";
 import { Button } from "@/components/ui/button";
 import type { Cart } from "@marketplace/core";
 

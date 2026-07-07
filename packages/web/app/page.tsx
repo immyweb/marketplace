@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { fetchProducts } from "@/lib/api";
-import { ProductCard } from "@/components/product-card";
-import { ProductFilters } from "@/components/product-filters";
-import { Pagination } from "@/components/pagination";
+import { ProductCard, ProductFilters, Pagination } from "@/app/_components";
 
 export const metadata: Metadata = {
   title: "Shop All Products",

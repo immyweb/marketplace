@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ApiRequestError, fetchProduct } from "@/lib/api";
-import { ProductGallery } from "@/components/product-gallery";
-import { AddToCartButton } from "@/components/add-to-cart-button";
+import {
+  ProductGallery,
+  AddToCartButton,
+} from "@/app/products/[id]/_components";
 
 interface Props {
   params: Promise<{ id: string }>;

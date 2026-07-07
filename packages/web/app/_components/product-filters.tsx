@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { PRODUCT_CATEGORIES } from "@marketplace/core";
-import { SortSelect } from "@/components/sort-select";
+import { SortSelect } from "./sort-select";
 
 interface Props {
   activeCategory?: string;
