@@ -131,6 +131,44 @@ describe("POST /order", () => {
 
     expect(res.body).toMatchObject({ error: expect.any(String) });
   });
+
+  it("returns 400 when the payment intent amount does not match the cart total", async () => {
+    const ag = agent(app);
+    // Cart total is 2 x £15.00 = £30.00
+    await ag.post("/cart/products").send({ productId, quantity: 2 });
+    const cartRes = await ag.get("/cart");
+    const cartId = cartRes.body.id;
+
+    // Simulates the product's price changing (or a stale client-supplied
+    // amount) between payment-intent creation and order placement: the
+    // payment intent was only confirmed for £20.00.
+    const pi = await createConfirmedPaymentIntent(20);
+
+    const res = await ag
+      .post("/order")
+      .send({
+        cartId,
+        paymentIntentId: pi.id,
+        address_details: {
+          name: "Jane Smith",
+          street: "10 Downing Street",
+          city: "London",
+          postcode: "SW1A 2AA",
+        },
+      })
+      .expect(400);
+
+    expect(res.body).toMatchObject({
+      error: expect.any(String),
+      code: "PAYMENT_FAILED",
+    });
+
+    // No order should have been created, and the cart must survive so the
+    // customer isn't left with a charge and no way to retry.
+    expect(await prisma.order.findMany()).toHaveLength(0);
+    const cartAfter = await ag.get("/cart");
+    expect(cartAfter.body.items).toHaveLength(1);
+  });
 });
 
 describe("GET /order/:id", () => {

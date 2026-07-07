@@ -80,6 +80,14 @@ export async function placeOrder(params: {
 
   const totalPrice = orderItems.reduce((sum, item) => sum + item.price, 0);
 
+  // Guard against product prices changing between payment-intent creation
+  // and order placement: the amount actually charged must match what the
+  // cart costs right now, or the customer/order total would silently drift
+  // from what Stripe collected.
+  if (paymentIntent.amount !== Math.round(totalPrice * 100)) {
+    throw new PaymentFailedError("Payment amount does not match cart total");
+  }
+
   const pm = paymentIntent.payment_method;
 
   if (!pm || typeof pm !== "object" || pm.type !== "card" || !pm.card?.last4) {
