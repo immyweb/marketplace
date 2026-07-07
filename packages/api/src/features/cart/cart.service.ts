@@ -1,6 +1,6 @@
 import type { Prisma } from "@prisma/client";
-import { prisma } from "../../shared/db/prisma";
-import { NotFoundError } from "../../shared/errors";
+import { prisma } from "@/shared/db/prisma";
+import { NotFoundError } from "@/shared/errors";
 
 type CartWithItems = Prisma.CartGetPayload<{
   include: { items: { include: { product: true } } };

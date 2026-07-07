@@ -1,5 +1,5 @@
-import { prisma } from "../../shared/db/prisma";
-import { NotFoundError } from "../../shared/errors";
+import { prisma } from "@/shared/db/prisma";
+import { NotFoundError } from "@/shared/errors";
 import type { ProductListQuery } from "@marketplace/core";
 
 export type ProductDTO = {

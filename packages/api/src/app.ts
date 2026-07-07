@@ -2,13 +2,13 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { toNodeHandler } from "better-auth/node";
-import { auth } from "./shared/auth";
-import { sessionMiddleware } from "./shared/middleware/session";
-import { errorHandler } from "./shared/middleware/error";
-import { productsRouter } from "./features/products";
-import { cartRouter } from "./features/cart";
-import { checkoutRouter } from "./features/checkout";
-import { ordersRouter } from "./features/orders";
+import { auth } from "@/shared/auth";
+import { sessionMiddleware } from "@/shared/middleware/session";
+import { errorHandler } from "@/shared/middleware/error";
+import { productsRouter } from "@/features/products";
+import { cartRouter } from "@/features/cart";
+import { checkoutRouter } from "@/features/checkout";
+import { ordersRouter } from "@/features/orders";
 
 export const app = express();
 

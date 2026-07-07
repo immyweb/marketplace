@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterAll } from "vitest";
 import request from "supertest";
-import { app } from "../../app";
-import { prisma } from "../../shared/db/prisma";
+import { app } from "@/app";
+import { prisma } from "@/shared/db/prisma";
 
 async function resetProducts() {
   await prisma.orderItem.deleteMany();

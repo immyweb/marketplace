@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { errorHandler } from "./error";
-import { NotFoundError } from "../errors";
+import { NotFoundError } from "@/shared/errors";
 
 function createRes() {
   const res: any = {};

@@ -6,7 +6,7 @@
     "predev": "bun run --filter @marketplace/core build",
     "dev": "bun --watch index.ts",
     "prebuild": "bun run --filter @marketplace/core build",
-    "build": "tsc",
+    "build": "tsc && tsc-alias",
     "pretest": "bun run --filter @marketplace/core build",
     "test": "vitest run",
     "db:migrate": "prisma migrate dev",
@@ -32,15 +32,16 @@
   },
   "devDependencies": {
     "@types/connect-pg-simple": "^7.0.0",
-    "@types/pg": "^8.0.0",
     "@types/cors": "^2.8.0",
     "@types/express": "^5.0.0",
     "@types/express-serve-static-core": "^5.0.0",
     "@types/express-session": "^1.18.0",
     "@types/node": "^22.0.0",
+    "@types/pg": "^8.0.0",
     "@types/supertest": "^7.0.0",
     "prisma": "^7.0.0",
     "supertest": "^7.0.0",
+    "tsc-alias": "^1.9.0",
     "typescript": "^6.0.3",
     "vitest": "^4.1.9"
   }

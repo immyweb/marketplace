@@ -6,6 +6,9 @@ import { resolve } from "node:path";
 config({ path: resolve(__dirname, ".env.test") });
 
 export default defineConfig({
+  resolve: {
+    tsconfigPaths: true,
+  },
   test: {
     globals: true,
     environment: "node",

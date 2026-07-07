@@ -36,9 +36,20 @@ Services are plain exported functions (no class-based service objects), consiste
 
 `src/shared/middleware/error.ts` catches `AppError` instances and responds with `{ error: message, code }` at the error's `statusCode`; anything else is logged via `console.error` and returned as a generic 500 `{ error: "Internal server error", code: "INTERNAL_ERROR" }`. Routes forward errors to it via `next(err)` from their existing `try/catch` blocks.
 
+### Module resolution
+
+Imports that cross out of the current directory (anything that would otherwise start with `../`) use the `@/*` path alias (`@/shared/errors`, `@/features/products`), mapped in `tsconfig.json` to `./src/*`. Same-directory/sibling imports (e.g. `./checkout.service`) stay relative. This mirrors the `@/*` convention already used in `packages/web`.
+
+The alias needed separate wiring per runtime, since none of them share a single resolution step (added 2026-07-07):
+
+- **Bun** (`bun --watch index.ts`, the dev script) resolves `tsconfig.json` `paths` natively — no extra tooling.
+- **`tsc`** (the build script) only type-checks aliases; it never rewrites module specifiers in emitted JS (a deliberate, permanent TypeScript policy, not a bug). `tsc-alias` runs after `tsc` (`tsc && tsc-alias`) to rewrite `dist/**/*.js` imports back to relative paths so the compiled output runs under plain Node module resolution.
+- **Vitest** (the test script) uses Vite's resolver, which ignores `tsconfig.json` by default. `vitest.config.ts` sets `resolve: { tsconfigPaths: true }` (Vite's native option — preferred over the `vite-tsconfig-paths` plugin package, which now just wraps the same feature).
+
 ## Consequences
 
 - Route files are reduced to input parsing, one service call, and response shaping — business logic (Prisma queries, Stripe calls, calculations, formatting) lives solely in services.
 - New error cases should be modeled as `AppError` subclasses rather than ad-hoc `res.status(...).json(...)` calls in services, so they flow through the centralized handler.
 - Since routes still perform input validation and some session logic directly, "thin routes" here means no business logic, not zero logic — see `docs/superpowers/specs/2026-07-02-api-routes-services-design.md` for the exact split.
 - The existing supertest suite (now colocated as `packages/api/src/features/*/*.test.ts` and `packages/api/src/shared/middleware/error.test.ts`) asserts on exact response bodies and status codes; any change to this layering must keep those responses byte-identical or update the tests deliberately.
+- Adding a new cross-directory import means writing `@/...` rather than `../..`; adding a new _runtime_ (a script that imports `src/` code outside Bun, `tsc`, or Vitest) means checking whether it resolves `tsconfig.json` `paths` on its own or needs the same treatment.

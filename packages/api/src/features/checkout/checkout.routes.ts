@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { ForbiddenError } from "../../shared/errors";
-import { requireAuth } from "../../shared/middleware/require-auth";
+import { ForbiddenError } from "@/shared/errors";
+import { requireAuth } from "@/shared/middleware/require-auth";
 import { createPaymentIntent } from "./checkout.service";
 
 const router = Router();
