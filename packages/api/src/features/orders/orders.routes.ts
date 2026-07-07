@@ -1,11 +1,12 @@
 import { Router } from "express";
 import { PlaceOrderSchema } from "@marketplace/core";
 import { ForbiddenError } from "../../shared/errors";
+import { requireAuth } from "../../shared/middleware/require-auth";
 import { placeOrder, getOrderById } from "./orders.service";
 
 const router = Router();
 
-router.post("/", async (req, res, next) => {
+router.post("/", requireAuth, async (req, res, next) => {
   try {
     const parsed = PlaceOrderSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -25,6 +26,7 @@ router.post("/", async (req, res, next) => {
       cartId,
       paymentIntentId,
       addressDetails: address_details,
+      userId: req.userId!,
     });
 
     req.session.cartId = undefined;

@@ -1,6 +1,7 @@
 import type { AddressDetails, Cart, Order, Product } from "@marketplace/core";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+export const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
 export class ApiRequestError extends Error {
   code?: string;

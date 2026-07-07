@@ -1,12 +1,31 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("Checkout flow with empty cart", () => {
-  test("redirects to /cart when checkout is visited with empty cart", async ({
+test.describe("Checkout auth gate", () => {
+  test("redirects to sign-in when checkout is visited while signed out", async ({
     page,
   }) => {
-    // New context = fresh session = empty cart
     await page.goto("/checkout");
-    // Give client-side redirect time to run
+    await page.waitForURL(/\/sign-in/);
+
+    const url = new URL(page.url());
+    expect(url.pathname).toBe("/sign-in");
+    expect(url.searchParams.get("redirect")).toBe("/checkout");
+  });
+});
+
+test.describe("Checkout flow with empty cart", () => {
+  test("redirects to /cart when checkout is visited with an empty cart", async ({
+    page,
+  }) => {
+    const email = `checkout-empty-${Date.now()}@example.com`;
+    await page.goto("/sign-up");
+    await page.getByLabel("Full name").fill("Jane Smith");
+    await page.getByLabel("Email").fill(email);
+    await page.getByLabel("Password").fill("password123");
+    await page.getByRole("button", { name: "Sign Up" }).click();
+    await page.waitForURL("/");
+
+    await page.goto("/checkout");
     await page.waitForURL(/\/cart/);
     await expect(page).toHaveURL("/cart");
   });
@@ -17,6 +36,14 @@ test.describe("Checkout flow", () => {
     await page.goto("/products/1");
     await page.getByRole("button", { name: "Add to Cart" }).click();
     await page.waitForLoadState("networkidle");
+
+    const email = `checkout-${Date.now()}@example.com`;
+    await page.goto("/sign-up");
+    await page.getByLabel("Full name").fill("Jane Smith");
+    await page.getByLabel("Email").fill(email);
+    await page.getByLabel("Password").fill("password123");
+    await page.getByRole("button", { name: "Sign Up" }).click();
+    await page.waitForURL("/");
   });
 
   test("completes a full purchase and lands on order confirmation", async ({

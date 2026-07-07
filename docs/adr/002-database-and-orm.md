@@ -47,3 +47,4 @@ Five models across four tables (names snake_cased via `@@map`):
 - The `pg` driver adapter means Prisma behaves differently from older versions — any Prisma upgrade should check adapter compatibility first.
 - `prisma.config.ts` must be kept in sync with `.env` variable names; removing it or renaming `DATABASE_URL` will break CLI commands (`migrate`, `generate`, `seed`).
 - `OrderItem.price` is a snapshot, not a foreign-key reference to `Product.unit_price`. Changing a product's price does not affect existing orders.
+- `Order.user_id` (added when user accounts were introduced) is a required column with no default — any environment with pre-existing order rows must clear or backfill them before applying that migration. This project has no production deployment target today; if one is added later, this migration would need to become nullable → backfill → required instead of a single additive step.

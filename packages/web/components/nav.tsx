@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { fetchCart } from "@/lib/api";
+import { getServerSession } from "@/lib/get-server-session";
+import { SignOutButton } from "@/components/sign-out-button";
 
 export async function Nav() {
   let itemCount = 0;
@@ -16,6 +18,8 @@ export async function Nav() {
     // cart fetch fails gracefully — show 0
   }
 
+  const session = await getServerSession();
+
   return (
     <header className="bg-primary text-primary-foreground">
       <nav
@@ -28,19 +32,34 @@ export async function Nav() {
         >
           Marketplace <span className="text-accent">·</span> Goods
         </Link>
-        <Link
-          href="/cart"
-          aria-label={`Cart, ${itemCount} item${itemCount !== 1 ? "s" : ""}`}
-          className="font-mono text-sm tracking-wide uppercase hover:text-accent"
-        >
-          Cart
-          <span
-            aria-hidden="true"
-            className="ml-1.5 rounded-sm bg-accent px-1.5 py-0.5 text-xs text-foreground"
+        <div className="flex items-center gap-6">
+          {session ? (
+            <div className="flex items-center gap-3 font-mono text-sm tracking-wide uppercase">
+              <span>{session.user.email}</span>
+              <SignOutButton />
+            </div>
+          ) : (
+            <Link
+              href="/sign-in"
+              className="font-mono text-sm tracking-wide uppercase hover:text-accent"
+            >
+              Sign in
+            </Link>
+          )}
+          <Link
+            href="/cart"
+            aria-label={`Cart, ${itemCount} item${itemCount !== 1 ? "s" : ""}`}
+            className="font-mono text-sm tracking-wide uppercase hover:text-accent"
           >
-            {itemCount}
-          </span>
-        </Link>
+            Cart
+            <span
+              aria-hidden="true"
+              className="ml-1.5 rounded-sm bg-accent px-1.5 py-0.5 text-xs text-foreground"
+            >
+              {itemCount}
+            </span>
+          </Link>
+        </div>
       </nav>
     </header>
   );

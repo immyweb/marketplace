@@ -47,8 +47,9 @@ export async function placeOrder(params: {
   cartId: number;
   paymentIntentId: string;
   addressDetails: AddressInput;
+  userId: string;
 }): Promise<OrderDTO> {
-  const { cartId, paymentIntentId, addressDetails } = params;
+  const { cartId, paymentIntentId, addressDetails, userId } = params;
 
   let paymentIntent: Stripe.PaymentIntent;
   try {
@@ -117,6 +118,7 @@ export async function placeOrder(params: {
         address_street: addressDetails.street,
         address_city: addressDetails.city,
         address_postcode: addressDetails.postcode,
+        user_id: userId,
         items: { create: orderItems },
       },
       include: orderInclude,

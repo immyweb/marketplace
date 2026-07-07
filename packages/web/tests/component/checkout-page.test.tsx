@@ -3,7 +3,7 @@ import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { server } from "./setup";
 import { cart } from "./msw-handlers";
-import CheckoutPage from "@/app/checkout/page";
+import { CheckoutFormPage } from "@/app/checkout/_components";
 import { useStripe, useElements } from "@stripe/react-stripe-js";
 import type { Stripe, StripeElements } from "@stripe/stripe-js";
 
@@ -55,7 +55,7 @@ function fillAddress(
   });
 }
 
-describe("CheckoutPage", () => {
+describe("CheckoutFormPage", () => {
   beforeEach(() => {
     push.mockClear();
     // Only the members the checkout page actually calls are stubbed; cast
@@ -69,7 +69,7 @@ describe("CheckoutPage", () => {
   });
 
   it("renders the address form fields once the cart loads", async () => {
-    render(<CheckoutPage />);
+    render(<CheckoutFormPage />);
 
     expect(await screen.findByLabelText("Full name")).toBeInTheDocument();
     expect(screen.getByLabelText("Street address")).toBeInTheDocument();
@@ -78,7 +78,7 @@ describe("CheckoutPage", () => {
   });
 
   it("shows validation errors when submitting an empty form", async () => {
-    render(<CheckoutPage />);
+    render(<CheckoutFormPage />);
     await screen.findByLabelText("Full name");
 
     fireEvent.click(screen.getByRole("button", { name: "Place Order" }));
@@ -94,7 +94,7 @@ describe("CheckoutPage", () => {
   it("disables the submit button while Stripe hasn't loaded", async () => {
     vi.mocked(useStripe).mockReturnValue(null);
 
-    render(<CheckoutPage />);
+    render(<CheckoutFormPage />);
     await screen.findByLabelText("Full name");
 
     expect(screen.getByRole("button", { name: "Place Order" })).toBeDisabled();
@@ -134,7 +134,7 @@ describe("CheckoutPage", () => {
       ),
     );
 
-    render(<CheckoutPage />);
+    render(<CheckoutFormPage />);
     await screen.findByLabelText("Full name");
     fillAddress();
 

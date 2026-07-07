@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { ForbiddenError } from "../../shared/errors";
+import { requireAuth } from "../../shared/middleware/require-auth";
 import { createPaymentIntent } from "./checkout.service";
 
 const router = Router();
 
-router.post("/payment-intent", async (req, res, next) => {
+router.post("/payment-intent", requireAuth, async (req, res, next) => {
   try {
     const { cartId } = req.body as { cartId?: unknown };
 
