@@ -1,0 +1,42 @@
+{
+  "theme": "base",
+  "themeVariables": {
+    "fontFamily": "\"IBM Plex Mono\", ui-monospace, SFMono-Regular, Menlo, monospace",
+    "fontSize": "15px",
+    "lineColor": "#8a7a5e",
+    "textColor": "#26231f",
+    "primaryColor": "#e2ddcf",
+    "primaryBorderColor": "#26231f",
+    "primaryTextColor": "#26231f",
+    "mainBkg": "#e2ddcf",
+    "clusterBkg": "#e6ddca",
+    "clusterBorder": "#7a4b2e",
+    "titleColor": "#26231f",
+    "edgeLabelBackground": "#ede6d6",
+    "tertiaryColor": "#ede6d6",
+    "actorBkg": "#3c4a3a",
+    "actorBorder": "#26231f",
+    "actorTextColor": "#ede6d6",
+    "actorLineColor": "#8a7a5e",
+    "signalColor": "#6f5f47",
+    "signalTextColor": "#26231f",
+    "labelBoxBkgColor": "#b98a44",
+    "labelBoxBorderColor": "#26231f",
+    "labelTextColor": "#26231f",
+    "loopTextColor": "#26231f",
+    "activationBkgColor": "#d8cdb4",
+    "activationBorderColor": "#26231f",
+    "noteBkgColor": "#b98a44",
+    "noteBorderColor": "#26231f",
+    "noteTextColor": "#26231f",
+    "sequenceNumberColor": "#ede6d6"
+  },
+  "flowchart": {
+    "useMaxWidth": true,
+    "htmlLabels": true,
+    "curve": "basis",
+    "padding": 14,
+    "nodeSpacing": 55,
+    "rankSpacing": 70
+  }
+}

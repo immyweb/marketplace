@@ -1,0 +1,38 @@
+%% Checkout sequence - placing an order from the checkout form.
+%% Source of truth: packages/web/app/checkout/*, packages/api/src/features/checkout + orders,
+%% docs/adr/006-authentication.md. Regenerate the SVG with: bun run diagrams
+sequenceDiagram
+  autonumber
+  actor U as Browser (checkout form + Stripe Elements)
+  participant A as api<br/>Express
+  participant ST as Stripe
+  participant DB as PostgreSQL
+  participant RS as Resend
+
+  Note over U,A: Purchasing requires a signed-in account (Better Auth).<br/>Both API calls run requireAuth + cart-ownership check.
+
+  U->>A: GET /cart (session cookie)
+  A-->>U: cart (redirect to /cart if empty)
+
+  Note over U: Customer fills address + card, clicks "Place Order"
+
+  U->>A: POST /checkout/payment-intent (cartId)
+  A->>ST: paymentIntents.create(amount = cart total, gbp)
+  ST-->>A: PaymentIntent (client_secret)
+  A-->>U: clientSecret + amount
+
+  U->>ST: confirmCardPayment(clientSecret, card)
+  Note over U,ST: Raw card data goes browser to Stripe directly,<br/>never passing through api or app state.
+  ST-->>U: paymentIntent (succeeded)
+
+  U->>A: POST /order (cartId, paymentIntentId, address)
+  A->>ST: paymentIntents.retrieve(id, expand payment_method)
+  ST-->>A: status, amount, card last4
+  Note over A: Reject unless status = succeeded AND<br/>Stripe amount = cart total recomputed now.
+
+  A->>DB: transaction - create Order (+items, address,<br/>card last4, user), then delete Cart
+  DB-->>A: created order
+  A->>RS: sendOrderConfirmationEmail(order, user.email)
+  A-->>U: 201 order (clears session cartId)
+
+  U->>U: redirect to /order-confirmation/:id

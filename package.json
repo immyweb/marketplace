@@ -13,9 +13,11 @@
     "test:api": "bun run --filter api test",
     "test:web": "bun run --filter web test",
     "test:e2e": "bun run --filter web test:e2e",
+    "diagrams": "for f in docs/diagrams/*/*.mmd; do echo \"rendering $f\"; mmdc -i \"$f\" -o \"${f%.mmd}.svg\" -c docs/diagrams/mermaid.config.json -b '#ede6d6' || exit 1; done",
     "format": "prettier --write ."
   },
   "devDependencies": {
+    "@mermaid-js/mermaid-cli": "^11.16.0",
     "eslint": "^10.6.0",
     "prettier": "^3.9.4",
     "typescript-eslint": "^8.62.1"
