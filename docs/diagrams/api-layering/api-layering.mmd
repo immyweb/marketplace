@@ -1,0 +1,73 @@
+%% API layering — request pipeline, routes/services split, and shared modules in packages/api.
+%% Source of truth: packages/api/src/app.ts, packages/api/src/features/*, packages/api/src/shared/*,
+%% docs/adr/004-api-architecture.md. Regenerate the SVG with: bun run diagrams
+graph TD
+  subgraph pipeline["REQUEST PIPELINE · src/app.ts (in order)"]
+    PH["pino-http<br/>request logging"] --> CORS["cors<br/>localhost:3000, credentials"]
+    CORS --> BA["Better Auth handler<br/>/api/auth/*splat"]
+    BA --> JSON["express.json()"]
+    JSON --> SESS["session middleware<br/>connect-pg-simple"]
+  end
+
+  subgraph routes["FEATURE ROUTES · thin · src/features/*/*.routes.ts"]
+    PR["products.routes"]
+    CR["cart.routes"]
+    CKR["checkout.routes"]
+    OR["orders.routes"]
+  end
+
+  subgraph services["FEATURE SERVICES · logic · src/features/*/*.service.ts"]
+    PS["products.service"]
+    CS["cart.service"]
+    CKS["checkout.service"]
+    OS["orders.service"]
+  end
+
+  subgraph shared["SHARED · src/shared/*"]
+    REQAUTH["require-auth middleware"]
+    AUTHAPI["auth.ts<br/>Better Auth instance"]
+    PRISMA["db/prisma.ts<br/>Prisma client"]
+    STRIPEC["stripe.ts<br/>Stripe client"]
+    EMAILC["email.ts<br/>Resend client"]
+    ERRORS["errors.ts<br/>AppError hierarchy"]
+    LOGGER["logger.ts<br/>pino instance"]
+    EH["errorHandler middleware<br/>catches AppError -&gt; JSON response"]
+  end
+
+  SESS --> PR
+  SESS --> CR
+  SESS --> CKR
+  SESS --> OR
+
+  PR --> PS
+  CR --> CS
+  CKR --> REQAUTH
+  CKR --> CKS
+  OR --> REQAUTH
+  OR --> OS
+  REQAUTH --> AUTHAPI
+
+  PS --> PRISMA
+  CS --> PRISMA
+  CKS --> PRISMA
+  CKS --> STRIPEC
+  OS --> PRISMA
+  OS --> STRIPEC
+  OS --> EMAILC
+
+  PS -.->|"throws"| ERRORS
+  CS -.->|"throws"| ERRORS
+  CKS -.->|"throws"| ERRORS
+  OS -.->|"throws"| ERRORS
+  OS -.->|"logs"| LOGGER
+  ERRORS -.-> EH
+
+  %% Field Ledger palette (docs/adr/007-visual-identity.md)
+  classDef package fill:#3c4a3a,stroke:#26231f,color:#ede6d6;
+  classDef datastore fill:#7a4b2e,stroke:#26231f,color:#ede6d6;
+  classDef external fill:#b98a44,stroke:#26231f,color:#26231f;
+  classDef client fill:#26231f,stroke:#26231f,color:#ede6d6;
+
+  class PH,CORS,BA,JSON,SESS,PR,CR,CKR,OR,PS,CS,CKS,OS,REQAUTH,AUTHAPI,ERRORS,LOGGER,EH package;
+  class PRISMA datastore;
+  class STRIPEC,EMAILC external;

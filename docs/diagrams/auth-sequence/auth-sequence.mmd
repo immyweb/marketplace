@@ -1,0 +1,64 @@
+%% Auth sequence - sign-up/sign-in via Better Auth, and the three independent
+%% checkout auth-boundary checks (page gate + two requireAuth middlewares).
+%% Source of truth: packages/api/src/shared/auth.ts, packages/api/src/shared/middleware/require-auth.ts,
+%% packages/web/lib/auth-client.ts, packages/web/lib/get-server-session.ts, packages/web/app/checkout/page.tsx,
+%% docs/adr/006-authentication.md. Regenerate the SVG with: bun run diagrams
+%%{init: { "sequence": { "width": 260 } } }%%
+sequenceDiagram
+  autonumber
+  actor U as Browser
+  participant W as web<br/>Next.js Server Components
+  participant A as api<br/>Express + Better Auth
+  participant DB as PostgreSQL
+
+  Note over U,DB: Sign-up (email + password). autoSignIn creates a session immediately.
+
+  U->>A: POST /api/auth/sign-up/email (name, email, password)
+  A->>DB: create User + Account (hashed password)
+  A->>DB: create Session (auto sign-in)
+  DB-->>A: user, session
+  A-->>U: Set-Cookie (session token)
+  U->>U: router.push("/"), router.refresh()
+  Note over U,W: router.refresh() is required -<br/>push alone leaves nav stale
+
+  Note over U,DB: Sign-in (existing account)
+
+  U->>A: POST /api/auth/sign-in/email (email, password)
+  A->>DB: verify Account credentials
+  A->>DB: create Session
+  DB-->>A: user, session
+  A-->>U: Set-Cookie (session token)
+  U->>U: router.push(redirect ?? "/"), router.refresh()
+
+  Note over U,DB: Layer 1 - checkout page gate (Server Component, not a middleware)
+
+  U->>W: GET /checkout (cookie: session token)
+  W->>A: GET /api/auth/get-session (Cookie header forwarded)
+  A->>DB: validate session token
+  DB-->>A: session + user, or none
+  A-->>W: session JSON, or null
+
+  alt no session
+    W-->>U: redirect to /sign-in?redirect=/checkout
+  else session valid
+    W-->>U: render CheckoutFormPage
+  end
+
+  Note over U,DB: Layers 2 and 3 - requireAuth middleware, checked independently per endpoint
+
+  U->>A: POST /checkout/payment-intent (cookie: session token)
+  A->>A: requireAuth - auth.api.getSession(fromNodeHeaders(req))
+  A->>DB: validate session token
+  DB-->>A: session + user, or none
+  alt no session
+    A-->>U: 403 Forbidden, code FORBIDDEN
+  else session valid
+    A->>A: req.userId = session.user.id, next()
+    Note over A,DB: continues into checkout.service -<br/>see checkout-sequence.mmd
+  end
+
+  U->>A: POST /order (cookie: session token)
+  A->>A: requireAuth (same check, independent call)
+  Note over A,DB: placeOrder writes req.userId<br/>onto the created Order
+
+  %% Field Ledger theme applies automatically via docs/diagrams/mermaid.config.json

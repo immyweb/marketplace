@@ -11,6 +11,8 @@ Originally, route handlers in `src/routes/*.ts` mixed HTTP concerns (parsing `re
 
 ## Decision
 
+![API layering — request pipeline, routes/services split, and shared modules](../diagrams/api-layering/api-layering.svg)
+
 ### Request pipeline
 
 `src/app.ts` wires global middleware in order: `pino-http` request logging (see Logging below), CORS (restricted to `http://localhost:3000`, credentials enabled), `express.json()`, then session middleware, followed by one router per resource (`/products`, `/cart`, `/checkout`, `/order`), and a final centralized `errorHandler`.

@@ -1,0 +1,76 @@
+%% Data model — Prisma schema (packages/api/prisma/schema.prisma).
+%% Source of truth: packages/api/prisma/schema.prisma, docs/adr/002-database-and-orm.md.
+%% Regenerate the SVG with: bun run diagrams
+erDiagram
+  USER ||--o{ ORDER : places
+  USER ||--o{ SESSION : has
+  USER ||--o{ ACCOUNT : has
+  CART ||--o{ CART_ITEM : contains
+  PRODUCT ||--o{ CART_ITEM : "added as"
+  ORDER ||--o{ ORDER_ITEM : contains
+  PRODUCT ||--o{ ORDER_ITEM : "purchased as"
+
+  USER {
+    string id PK
+    string email UK
+    boolean emailVerified
+  }
+
+  SESSION {
+    string id PK
+    string token UK
+    string userId FK
+    datetime expiresAt
+  }
+
+  ACCOUNT {
+    string id PK
+    string userId FK
+    string providerId
+    string password "nullable, credential provider"
+  }
+
+  VERIFICATION {
+    string id PK
+    string identifier
+    string value
+    datetime expiresAt
+  }
+
+  PRODUCT {
+    int id PK
+    string name
+    decimal unit_price
+    string currency
+    string category
+  }
+
+  CART {
+    int id PK
+    string session_id UK
+    string currency
+  }
+
+  CART_ITEM {
+    int id PK
+    int cart_id FK
+    int product_id FK
+    int quantity
+  }
+
+  ORDER {
+    int id PK
+    string user_id FK
+    decimal total_price
+    string status
+    string stripe_payment_id
+    string card_last_four
+  }
+
+  ORDER_ITEM {
+    int id PK
+    int order_id FK
+    int product_id FK
+    int quantity
+    decimal price "snapshot at purchase time"
+  }

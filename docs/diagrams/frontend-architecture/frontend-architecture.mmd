@@ -1,0 +1,68 @@
+%% Frontend architecture — App Router routes, colocation, and the shared/client split in packages/web.
+%% Source of truth: packages/web/app/*, packages/web/lib/*, packages/web/components/*,
+%% docs/adr/005-frontend-architecture.md. Regenerate the SVG with: bun run diagrams
+graph TD
+  B["Browser"]
+
+  subgraph routes["ROUTES · app/*/page.tsx · async Server Components, fetch directly"]
+    HOME["/ · product listing<br/>fetchProducts()"]
+    PDP["/products/[id]"]
+    CART["/cart<br/>forwards Cookie header<br/>(no browser jar in SSR)"]
+    AUTHPAGES["/sign-in · /sign-up"]
+    CHECKOUT["/checkout<br/>getServerSession() gate<br/>redirects if signed out"]
+    ORDERCONF["/order-confirmation/[id]"]
+    %% Invisible links pack routes into 3 columns x 2 rows instead of 6-wide
+    HOME ~~~ PDP
+    CART ~~~ AUTHPAGES
+    CHECKOUT ~~~ ORDERCONF
+  end
+
+  subgraph local["ROUTE-LOCAL · _components/_lib · private folders, barrel index.ts"]
+    CLIENT["Client Components ('use client')<br/>AddToCartButton · CheckoutForm<br/>StripePaymentForm · SignIn/SignUpForm"]
+  end
+
+  subgraph shared["SHARED · components/, lib/ · imported via @/* across routes"]
+    NAV["Nav<br/>Server Component<br/>signed-in state + cart badge"]
+    UI["components/ui/*<br/>cva primitives (Button, ...)"]
+    APICLIENT["lib/api.ts<br/>apiFetch&lt;T&gt;<br/>throws ApiRequestError"]
+    GETSESSION["lib/get-server-session.ts<br/>for Server Components"]
+    AUTHCLIENT["lib/auth-client.ts<br/>Better Auth client<br/>for Client Components"]
+    %% Invisible links pack shared modules into 3 columns instead of 5-wide
+    NAV ~~~ UI
+    GETSESSION ~~~ AUTHCLIENT
+  end
+
+  subgraph ext["EXTERNAL"]
+    API["api<br/>Express REST"]
+    CORE["@marketplace/core<br/>Zod schemas"]
+    STRIPEJS["Stripe Elements<br/>CardElement"]
+  end
+
+  B -->|"HTTPS"| routes
+
+  routes --> APICLIENT
+  CHECKOUT --> GETSESSION
+  routes --> CLIENT
+  NAV --> APICLIENT
+  NAV --> GETSESSION
+
+  CLIENT --> APICLIENT
+  CLIENT --> AUTHCLIENT
+  CLIENT --> UI
+  CLIENT --> STRIPEJS
+  CLIENT -.->|"router.refresh() after mutation"| NAV
+
+  APICLIENT -->|"REST, credentials: include"| API
+  GETSESSION -->|"GET /api/auth/get-session, Cookie forwarded"| API
+  AUTHCLIENT -->|"Better Auth client"| API
+  CLIENT -.->|"zodResolver(AddressSchema, ...)"| CORE
+  APICLIENT -.->|"imports types"| CORE
+
+  %% Field Ledger palette (docs/adr/007-visual-identity.md)
+  classDef package fill:#3c4a3a,stroke:#26231f,color:#ede6d6;
+  classDef external fill:#b98a44,stroke:#26231f,color:#26231f;
+  classDef client fill:#26231f,stroke:#26231f,color:#ede6d6;
+
+  class HOME,PDP,CART,CHECKOUT,ORDERCONF,AUTHPAGES,CLIENT,NAV,UI,APICLIENT,GETSESSION,AUTHCLIENT package;
+  class API,CORE,STRIPEJS external;
+  class B client;

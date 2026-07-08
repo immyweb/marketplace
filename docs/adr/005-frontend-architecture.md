@@ -9,6 +9,8 @@
 
 ## Decision
 
+![Frontend architecture — App Router routes, colocation, and the shared/client split](../diagrams/frontend-architecture/frontend-architecture.svg)
+
 ### Feature code colocation under `app/`
 
 Components and lib code used by exactly one route live in that route's private `_components`/`_lib` folders (e.g. `app/checkout/_components/stripe-payment-form.tsx`, `app/checkout/_lib/stripe.ts`) rather than the top-level `components/`/`lib/`. The leading underscore opts these folders out of routing (Next.js's private-folder convention). Each such folder exposes a single barrel `index.ts` re-exporting its public members, mirroring the feature-folder/barrel pattern in `packages/api/src/features/*` (e.g. `features/cart/index.ts`). A route's `page.tsx` imports from the barrel (`./_components`); files inside the same folder import each other directly by sibling path (e.g. `add-to-cart-button.tsx` imports `./added-to-cart-modal`, not through the barrel) to avoid a self-referential circular import.

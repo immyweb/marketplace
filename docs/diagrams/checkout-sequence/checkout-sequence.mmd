@@ -9,12 +9,12 @@ sequenceDiagram
   participant DB as PostgreSQL
   participant RS as Resend
 
-  Note over U,A: Purchasing requires a signed-in account (Better Auth).<br/>Both API calls run requireAuth + cart-ownership check.
+  Note over U,DB: Purchasing requires a signed-in<br/>account (Better Auth). Both API calls<br/>run requireAuth + cart-ownership check.
 
   U->>A: GET /cart (session cookie)
   A-->>U: cart (redirect to /cart if empty)
 
-  Note over U: Customer fills address + card, clicks "Place Order"
+  Note over U,A: Customer fills address +<br/>card, clicks "Place Order"
 
   U->>A: POST /checkout/payment-intent (cartId)
   A->>ST: paymentIntents.create(amount = cart total, gbp)
@@ -28,7 +28,7 @@ sequenceDiagram
   U->>A: POST /order (cartId, paymentIntentId, address)
   A->>ST: paymentIntents.retrieve(id, expand payment_method)
   ST-->>A: status, amount, card last4
-  Note over A: Reject unless status = succeeded AND<br/>Stripe amount = cart total recomputed now.
+  Note over A,DB: Reject unless status =<br/>succeeded AND Stripe amount =<br/>cart total recomputed now.
 
   A->>DB: transaction - create Order (+items, address,<br/>card last4, user), then delete Cart
   DB-->>A: created order

@@ -21,15 +21,21 @@ A `prisma.config.ts` file exists at the package root because Prisma 7 no longer 
 
 ### Schema
 
-Five models across four tables (names snake_cased via `@@map`):
+![Data model — Product/Cart/Order tables plus the Better Auth user tables](../diagrams/data-model/data-model.svg)
 
-| Model       | Table         | Notes                                                                  |
-| ----------- | ------------- | ---------------------------------------------------------------------- |
-| `Product`   | `products`    | Prices as `Decimal(10,2)`                                              |
-| `Cart`      | `carts`       | Keyed to `session_id` (unique); tied to express-session                |
-| `CartItem`  | `cart_items`  | Unique on `(cart_id, product_id)`; cascades delete from Cart           |
-| `Order`     | `orders`      | Stores Stripe payment ID and card/address snapshot at time of purchase |
-| `OrderItem` | `order_items` | Captures price at time of order (not live product price)               |
+Nine models across eight tables (domain tables snake_cased via `@@map`; the four Better Auth tables use its own default naming — see [ADR 006](006-authentication.md)):
+
+| Model          | Table           | Notes                                                                                                        |
+| -------------- | --------------- | ------------------------------------------------------------------------------------------------------------ |
+| `Product`      | `products`      | Prices as `Decimal(10,2)`                                                                                    |
+| `Cart`         | `carts`         | Keyed to `session_id` (unique); tied to express-session                                                      |
+| `CartItem`     | `cart_items`    | Unique on `(cart_id, product_id)`; cascades delete from Cart                                                 |
+| `Order`        | `orders`        | Stores Stripe payment ID, card/address snapshot, and owning `User`                                           |
+| `OrderItem`    | `order_items`   | Captures price at time of order (not live product price)                                                     |
+| `User`         | `user`          | Better Auth account; owns `Order`s                                                                           |
+| `Session`      | `auth_sessions` | Better Auth login session (mapped off its `session` default to avoid colliding with express-session's table) |
+| `Account`      | `account`       | Better Auth credential (hashed password)                                                                     |
+| `Verification` | `verification`  | Better Auth email/token verification records                                                                 |
 
 ### Migrations
 

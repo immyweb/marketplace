@@ -25,7 +25,27 @@ One folder per diagram, named by what it shows: `system-context/`, `checkout-seq
 1. Create `docs/diagrams/<name>/<name>.mmd`. Start the file with a `%%` comment naming what it shows.
 2. Render and **verify it compiled**: `bun run diagrams` (or one file: `mmdc -i docs/diagrams/<name>/<name>.mmd -o docs/diagrams/<name>/<name>.svg -c docs/diagrams/mermaid.config.json -b '#ede6d6'`).
 3. A syntax error makes `mmdc` render an error graph or exit non-zero — treat that as a failing build and fix the `.mmd` before moving on. Do not claim a diagram is done until its SVG regenerated cleanly.
-4. Embed with `![Alt text](diagrams/<name>/<name>.svg)` from a doc under `docs/`.
+4. For any `sequenceDiagram`, also **visually verify box sizing** before calling it done — a clean exit code does not mean text fits inside its box (see "Sizing" below). Render a PNG and look at it:
+   `mmdc -i docs/diagrams/<name>/<name>.mmd -o /tmp/<name>-check.png -c docs/diagrams/mermaid.config.json -b '#ede6d6' -w 1600`, then view the PNG. Delete the scratch PNG once you've confirmed it — only the `.svg` is committed.
+5. Embed with `![Alt text](diagrams/<name>/<name>.svg)` from a doc under `docs/`.
+
+## Sizing — boxes must fit their text
+
+Mermaid silently lets text overflow a box instead of erroring or auto-growing it — `mmdc` exits 0 either way, so this only shows up on visual inspection (step 4 above), never from the render command's exit code.
+
+**Participant/actor boxes** (`participant X as line1<br/>line2`): a two-line label on a box-type `participant` can render narrower than the text needs, especially when one line is much longer than the other (e.g. `web<br/>Next.js Server Components`). Fix it with an `%%{init: ...}%%` directive **scoped to that one diagram**, placed right above `sequenceDiagram`:
+
+```
+%%{init: { "sequence": { "width": 260 } } }%%
+sequenceDiagram
+```
+
+Do not add `sequence.width`/`sequence.wrap` to the shared `mermaid.config.json` — it applies to every sequence diagram in the repo uniformly, including ones whose boxes already fit correctly (short single-word labels, or `actor` stick-figure labels that auto-wrap fine). A blanket width forces those down too and can shrink their notes below what they need (this happened once — the fix was reverting the shared config and moving the override into the one `.mmd` that needed it).
+
+**Note boxes** (`Note over A: ...` / `Note over A,B: ...`): the box width is the geometric distance between the named actors' lifelines — it is _not_ computed from the note's text. A `Note over` a single actor, or two adjacent actors, is often too narrow for more than a few words; long text overflows both edges of the box (and can spill off the left edge of the canvas entirely if the actor is the leftmost one). Two independent levers, use both when a note is tight:
+
+- **Widen the span** — add another actor to the `over` list (`Note over A,DB` instead of `Note over A`) even if that actor isn't really "involved"; it's a normal, harmless way to borrow width. Prefer a neighbor 2–3 columns away for anything longer than a few words.
+- **Shorten each line** with manual `<br/>` breaks — don't rely on Mermaid to wrap note text for you, it won't. As a rule of thumb at this repo's font size: keep single/adjacent-actor note lines under ~25 characters, and lines in a note spanning 3+ actors under ~45 characters. Verify visually rather than trusting the arithmetic — actual glyph widths vary.
 
 ## Accuracy — this is the point of the diagram
 
@@ -72,3 +92,4 @@ Uppercase subgraph titles (`subgraph app["MARKETPLACE MONOREPO"]`) for the stamp
 - Guessing the architecture instead of reading the ADRs/source — produces confident, wrong diagrams.
 - Long prose inside a node — Mermaid is for structure; put detail in the surrounding doc.
 - A `;` in a `sequenceDiagram` message or note — Mermaid reads it as a statement separator and the render fails with a `Parse error` on a misleading line number (comment lines shift the count). Use `,` or `.` instead.
+- Trusting `mmdc`'s exit code as proof a `sequenceDiagram` looks right — it doesn't catch text overflowing a participant or note box. See "Sizing" above; visually check the PNG.

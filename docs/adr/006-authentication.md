@@ -53,6 +53,8 @@ Better Auth's standard tables were added via its documented Prisma shape (`packa
 
 ### Auth boundary: enforced independently at three layers
 
+![Auth sequence — sign-up/sign-in via Better Auth, and the three independent checkout auth-boundary checks](../diagrams/auth-sequence/auth-sequence.svg)
+
 Only checkout requires a session, and it's checked in three places that don't depend on each other — a UI-only gate would be bypassable via direct API calls:
 
 1. **`app/checkout/page.tsx`** (Next.js, server-rendered): an async Server Component calls `getServerSession()` and `redirect("/sign-in?redirect=/checkout")` if there's no session, before rendering the actual checkout form (`CheckoutFormPage`, colocated under `app/checkout/_components/`).
