@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { ProductFilters } from "@/app/_components";
+import { ProductFilters } from "@/app/products/_components";
 
 const { push } = vi.hoisted(() => ({ push: vi.fn() }));
 let mockSearchParams = "";
