@@ -68,6 +68,7 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 - When implementing a task from a written plan (e.g. `docs/superpowers/plans/`), use the `superpowers:subagent-driven-development` skill (or `superpowers:executing-plans` for a separate session) by default — the user does not need to say "using superpowers" each time.
 - Follow that skill's process: task brief, dispatched implementer subagent, task reviewer subagent, ledger update — scaled sensibly for the size of the task.
 - This is subject to Rule 6 below: implementers must leave work uncommitted for user review.
+- **Skip superpowers process skills (brainstorming, writing-plans, subagent-driven-development, etc.) for small tasks** — a one-line fix, a small unambiguous UI tweak, a config change, a docs edit. Just make the change directly, per Rule 2 (Simplicity First). Use them when the task is genuinely multi-step, ambiguous, or touches a written plan.
 
 ## 6. Never Auto-Commit
 
