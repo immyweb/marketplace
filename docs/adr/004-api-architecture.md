@@ -13,7 +13,13 @@ Originally, route handlers in `src/routes/*.ts` mixed HTTP concerns (parsing `re
 
 ### Request pipeline
 
-`src/app.ts` wires global middleware in order: CORS (restricted to `http://localhost:3000`, credentials enabled), `express.json()`, then session middleware, followed by one router per resource (`/products`, `/cart`, `/checkout`, `/order`), and a final centralized `errorHandler`.
+`src/app.ts` wires global middleware in order: `pino-http` request logging (see Logging below), CORS (restricted to `http://localhost:3000`, credentials enabled), `express.json()`, then session middleware, followed by one router per resource (`/products`, `/cart`, `/checkout`, `/order`), and a final centralized `errorHandler`.
+
+### Logging
+
+`src/shared/logger.ts` (added 2026-07-08) exports a single shared `pino` instance. Route/service code that needs to log — `src/shared/middleware/error.ts`, `src/features/orders/orders.service.ts` — imports it directly; there is no per-request logger threaded through function signatures. Log level defaults to `debug` outside production and `info` in production, overridable via `LOG_LEVEL`; output is pretty-printed via `pino-pretty` outside production and raw JSON in production.
+
+`app.ts` also mounts `pino-http`, built from the same instance, as the very first middleware — ahead of CORS — so every request gets an automatic completion log line (method, path, status, response time) with no changes to route files. The mount redacts `req.headers.cookie`, `req.headers.authorization`, and `res.headers['set-cookie']`: pino-http's default serializers otherwise log full request/response headers, and this app's cookie-based sessions (`express-session`, Better Auth) would leak live session tokens into the log store without it. See `docs/superpowers/specs/2026-07-08-api-pino-logging-design.md` for the design rationale.
 
 ### Sessions
 
@@ -34,7 +40,7 @@ Services are plain exported functions (no class-based service objects), consiste
 
 `src/shared/errors.ts` defines a typed error hierarchy: `AppError` (base, carries `statusCode` and `code`), with `NotFoundError` (404, `NOT_FOUND`), `ForbiddenError` (403, `FORBIDDEN`), and `PaymentFailedError` (`PAYMENT_FAILED`, defaults to 400, overridable). Services throw these directly.
 
-`src/shared/middleware/error.ts` catches `AppError` instances and responds with `{ error: message, code }` at the error's `statusCode`; anything else is logged via `console.error` and returned as a generic 500 `{ error: "Internal server error", code: "INTERNAL_ERROR" }`. Routes forward errors to it via `next(err)` from their existing `try/catch` blocks.
+`src/shared/middleware/error.ts` catches `AppError` instances, logs them at `warn` via the shared logger, and responds with `{ error: message, code }` at the error's `statusCode`; anything else is logged at `error` (the caught error passed under an `err` key for structured stack-trace serialization) and returned as a generic 500 `{ error: "Internal server error", code: "INTERNAL_ERROR" }`. Routes forward errors to it via `next(err)` from their existing `try/catch` blocks.
 
 ### Module resolution
 
@@ -53,3 +59,4 @@ The alias needed separate wiring per runtime, since none of them share a single 
 - Since routes still perform input validation and some session logic directly, "thin routes" here means no business logic, not zero logic — see `docs/superpowers/specs/2026-07-02-api-routes-services-design.md` for the exact split.
 - The existing supertest suite (now colocated as `packages/api/src/features/*/*.test.ts` and `packages/api/src/shared/middleware/error.test.ts`) asserts on exact response bodies and status codes; any change to this layering must keep those responses byte-identical or update the tests deliberately.
 - Adding a new cross-directory import means writing `@/...` rather than `../..`; adding a new _runtime_ (a script that imports `src/` code outside Bun, `tsc`, or Vitest) means checking whether it resolves `tsconfig.json` `paths` on its own or needs the same treatment.
+- All logging goes through the shared `logger` singleton (`@/shared/logger`), never `console.*`; any future change to `pino-http`'s options (e.g. logging additional headers) must be checked against the `redact` list in `app.ts` so session tokens don't end up in logs.
