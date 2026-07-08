@@ -5,13 +5,18 @@ import { prisma } from "@/shared/db/prisma";
 import { NotFoundError, PaymentFailedError } from "@/shared/errors";
 import { stripe } from "@/shared/stripe";
 import { logger } from "@/shared/logger";
+import { sendOrderConfirmationEmail } from "./order-confirmation.email";
 
 type OrderWithItems = Prisma.OrderGetPayload<{
-  include: { items: { include: { product: true } } };
+  include: {
+    items: { include: { product: true } };
+    user: { select: { email: true; name: true } };
+  };
 }>;
 
 const orderInclude = {
   items: { include: { product: true } },
+  user: { select: { email: true, name: true } },
 } satisfies Prisma.OrderInclude;
 
 function formatOrder(order: OrderWithItems) {
@@ -134,7 +139,10 @@ export async function placeOrder(params: {
     return created;
   });
 
-  return formatOrder(order);
+  const orderDTO = formatOrder(order);
+  await sendOrderConfirmationEmail(orderDTO, order.user.email, order.user.name);
+
+  return orderDTO;
 }
 
 export async function getOrderById(id: number): Promise<OrderDTO> {

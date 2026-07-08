@@ -1,7 +1,7 @@
 # ADR 001: Testing Setup — Vitest + Playwright
 
 **Status:** Accepted  
-**Date:** 2026-06-30 (amended 2026-07-01)
+**Date:** 2026-06-30 (amended 2026-07-01, 2026-07-08)
 
 ## Context
 
@@ -17,9 +17,9 @@ The project is a Bun monorepo with three packages: `core` (shared types/schemas)
 
 `packages/api` uses Vitest (`vitest run`) with `supertest` for HTTP-layer assertions.
 
-- **No mocks.** Tests hit a real PostgreSQL instance on port 5433 (`marketplace_test`), connected via the same Prisma client used in production.
+- **No mocks, with one exception.** Tests hit a real PostgreSQL instance on port 5433 (`marketplace_test`), connected via the same Prisma client used in production, and a real Stripe test-mode API for payment intents. The one exception: outbound transactional email via Resend is intercepted with `msw/node` (`tests/resend-mock.ts`, wired into `tests/setup.ts`) — added 2026-07-08 alongside the order confirmation email feature. Resend, unlike Stripe, has no test-mode affordance for deterministically triggering a send failure from CI, so its network boundary is mocked the same way the web package already mocks its own API calls (see UI section below) — this is the second deliberate exception to this ADR's "no mocks" stance, not an accidental one.
 - **Single fork, serialized.** `pool: 'forks'` with `fileParallelism: false` prevents parallel test files from racing on shared DB state (Vitest 4 replaced the old `poolOptions.forks.singleFork` option with this top-level flag).
-- **Setup/teardown** is in `tests/setup.ts`: connects before the suite, disconnects after.
+- **Setup/teardown** is in `tests/setup.ts`: connects before the suite, disconnects after, and starts/stops the MSW server intercepting Resend calls.
 
 ### UI: Vitest + React Testing Library, mocked network via MSW
 

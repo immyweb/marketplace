@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, afterAll } from "vitest";
 import { agent } from "supertest";
-import Stripe from "stripe";
+import { http, HttpResponse } from "msw";
 import { app } from "@/app";
 import { prisma } from "@/shared/db/prisma";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+import { stripe } from "@/shared/stripe";
+import { server } from "../../../tests/setup";
 
 async function createConfirmedPaymentIntent(amountGbp: number) {
   const pi = await stripe.paymentIntents.create({
@@ -109,6 +109,81 @@ describe("POST /order", () => {
       where: { email: "jane@example.com" },
     });
     expect(orderInDb.user_id).toBe(user.id);
+  });
+
+  it("sends an order confirmation email to the signed-in user", async () => {
+    let capturedRequest: { to: string; subject: string } | null = null;
+    server.use(
+      http.post("https://api.resend.com/emails", async ({ request }) => {
+        capturedRequest = (await request.json()) as {
+          to: string;
+          subject: string;
+        };
+        return HttpResponse.json({ id: "email_test_id" });
+      }),
+    );
+
+    const ag = agent(app);
+    await ag.post("/cart/products").send({ productId, quantity: 1 });
+    const cartRes = await ag.get("/cart");
+    const cartId = cartRes.body.id;
+    await signUpAgent(ag);
+
+    const pi = await createConfirmedPaymentIntent(15);
+
+    const res = await ag
+      .post("/order")
+      .send({
+        cartId,
+        paymentIntentId: pi.id,
+        address_details: {
+          name: "Jane Smith",
+          street: "10 Downing Street",
+          city: "London",
+          postcode: "SW1A 2AA",
+        },
+      })
+      .expect(201);
+
+    expect(capturedRequest).toMatchObject({
+      to: "jane@example.com",
+      subject: `Order Confirmation — #${res.body.id}`,
+    });
+  });
+
+  it("still creates the order and returns 201 when the confirmation email fails to send", async () => {
+    server.use(
+      http.post("https://api.resend.com/emails", () => {
+        return HttpResponse.json(
+          { message: "rate limit exceeded", name: "rate_limit_exceeded" },
+          { status: 429 },
+        );
+      }),
+    );
+
+    const ag = agent(app);
+    await ag.post("/cart/products").send({ productId, quantity: 1 });
+    const cartRes = await ag.get("/cart");
+    const cartId = cartRes.body.id;
+    await signUpAgent(ag);
+
+    const pi = await createConfirmedPaymentIntent(15);
+
+    const res = await ag
+      .post("/order")
+      .send({
+        cartId,
+        paymentIntentId: pi.id,
+        address_details: {
+          name: "Jane Smith",
+          street: "10 Downing Street",
+          city: "London",
+          postcode: "SW1A 2AA",
+        },
+      })
+      .expect(201);
+
+    expect(res.body.total_price).toBe(15);
   });
 
   it("returns 403 when placing an order without signing in", async () => {
