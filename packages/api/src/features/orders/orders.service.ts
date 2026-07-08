@@ -1,6 +1,6 @@
 import type Stripe from "stripe";
 import type { Prisma } from "@prisma/client";
-import type { AddressInput } from "@marketplace/core";
+import type { AddressInput, OrderSummary } from "@marketplace/core";
 import { prisma } from "@/shared/db/prisma";
 import { NotFoundError, PaymentFailedError } from "@/shared/errors";
 import { stripe } from "@/shared/stripe";
@@ -145,15 +145,44 @@ export async function placeOrder(params: {
   return orderDTO;
 }
 
-export async function getOrderById(id: number): Promise<OrderDTO> {
+export async function getOrderById(
+  id: number,
+  userId: string,
+): Promise<OrderDTO> {
   const order = await prisma.order.findUnique({
     where: { id },
     include: orderInclude,
   });
 
-  if (!order) {
+  if (!order || order.user_id !== userId) {
     throw new NotFoundError("Order not found");
   }
 
   return formatOrder(order);
+}
+
+export async function listOrdersByUser(
+  userId: string,
+): Promise<OrderSummary[]> {
+  const orders = await prisma.order.findMany({
+    where: { user_id: userId },
+    orderBy: { created_at: "desc" },
+    select: {
+      id: true,
+      created_at: true,
+      status: true,
+      total_price: true,
+      currency: true,
+      _count: { select: { items: true } },
+    },
+  });
+
+  return orders.map((order) => ({
+    id: order.id,
+    created_at: order.created_at.toISOString(),
+    status: order.status,
+    total_price: Number(order.total_price),
+    currency: order.currency,
+    item_count: order._count.items,
+  }));
 }

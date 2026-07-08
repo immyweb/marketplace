@@ -2,9 +2,18 @@ import { Router } from "express";
 import { PlaceOrderSchema } from "@marketplace/core";
 import { ForbiddenError } from "@/shared/errors";
 import { requireAuth } from "@/shared/middleware/require-auth";
-import { placeOrder, getOrderById } from "./orders.service";
+import { placeOrder, getOrderById, listOrdersByUser } from "./orders.service";
 
 const router = Router();
+
+router.get("/", requireAuth, async (req, res, next) => {
+  try {
+    const orders = await listOrdersByUser(req.userId!);
+    res.json(orders);
+  } catch (err) {
+    next(err);
+  }
+});
 
 router.post("/", requireAuth, async (req, res, next) => {
   try {
@@ -36,7 +45,7 @@ router.post("/", requireAuth, async (req, res, next) => {
   }
 });
 
-router.get("/:id", async (req, res, next) => {
+router.get<{ id: string }>("/:id", requireAuth, async (req, res, next) => {
   try {
     const id = parseInt(req.params.id, 10);
     if (isNaN(id)) {
@@ -44,7 +53,7 @@ router.get("/:id", async (req, res, next) => {
       return;
     }
 
-    const order = await getOrderById(id);
+    const order = await getOrderById(id, req.userId!);
     res.json(order);
   } catch (err) {
     next(err);

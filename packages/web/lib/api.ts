@@ -1,4 +1,10 @@
-import type { AddressDetails, Cart, Order, Product } from "@marketplace/core";
+import type {
+  AddressDetails,
+  Cart,
+  Order,
+  OrderSummary,
+  Product,
+} from "@marketplace/core";
 
 export const API_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
@@ -99,6 +105,10 @@ export function placeOrder(body: {
   });
 }
 
-export function fetchOrder(id: number) {
-  return apiFetch<Order>(`/order/${id}`);
+export function fetchOrder(id: number, init?: RequestInit) {
+  return apiFetch<Order>(`/order/${id}`, init);
+}
+
+export function fetchOrders(init?: RequestInit) {
+  return apiFetch<OrderSummary[]>("/order", init);
 }

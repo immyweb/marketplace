@@ -36,6 +36,9 @@ export async function Nav() {
           {session ? (
             <div className="flex items-center gap-3 font-mono text-sm tracking-wide uppercase">
               <span>{session.user.name}</span>
+              <Link href="/orders" className="hover:text-accent">
+                Orders
+              </Link>
               <SignOutButton />
             </div>
           ) : (

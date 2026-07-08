@@ -27,6 +27,9 @@ describe("Nav", () => {
 
     expect(screen.getByRole("link", { name: "Sign in" })).toBeInTheDocument();
     expect(screen.queryByText("Sign out")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "Orders" }),
+    ).not.toBeInTheDocument();
   });
 
   it("shows the user's name and a sign-out control when logged in", async () => {
@@ -46,6 +49,10 @@ describe("Nav", () => {
     render(await Nav());
 
     expect(screen.getByText("Ada")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Orders" })).toHaveAttribute(
+      "href",
+      "/orders",
+    );
     expect(
       screen.getByRole("button", { name: "Sign out" }),
     ).toBeInTheDocument();

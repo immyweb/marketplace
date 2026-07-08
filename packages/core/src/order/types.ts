@@ -23,3 +23,12 @@ export interface Order {
   address_details: AddressDetails;
   payment_details: { card_last_four_digits: string };
 }
+
+export interface OrderSummary {
+  id: number;
+  created_at: string;
+  status: string;
+  total_price: number;
+  currency: string;
+  item_count: number;
+}

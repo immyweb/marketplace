@@ -77,6 +77,17 @@ export const order = {
   payment_details: { card_last_four_digits: "4242" },
 };
 
+export const orderSummaries = [
+  {
+    id: order.id,
+    created_at: "2026-07-01T10:00:00.000Z",
+    status: "confirmed",
+    total_price: order.total_price,
+    currency: order.currency,
+    item_count: order.items.length,
+  },
+];
+
 export const handlers = [
   http.get(`${API_URL}/products`, () => {
     return HttpResponse.json({
@@ -103,5 +114,8 @@ export const handlers = [
       return HttpResponse.json({ error: "Order not found" }, { status: 404 });
     }
     return HttpResponse.json(order);
+  }),
+  http.get(`${API_URL}/order`, () => {
+    return HttpResponse.json(orderSummaries);
   }),
 ];

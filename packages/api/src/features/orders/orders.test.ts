@@ -300,13 +300,10 @@ describe("POST /order", () => {
 
 describe("GET /order/:id", () => {
   it("returns the order with items, address and payment details", async () => {
-    const user = await prisma.user.create({
-      data: {
-        id: "test-user-1",
-        name: "Jane Smith",
-        email: "jane@example.com",
-        emailVerified: true,
-      },
+    const ag = agent(app);
+    await signUpAgent(ag);
+    const user = await prisma.user.findUniqueOrThrow({
+      where: { email: "jane@example.com" },
     });
     const order = await prisma.order.create({
       data: {
@@ -324,7 +321,7 @@ describe("GET /order/:id", () => {
       },
     });
 
-    const res = await agent(app).get(`/order/${order.id}`).expect(200);
+    const res = await ag.get(`/order/${order.id}`).expect(200);
 
     expect(res.body).toMatchObject({
       id: order.id,
@@ -353,14 +350,187 @@ describe("GET /order/:id", () => {
     ]);
   });
 
+  it("returns 403 for a signed-out request", async () => {
+    const owner = await prisma.user.create({
+      data: {
+        id: "owner-1",
+        name: "Owner",
+        email: "owner1@example.com",
+        emailVerified: true,
+      },
+    });
+    const order = await prisma.order.create({
+      data: {
+        total_price: 30,
+        stripe_payment_id: "pi_owner_1",
+        card_last_four: "4242",
+        address_name: "Owner",
+        address_street: "1 St",
+        address_city: "London",
+        address_postcode: "SW1A 1AA",
+        user_id: owner.id,
+        items: { create: [{ product_id: productId, quantity: 1, price: 30 }] },
+      },
+    });
+
+    const res = await agent(app).get(`/order/${order.id}`).expect(403);
+
+    expect(res.body).toMatchObject({ error: expect.any(String) });
+  });
+
+  it("returns 404 when the order belongs to a different user", async () => {
+    const owner = await prisma.user.create({
+      data: {
+        id: "owner-2",
+        name: "Owner",
+        email: "owner2@example.com",
+        emailVerified: true,
+      },
+    });
+    const order = await prisma.order.create({
+      data: {
+        total_price: 30,
+        stripe_payment_id: "pi_owner_2",
+        card_last_four: "4242",
+        address_name: "Owner",
+        address_street: "1 St",
+        address_city: "London",
+        address_postcode: "SW1A 1AA",
+        user_id: owner.id,
+        items: { create: [{ product_id: productId, quantity: 1, price: 30 }] },
+      },
+    });
+
+    const ag = agent(app);
+    await signUpAgent(ag, "someone-else@example.com");
+    const res = await ag.get(`/order/${order.id}`).expect(404);
+
+    expect(res.body).toMatchObject({ error: expect.any(String) });
+  });
+
   it("returns 404 for an order id that does not exist", async () => {
-    const res = await agent(app).get("/order/999999").expect(404);
+    const ag = agent(app);
+    await signUpAgent(ag);
+    const res = await ag.get("/order/999999").expect(404);
 
     expect(res.body).toMatchObject({ error: expect.any(String) });
   });
 
   it("returns 404 for a non-numeric order id", async () => {
-    const res = await agent(app).get("/order/not-a-number").expect(404);
+    const ag = agent(app);
+    await signUpAgent(ag);
+    const res = await ag.get("/order/not-a-number").expect(404);
+
+    expect(res.body).toMatchObject({ error: expect.any(String) });
+  });
+});
+
+describe("GET /order", () => {
+  it("returns the signed-in user's orders, newest first, with summary fields", async () => {
+    const ag = agent(app);
+    await signUpAgent(ag);
+    const user = await prisma.user.findUniqueOrThrow({
+      where: { email: "jane@example.com" },
+    });
+
+    const older = await prisma.order.create({
+      data: {
+        total_price: 15,
+        stripe_payment_id: "pi_list_1",
+        card_last_four: "4242",
+        address_name: "Jane",
+        address_street: "1 St",
+        address_city: "London",
+        address_postcode: "SW1A 1AA",
+        user_id: user.id,
+        created_at: new Date("2026-01-01T00:00:00.000Z"),
+        items: { create: [{ product_id: productId, quantity: 1, price: 15 }] },
+      },
+    });
+    const newer = await prisma.order.create({
+      data: {
+        total_price: 30,
+        stripe_payment_id: "pi_list_2",
+        card_last_four: "4242",
+        address_name: "Jane",
+        address_street: "1 St",
+        address_city: "London",
+        address_postcode: "SW1A 1AA",
+        user_id: user.id,
+        created_at: new Date("2026-02-01T00:00:00.000Z"),
+        items: {
+          create: [
+            { product_id: productId, quantity: 1, price: 15 },
+            { product_id: productId, quantity: 1, price: 15 },
+          ],
+        },
+      },
+    });
+
+    const res = await ag.get("/order").expect(200);
+
+    expect(res.body).toEqual([
+      {
+        id: newer.id,
+        created_at: newer.created_at.toISOString(),
+        status: "confirmed",
+        total_price: 30,
+        currency: "GBP",
+        item_count: 2,
+      },
+      {
+        id: older.id,
+        created_at: older.created_at.toISOString(),
+        status: "confirmed",
+        total_price: 15,
+        currency: "GBP",
+        item_count: 1,
+      },
+    ]);
+  });
+
+  it("does not include another user's orders", async () => {
+    const owner = await prisma.user.create({
+      data: {
+        id: "owner-3",
+        name: "Owner",
+        email: "owner3@example.com",
+        emailVerified: true,
+      },
+    });
+    await prisma.order.create({
+      data: {
+        total_price: 10,
+        stripe_payment_id: "pi_other_user",
+        card_last_four: "4242",
+        address_name: "Owner",
+        address_street: "1 St",
+        address_city: "London",
+        address_postcode: "SW1A 1AA",
+        user_id: owner.id,
+        items: { create: [{ product_id: productId, quantity: 1, price: 10 }] },
+      },
+    });
+
+    const ag = agent(app);
+    await signUpAgent(ag, "self@example.com");
+
+    const res = await ag.get("/order").expect(200);
+
+    expect(res.body).toEqual([]);
+  });
+
+  it("returns an empty array when the user has no orders", async () => {
+    const ag = agent(app);
+    await signUpAgent(ag);
+
+    const res = await ag.get("/order").expect(200);
+
+    expect(res.body).toEqual([]);
+  });
+
+  it("returns 403 when listing orders without signing in", async () => {
+    const res = await agent(app).get("/order").expect(403);
 
     expect(res.body).toMatchObject({ error: expect.any(String) });
   });

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { headers } from "next/headers";
-import { notFound } from "next/navigation";
+import { redirect, notFound } from "next/navigation";
+import { getServerSession } from "@/lib/get-server-session";
 import { ApiRequestError, fetchOrder } from "@/lib/api";
 
 interface Props {
@@ -20,29 +21,24 @@ async function fetchOrderOrNotFound(id: number, cookie: string | null) {
   }
 }
 
-export const metadata: Metadata = { title: "Order Confirmed" };
+export const metadata: Metadata = { title: "Order Details" };
 
-export default async function OrderConfirmationPage({ params }: Props) {
+export default async function OrderDetailPage({ params }: Props) {
   const { id } = await params;
+  const session = await getServerSession();
+
+  if (!session) {
+    redirect(`/sign-in?redirect=/orders/${id}`);
+  }
+
   const cookie = (await headers()).get("cookie");
   const order = await fetchOrderOrNotFound(parseInt(id, 10), cookie);
 
   if (!order) notFound();
 
   return (
-    <article aria-label="Order confirmation" className="relative max-w-2xl">
-      <div
-        aria-hidden="true"
-        className="absolute top-0 right-0 -rotate-6 rounded-sm border-2 border-secondary px-3 py-1 font-mono text-xs font-bold tracking-widest text-secondary uppercase"
-      >
-        Order Received
-      </div>
-
-      <h1 className="text-2xl">Order Confirmed</h1>
-      <p className="mt-2 text-muted-foreground">
-        Thank you for your order. Your order number is{" "}
-        <strong className="font-mono text-foreground">#{order.id}</strong>.
-      </p>
+    <article aria-label="Order details" className="max-w-2xl">
+      <h1 className="text-2xl">Order #{order.id}</h1>
 
       <section
         aria-label="Order summary"
@@ -68,7 +64,7 @@ export default async function OrderConfirmationPage({ params }: Props) {
         aria-label="Delivery details"
         className="mt-6 border-t border-dashed border-border pt-6"
       >
-        <h2 className="text-lg">Delivering to</h2>
+        <h2 className="text-lg">Delivered to</h2>
         <address className="mt-2 leading-relaxed not-italic">
           {order.address_details.name}
           <br />
@@ -91,10 +87,10 @@ export default async function OrderConfirmationPage({ params }: Props) {
       </section>
 
       <Link
-        href="/"
+        href="/orders"
         className="mt-8 inline-block font-mono text-sm tracking-wide text-secondary underline underline-offset-4"
       >
-        Continue Shopping
+        Back to Order History
       </Link>
     </article>
   );

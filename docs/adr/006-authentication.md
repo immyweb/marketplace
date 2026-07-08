@@ -63,7 +63,7 @@ Only checkout requires a session, and it's checked in three places that don't de
 
 `packages/api/src/shared/middleware/require-auth.ts` calls `auth.api.getSession()` (via `fromNodeHeaders(req.headers)`) and throws the existing `ForbiddenError` (403) if there's no session — it fails closed, and is plain middleware (not a service), consistent with the routes-thin/services-hold-logic split in [ADR 004](004-api-architecture.md). The pre-existing cart-ownership IDOR check (`cartId !== req.session.cartId`) is unchanged and runs independently of the auth check.
 
-`GET /order/:id` is deliberately left ungated — it has no owner check today (a pre-existing gap this work didn't introduce or attempt to close; order history/ownership on reads is out of scope until that feature is built).
+`GET /order/:id` is gated by `requireAuth` and checks `order.user_id === req.userId` (404 for a mismatch, 403 for signed-out) — closed 2026-07-08 as part of building order history. See `docs/superpowers/specs/2026-07-08-order-history-design.md`.
 
 ### Client-side: two different ways to read the session
 
@@ -81,7 +81,7 @@ Both are read-only wrappers; neither embeds any auth _logic_ — signing in/out 
 ## Consequences
 
 - Checkout's auth requirement is enforced redundantly by design (page + two endpoints) — any future checkout-adjacent endpoint must remember to add `requireAuth` itself; there is no shared route-level guard that applies it automatically.
-- `GET /order/:id` has no ownership check — anyone with an order ID can currently read it. Acceptable for today's scope (no order-history UI exists yet to make IDs discoverable in bulk), but must be revisited before building order history.
+- `GET /order/:id` is now gated by `requireAuth` and checks `order.user_id === req.userId` (404 for a mismatch, 403 for signed-out) — closed 2026-07-08 as part of building order history. See `docs/superpowers/specs/2026-07-08-order-history-design.md`.
 - Adding a new Better Auth table that happens to share a name with an existing non-Prisma table (as `session` did) will silently show up as Prisma migration drift, not a clear "naming collision" error — check `@@map` names against `packages/api/src/shared/middleware/session.ts` and any other unmanaged tables before adding new Better Auth plugins/tables.
 - No password reset flow exists (no email provider configured); email/password is the only credential recovery path Better Auth is configured to support today.
 - Local dev/test secrets (`BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`) live in the gitignored `packages/api/.env`/`.env.test`, following the same pattern as `SESSION_SECRET`/`STRIPE_SECRET_KEY` — a fresh checkout or worktree needs these copied in manually, same as the other secrets in that file.

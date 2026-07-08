@@ -1,9 +1,13 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { server } from "./setup";
 import { http, HttpResponse } from "msw";
 import { order } from "./msw-handlers";
 import OrderConfirmationPage from "@/app/order-confirmation/[id]/page";
+
+vi.mock("next/headers", () => ({
+  headers: () => Promise.resolve(new Headers({ cookie: "session=abc123" })),
+}));
 
 function renderPage(id: string) {
   return OrderConfirmationPage({ params: Promise.resolve({ id }) });
@@ -45,6 +49,20 @@ describe("OrderConfirmationPage", () => {
         `Card ending in ${order.payment_details.card_last_four_digits}`,
       ),
     ).toBeInTheDocument();
+  });
+
+  it("forwards the session cookie when fetching the order", async () => {
+    let receivedCookie: string | null = null;
+    server.use(
+      http.get("http://localhost:3001/order/:id", ({ request }) => {
+        receivedCookie = request.headers.get("cookie");
+        return HttpResponse.json(order);
+      }),
+    );
+
+    await renderPage(String(order.id));
+
+    expect(receivedCookie).toBe("session=abc123");
   });
 
   it("throws a Next.js not-found error for an unknown order id", async () => {
