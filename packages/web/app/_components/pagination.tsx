@@ -1,19 +1,11 @@
 import Link from "next/link";
+import { buildProductsHref } from "./product-href";
 
 interface Props {
   page: number;
   totalPages: number;
   sort?: string;
   category?: string;
-}
-
-function buildHref(page: number, sort?: string, category?: string) {
-  const params = new URLSearchParams();
-  if (page > 1) params.set("page", String(page));
-  if (sort) params.set("sort", sort);
-  if (category) params.set("category", category);
-  const qs = params.toString();
-  return qs ? `/?${qs}` : "/";
 }
 
 const navLinkClasses =
@@ -34,7 +26,7 @@ export function Pagination({ page, totalPages, sort, category }: Props) {
     >
       {page > 1 && (
         <Link
-          href={buildHref(page - 1, sort, category)}
+          href={buildProductsHref({ page: page - 1, sort, category })}
           aria-label="Previous page"
           className={navLinkClasses}
         >
@@ -54,7 +46,7 @@ export function Pagination({ page, totalPages, sort, category }: Props) {
         ) : (
           <Link
             key={p}
-            href={buildHref(p, sort, category)}
+            href={buildProductsHref({ page: p, sort, category })}
             className={pageLinkClasses}
           >
             {p}
@@ -63,7 +55,7 @@ export function Pagination({ page, totalPages, sort, category }: Props) {
       )}
       {page < totalPages && (
         <Link
-          href={buildHref(page + 1, sort, category)}
+          href={buildProductsHref({ page: page + 1, sort, category })}
           aria-label="Next page"
           className={navLinkClasses}
         >

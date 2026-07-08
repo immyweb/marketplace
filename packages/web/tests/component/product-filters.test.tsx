@@ -48,7 +48,7 @@ describe("ProductFilters", () => {
     );
     expect(screen.getByRole("link", { name: "Footwear" })).toHaveAttribute(
       "href",
-      "/?category=Footwear&sort=price_asc",
+      "/?sort=price_asc&category=Footwear",
     );
   });
 
@@ -96,7 +96,7 @@ describe("ProductFilters", () => {
       screen.getByRole("menuitemradio", { name: "Price: High to Low" }),
     );
 
-    expect(push).toHaveBeenCalledWith("/?category=Footwear&sort=price_desc");
+    expect(push).toHaveBeenCalledWith("/?sort=price_desc&category=Footwear");
   });
 
   it("removes the sort param when Featured is selected", async () => {

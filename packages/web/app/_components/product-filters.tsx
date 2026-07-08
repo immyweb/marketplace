@@ -1,18 +1,11 @@
 import Link from "next/link";
 import { PRODUCT_CATEGORIES } from "@marketplace/core";
 import { SortSelect } from "./sort-select";
+import { buildProductsHref } from "./product-href";
 
 interface Props {
   activeCategory?: string;
   sort?: string;
-}
-
-function buildHref(sort?: string, category?: string) {
-  const params = new URLSearchParams();
-  if (category) params.set("category", category);
-  if (sort) params.set("sort", sort);
-  const qs = params.toString();
-  return qs ? `/?${qs}` : "/";
 }
 
 export function ProductFilters({ activeCategory, sort }: Props) {
@@ -20,7 +13,7 @@ export function ProductFilters({ activeCategory, sort }: Props) {
     <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
       <nav aria-label="Filter by category" className="flex flex-wrap gap-2">
         <Link
-          href={buildHref(sort)}
+          href={buildProductsHref({ sort })}
           aria-current={!activeCategory ? "true" : undefined}
           className={`rounded-full border px-3 py-1 text-sm ${
             !activeCategory
@@ -33,7 +26,7 @@ export function ProductFilters({ activeCategory, sort }: Props) {
         {PRODUCT_CATEGORIES.map((category) => (
           <Link
             key={category}
-            href={buildHref(sort, category)}
+            href={buildProductsHref({ sort, category })}
             aria-current={activeCategory === category ? "true" : undefined}
             className={`rounded-full border px-3 py-1 text-sm ${
               activeCategory === category

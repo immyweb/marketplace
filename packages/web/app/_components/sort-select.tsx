@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronDownIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,6 +10,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { buildProductsHref } from "./product-href";
 
 const SORT_OPTIONS = [
   { value: "", label: "Featured" },
@@ -20,22 +21,14 @@ const SORT_OPTIONS = [
 
 export function SortSelect() {
   const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentSort = searchParams.get("sort") ?? "";
+  const currentCategory = searchParams.get("category") ?? undefined;
   const currentLabel =
     SORT_OPTIONS.find((o) => o.value === currentSort)?.label ?? "Featured";
 
   function handleChange(value: string) {
-    const params = new URLSearchParams(searchParams);
-    params.delete("page");
-    if (value) {
-      params.set("sort", value);
-    } else {
-      params.delete("sort");
-    }
-    const qs = params.toString();
-    router.push(qs ? `${pathname}?${qs}` : pathname);
+    router.push(buildProductsHref({ sort: value, category: currentCategory }));
   }
 
   return (
