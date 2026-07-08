@@ -13,12 +13,10 @@
     "test:api": "bun run --filter api test",
     "test:web": "bun run --filter web test",
     "test:e2e": "bun run --filter web test:e2e",
-    "format": "prettier --write .",
-    "prepare": "husky"
+    "format": "prettier --write ."
   },
   "devDependencies": {
     "eslint": "^10.6.0",
-    "husky": "^9.1.7",
     "prettier": "^3.9.4",
     "typescript-eslint": "^8.62.1"
   }
