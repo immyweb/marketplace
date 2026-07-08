@@ -35,7 +35,7 @@ export async function Nav() {
         <div className="flex items-center gap-6">
           {session ? (
             <div className="flex items-center gap-3 font-mono text-sm tracking-wide uppercase">
-              <span>{session.user.email}</span>
+              <span>{session.user.name}</span>
               <SignOutButton />
             </div>
           ) : (

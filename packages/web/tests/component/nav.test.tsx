@@ -29,7 +29,7 @@ describe("Nav", () => {
     expect(screen.queryByText("Sign out")).not.toBeInTheDocument();
   });
 
-  it("shows the user's email and a sign-out control when logged in", async () => {
+  it("shows the user's name and a sign-out control when logged in", async () => {
     server.use(
       http.get(`${API_URL}/api/auth/get-session`, () =>
         HttpResponse.json({
@@ -45,7 +45,7 @@ describe("Nav", () => {
 
     render(await Nav());
 
-    expect(screen.getByText("ada@example.com")).toBeInTheDocument();
+    expect(screen.getByText("Ada")).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Sign out" }),
     ).toBeInTheDocument();
