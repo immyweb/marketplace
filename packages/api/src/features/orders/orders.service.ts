@@ -4,6 +4,7 @@ import type { AddressInput } from "@marketplace/core";
 import { prisma } from "@/shared/db/prisma";
 import { NotFoundError, PaymentFailedError } from "@/shared/errors";
 import { stripe } from "@/shared/stripe";
+import { logger } from "@/shared/logger";
 
 type OrderWithItems = Prisma.OrderGetPayload<{
   include: { items: { include: { product: true } } };
@@ -92,10 +93,16 @@ export async function placeOrder(params: {
   const pm = paymentIntent.payment_method;
 
   if (!pm || typeof pm !== "object" || pm.type !== "card" || !pm.card?.last4) {
-    console.error(
-      "[placeOrder] ALERT: Stripe PaymentIntent succeeded but card last4 is unreadable. " +
-        `paymentIntentId=${paymentIntentId} cartId=${cartId} pm_type=${typeof pm === "object" && pm !== null ? (pm as Stripe.PaymentMethod).type : typeof pm}. ` +
-        "Customer has been charged but no order was created. Manual reconciliation required.",
+    logger.error(
+      {
+        paymentIntentId,
+        cartId,
+        pmType:
+          typeof pm === "object" && pm !== null
+            ? (pm as Stripe.PaymentMethod).type
+            : typeof pm,
+      },
+      "Stripe PaymentIntent succeeded but card last4 is unreadable; customer charged, no order created, manual reconciliation required",
     );
     throw new PaymentFailedError(
       "Could not read card details from payment",

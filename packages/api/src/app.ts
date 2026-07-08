@@ -1,8 +1,10 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import pinoHttp from "pino-http";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "@/shared/auth";
+import { logger } from "@/shared/logger";
 import { sessionMiddleware } from "@/shared/middleware/session";
 import { errorHandler } from "@/shared/middleware/error";
 import { productsRouter } from "@/features/products";
@@ -11,6 +13,19 @@ import { checkoutRouter } from "@/features/checkout";
 import { ordersRouter } from "@/features/orders";
 
 export const app = express();
+
+app.use(
+  pinoHttp({
+    logger,
+    redact: {
+      paths: [
+        "req.headers.cookie",
+        "req.headers.authorization",
+        "res.headers['set-cookie']",
+      ],
+    },
+  }),
+);
 
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 
