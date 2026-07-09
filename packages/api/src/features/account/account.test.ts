@@ -1,7 +1,9 @@
 import { describe, it, expect, beforeEach, afterAll } from "vitest";
 import { agent } from "supertest";
+import { http, HttpResponse } from "msw";
 import { app } from "@/app";
 import { prisma } from "@/shared/db/prisma";
+import { server } from "../../../tests/setup";
 
 async function signUpAgent(
   ag: ReturnType<typeof agent>,
@@ -67,5 +69,41 @@ describe("GET /account/address", () => {
     const res = await agent(app).get("/account/address").expect(403);
 
     expect(res.body).toMatchObject({ error: expect.any(String) });
+  });
+});
+
+describe("welcome email on sign-up", () => {
+  it("still creates the user when Resend returns an error", async () => {
+    server.use(
+      http.post("https://api.resend.com/emails", () => {
+        return HttpResponse.json(
+          { message: "Invalid `from` field" },
+          { status: 422 },
+        );
+      }),
+    );
+
+    const ag = agent(app);
+    await signUpAgent(ag);
+
+    const user = await prisma.user.findUnique({
+      where: { email: "jane@example.com" },
+    });
+    expect(user).not.toBeNull();
+  });
+
+  it("triggers a Resend email send during sign-up", async () => {
+    let resendCalled = false;
+    server.use(
+      http.post("https://api.resend.com/emails", () => {
+        resendCalled = true;
+        return HttpResponse.json({ id: "email_test_id" });
+      }),
+    );
+
+    const ag = agent(app);
+    await signUpAgent(ag);
+
+    expect(resendCalled).toBe(true);
   });
 });
