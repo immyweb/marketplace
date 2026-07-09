@@ -51,6 +51,13 @@ export const emptyCart = {
   currency: "GBP",
 };
 
+export const savedAddress = {
+  name: "Ada Lovelace",
+  street: "12 Analytical Engine Ave",
+  city: "London",
+  postcode: "SW1A 2AA",
+};
+
 export const order = {
   id: 42,
   total_price: 37.98,
@@ -108,6 +115,9 @@ export const handlers = [
   }),
   http.post(`${API_URL}/cart/products`, () => {
     return HttpResponse.json(cart);
+  }),
+  http.get(`${API_URL}/account/address`, () => {
+    return HttpResponse.json(null);
   }),
   http.get(`${API_URL}/order/:id`, ({ params }) => {
     if (Number(params.id) !== order.id) {

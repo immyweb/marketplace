@@ -13,6 +13,7 @@ export const PlaceOrderSchema = z.object({
   cartId: z.number({ required_error: "cartId is required" }).int().positive(),
   paymentIntentId: z.string().min(1, "paymentIntentId is required"),
   address_details: AddressSchema,
+  saveAddress: z.boolean({ required_error: "saveAddress is required" }),
 });
 
 export type AddressInput = z.infer<typeof AddressSchema>;

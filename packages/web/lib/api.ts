@@ -66,6 +66,10 @@ export function fetchCart(init?: RequestInit) {
   return apiFetch<Cart>("/cart", init);
 }
 
+export function fetchSavedAddress(init?: RequestInit) {
+  return apiFetch<AddressDetails | null>("/account/address", init);
+}
+
 export function addToCart(productId: number, quantity: number) {
   return apiFetch<Cart>("/cart/products", {
     method: "POST",
@@ -98,6 +102,7 @@ export function placeOrder(body: {
   cartId: number;
   paymentIntentId: string;
   address_details: AddressDetails;
+  saveAddress: boolean;
 }) {
   return apiFetch<Order>("/order", {
     method: "POST",

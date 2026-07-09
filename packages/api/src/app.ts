@@ -11,6 +11,7 @@ import { productsRouter } from "@/features/products";
 import { cartRouter } from "@/features/cart";
 import { checkoutRouter } from "@/features/checkout";
 import { ordersRouter } from "@/features/orders";
+import { accountRouter } from "@/features/account";
 
 export const app = express();
 
@@ -42,5 +43,6 @@ app.use("/products", productsRouter);
 app.use("/cart", cartRouter);
 app.use("/checkout", checkoutRouter);
 app.use("/order", ordersRouter);
+app.use("/account", accountRouter);
 
 app.use(errorHandler);

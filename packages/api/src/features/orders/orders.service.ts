@@ -53,9 +53,11 @@ export async function placeOrder(params: {
   cartId: number;
   paymentIntentId: string;
   addressDetails: AddressInput;
+  saveAddress: boolean;
   userId: string;
 }): Promise<OrderDTO> {
-  const { cartId, paymentIntentId, addressDetails, userId } = params;
+  const { cartId, paymentIntentId, addressDetails, saveAddress, userId } =
+    params;
 
   let paymentIntent: Stripe.PaymentIntent;
   try {
@@ -135,6 +137,19 @@ export async function placeOrder(params: {
       },
       include: orderInclude,
     });
+
+    if (saveAddress) {
+      await tx.user.update({
+        where: { id: userId },
+        data: {
+          addressName: addressDetails.name,
+          addressStreet: addressDetails.street,
+          addressCity: addressDetails.city,
+          addressPostcode: addressDetails.postcode,
+        },
+      });
+    }
+
     await tx.cart.delete({ where: { id: cartId } });
     return created;
   });

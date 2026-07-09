@@ -89,4 +89,45 @@ test.describe("Checkout flow", () => {
     await page.getByRole("button", { name: "Place Order" }).click();
     await expect(page.getByRole("alert").first()).toBeVisible();
   });
+
+  test("saves the address and prefills it on the next checkout visit", async ({
+    page,
+  }) => {
+    await page.goto("/checkout");
+    await page.getByLabel("Full name").fill("Jane Smith");
+    await page.getByLabel("Street address").fill("10 Downing Street");
+    await page.getByLabel("City").fill("London");
+    await page.getByLabel("Postcode").fill("SW1A 2AA");
+
+    await expect(
+      page.getByLabel("Save this address for future orders"),
+    ).toBeChecked();
+
+    const stripeFrame = page
+      .frameLocator('iframe[name^="__privateStripeFrame"]')
+      .first();
+    await stripeFrame
+      .getByRole("textbox", { name: "Card number" })
+      .fill("4242424242424242");
+    await stripeFrame
+      .getByRole("textbox", { name: /expiration/i })
+      .fill("12/30");
+    await stripeFrame.getByRole("textbox", { name: /CVC/i }).fill("123");
+
+    await page.getByRole("button", { name: "Place Order" }).click();
+    await page.waitForURL(/\/order-confirmation\/\d+/, { timeout: 15000 });
+
+    // Start a second checkout to verify the saved address prefills
+    await page.goto("/products/1");
+    await page.getByRole("button", { name: "Add to Cart" }).click();
+    await page.waitForLoadState("networkidle");
+
+    await page.goto("/checkout");
+    await expect(page.getByLabel("Full name")).toHaveValue("Jane Smith");
+    await expect(page.getByLabel("Street address")).toHaveValue(
+      "10 Downing Street",
+    );
+    await expect(page.getByLabel("City")).toHaveValue("London");
+    await expect(page.getByLabel("Postcode")).toHaveValue("SW1A 2AA");
+  });
 });

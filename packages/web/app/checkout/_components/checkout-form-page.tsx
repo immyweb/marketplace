@@ -16,16 +16,23 @@ import { fetchCart, createPaymentIntent, placeOrder } from "@/lib/api";
 import { AddressForm } from "./address-form";
 import { StripePaymentForm } from "./stripe-payment-form";
 import { Button } from "@/components/ui/button";
-import type { Cart } from "@marketplace/core";
+import type { AddressDetails, Cart } from "@marketplace/core";
 
 export type CheckoutFormValues = AddressInput;
 
-function CheckoutForm({ cart }: { cart: Cart }) {
+function CheckoutForm({
+  cart,
+  savedAddress,
+}: {
+  cart: Cart;
+  savedAddress: AddressDetails | null;
+}) {
   const stripe = useStripe();
   const elements = useElements();
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [saveAddress, setSaveAddress] = useState(true);
 
   const {
     register,
@@ -33,6 +40,7 @@ function CheckoutForm({ cart }: { cart: Cart }) {
     formState: { errors },
   } = useForm<CheckoutFormValues>({
     resolver: zodResolver(AddressSchema),
+    defaultValues: savedAddress ?? undefined,
   });
 
   async function onSubmit(values: CheckoutFormValues) {
@@ -65,6 +73,7 @@ function CheckoutForm({ cart }: { cart: Cart }) {
         cartId: cart.id,
         paymentIntentId: paymentIntent.id,
         address_details: values,
+        saveAddress,
       });
 
       router.push(`/order-confirmation/${order.id}`);
@@ -85,6 +94,16 @@ function CheckoutForm({ cart }: { cart: Cart }) {
       <h1 className="text-2xl">Checkout</h1>
 
       <AddressForm register={register} errors={errors} />
+
+      <label className="mt-4 flex items-center gap-2 text-sm">
+        <input
+          type="checkbox"
+          checked={saveAddress}
+          onChange={(e) => setSaveAddress(e.target.checked)}
+        />
+        Save this address for future orders
+      </label>
+
       <StripePaymentForm />
 
       <div className="mt-8 flex items-center justify-between border-t-2 border-primary pt-4">
@@ -112,7 +131,11 @@ function CheckoutForm({ cart }: { cart: Cart }) {
   );
 }
 
-export function CheckoutFormPage() {
+export function CheckoutFormPage({
+  savedAddress = null,
+}: {
+  savedAddress?: AddressDetails | null;
+}) {
   const [cart, setCart] = useState<Cart | null>(null);
   const router = useRouter();
 
@@ -130,7 +153,7 @@ export function CheckoutFormPage() {
 
   return (
     <Elements stripe={stripePromise}>
-      <CheckoutForm cart={cart} />
+      <CheckoutForm cart={cart} savedAddress={savedAddress} />
     </Elements>
   );
 }

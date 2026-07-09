@@ -80,6 +80,7 @@ describe("POST /order", () => {
       .send({
         cartId,
         paymentIntentId: pi.id,
+        saveAddress: false,
         address_details: {
           name: "Jane Smith",
           street: "10 Downing Street",
@@ -136,6 +137,7 @@ describe("POST /order", () => {
       .send({
         cartId,
         paymentIntentId: pi.id,
+        saveAddress: false,
         address_details: {
           name: "Jane Smith",
           street: "10 Downing Street",
@@ -174,6 +176,7 @@ describe("POST /order", () => {
       .send({
         cartId,
         paymentIntentId: pi.id,
+        saveAddress: false,
         address_details: {
           name: "Jane Smith",
           street: "10 Downing Street",
@@ -196,6 +199,7 @@ describe("POST /order", () => {
       .send({
         cartId: cartRes.body.id,
         paymentIntentId: "pi_test",
+        saveAddress: false,
         address_details: {
           name: "Jane",
           street: "1 St",
@@ -219,6 +223,7 @@ describe("POST /order", () => {
       .send({
         cartId: cartRes.body.id,
         paymentIntentId: "pi_fake_id",
+        saveAddress: false,
         address_details: {
           name: "Jane",
           street: "1 St",
@@ -246,6 +251,7 @@ describe("POST /order", () => {
       .send({
         cartId,
         paymentIntentId: "pi_test",
+        saveAddress: false,
         address_details: {
           name: "X",
           street: "Y",
@@ -276,6 +282,7 @@ describe("POST /order", () => {
       .send({
         cartId,
         paymentIntentId: pi.id,
+        saveAddress: false,
         address_details: {
           name: "Jane Smith",
           street: "10 Downing Street",
@@ -295,6 +302,137 @@ describe("POST /order", () => {
     expect(await prisma.order.findMany()).toHaveLength(0);
     const cartAfter = await ag.get("/cart");
     expect(cartAfter.body.items).toHaveLength(1);
+  });
+});
+
+describe("POST /order — saved address", () => {
+  it("saves the address to the user when saveAddress is true and none exists yet", async () => {
+    const ag = agent(app);
+    await ag.post("/cart/products").send({ productId, quantity: 1 });
+    const cartRes = await ag.get("/cart");
+    const cartId = cartRes.body.id;
+    await signUpAgent(ag);
+
+    const pi = await createConfirmedPaymentIntent(15);
+
+    await ag
+      .post("/order")
+      .send({
+        cartId,
+        paymentIntentId: pi.id,
+        saveAddress: true,
+        address_details: {
+          name: "Jane Smith",
+          street: "10 Downing Street",
+          city: "London",
+          postcode: "SW1A 2AA",
+        },
+      })
+      .expect(201);
+
+    const user = await prisma.user.findUniqueOrThrow({
+      where: { email: "jane@example.com" },
+    });
+    expect(user).toMatchObject({
+      addressName: "Jane Smith",
+      addressStreet: "10 Downing Street",
+      addressCity: "London",
+      addressPostcode: "SW1A 2AA",
+    });
+  });
+
+  it("overwrites an existing saved address when saveAddress is true", async () => {
+    const ag = agent(app);
+    await ag.post("/cart/products").send({ productId, quantity: 1 });
+    const cartRes = await ag.get("/cart");
+    const cartId = cartRes.body.id;
+    await signUpAgent(ag);
+    const user = await prisma.user.findUniqueOrThrow({
+      where: { email: "jane@example.com" },
+    });
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        addressName: "Old Name",
+        addressStreet: "Old Street",
+        addressCity: "Old City",
+        addressPostcode: "OL1 1OL",
+      },
+    });
+
+    const pi = await createConfirmedPaymentIntent(15);
+
+    await ag
+      .post("/order")
+      .send({
+        cartId,
+        paymentIntentId: pi.id,
+        saveAddress: true,
+        address_details: {
+          name: "Jane Smith",
+          street: "10 Downing Street",
+          city: "London",
+          postcode: "SW1A 2AA",
+        },
+      })
+      .expect(201);
+
+    const updatedUser = await prisma.user.findUniqueOrThrow({
+      where: { id: user.id },
+    });
+    expect(updatedUser).toMatchObject({
+      addressName: "Jane Smith",
+      addressStreet: "10 Downing Street",
+      addressCity: "London",
+      addressPostcode: "SW1A 2AA",
+    });
+  });
+
+  it("leaves an existing saved address unchanged when saveAddress is false", async () => {
+    const ag = agent(app);
+    await ag.post("/cart/products").send({ productId, quantity: 1 });
+    const cartRes = await ag.get("/cart");
+    const cartId = cartRes.body.id;
+    await signUpAgent(ag);
+    const user = await prisma.user.findUniqueOrThrow({
+      where: { email: "jane@example.com" },
+    });
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        addressName: "Old Name",
+        addressStreet: "Old Street",
+        addressCity: "Old City",
+        addressPostcode: "OL1 1OL",
+      },
+    });
+
+    const pi = await createConfirmedPaymentIntent(15);
+
+    await ag
+      .post("/order")
+      .send({
+        cartId,
+        paymentIntentId: pi.id,
+        saveAddress: false,
+        address_details: {
+          name: "Jane Smith",
+          street: "10 Downing Street",
+          city: "London",
+          postcode: "SW1A 2AA",
+        },
+      })
+      .expect(201);
+
+    const unchangedUser = await prisma.user.findUniqueOrThrow({
+      where: { id: user.id },
+    });
+    expect(unchangedUser).toMatchObject({
+      addressName: "Old Name",
+      addressStreet: "Old Street",
+      addressCity: "Old City",
+      addressPostcode: "OL1 1OL",
+    });
   });
 });
 

@@ -18,12 +18,14 @@ Add four nullable columns directly to `User`, mirroring how `Order` already flat
 ```prisma
 model User {
   ...
-  address_name     String?
-  address_street   String?
-  address_city     String?
-  address_postcode String?
+  addressName     String?
+  addressStreet   String?
+  addressCity     String?
+  addressPostcode String?
 }
 ```
+
+Named camelCase, not `Order`'s snake_case (`address_name`) — `User` is a Better Auth table where every existing column (`emailVerified`, `createdAt`, ...) is already camelCase (ADR 002/006); matching the table's own convention takes priority over matching `Order`'s convention here, since these columns live on that table, not a hand-authored one.
 
 One saved address per user, upserted in place — not a separate `Address` table. A join buys nothing here since the product decision is exactly one address per user, and this avoids a new table plus the extra query it would need on every checkout page load.
 
@@ -43,7 +45,7 @@ Backed by `getSavedAddress(userId: string)` in a new `account.service.ts`, a pla
 
 ### Frontend: `packages/web`
 
-**`lib/get-server-session.ts`**: add `fetchSavedAddress()`, following the exact pattern of the existing `getServerSession()` — a plain `fetch` to `GET /account/address` with the incoming request's `Cookie` header forwarded. Returns `AddressDetails | null`.
+**`lib/api.ts`**: add `fetchSavedAddress(init?: RequestInit)`, following the same pattern as the existing `fetchCart(init?: RequestInit)`/`fetchOrder(id, init?)` — a typed `apiFetch<AddressDetails | null>("/account/address", init)` call. `init` carries the forwarded `Cookie` header when called server-side, the same convention `app/order-confirmation/[id]/page.tsx` already uses.
 
 **`app/checkout/page.tsx`**: after the existing session gate, also calls `fetchSavedAddress()` and passes the result into `CheckoutFormPage` as a new `savedAddress` prop.
 

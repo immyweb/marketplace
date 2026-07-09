@@ -24,7 +24,8 @@ router.post("/", requireAuth, async (req, res, next) => {
         .json({ error: parsed.error.errors[0].message, code: "INVALID_INPUT" });
       return;
     }
-    const { cartId, paymentIntentId, address_details } = parsed.data;
+    const { cartId, paymentIntentId, address_details, saveAddress } =
+      parsed.data;
 
     // Ensure the cart belongs to the current session to prevent IDOR
     if (cartId !== req.session.cartId) {
@@ -35,6 +36,7 @@ router.post("/", requireAuth, async (req, res, next) => {
       cartId,
       paymentIntentId,
       addressDetails: address_details,
+      saveAddress,
       userId: req.userId!,
     });
 

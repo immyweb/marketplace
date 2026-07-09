@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { server } from "./setup";
-import { cart } from "./msw-handlers";
+import { cart, savedAddress } from "./msw-handlers";
 import { CheckoutFormPage } from "@/app/checkout/_components";
 import { useStripe, useElements } from "@stripe/react-stripe-js";
 import type { Stripe, StripeElements } from "@stripe/stripe-js";
@@ -144,5 +144,133 @@ describe("CheckoutFormPage", () => {
       expect(push).toHaveBeenCalledWith("/order-confirmation/42"),
     );
     expect(confirmCardPayment).toHaveBeenCalled();
+  });
+
+  it("prefills the address fields when a saved address is passed in", async () => {
+    render(<CheckoutFormPage savedAddress={savedAddress} />);
+
+    expect(await screen.findByLabelText("Full name")).toHaveValue(
+      savedAddress.name,
+    );
+    expect(screen.getByLabelText("Street address")).toHaveValue(
+      savedAddress.street,
+    );
+    expect(screen.getByLabelText("City")).toHaveValue(savedAddress.city);
+    expect(screen.getByLabelText("Postcode")).toHaveValue(
+      savedAddress.postcode,
+    );
+  });
+
+  it("renders blank when there is no saved address", async () => {
+    render(<CheckoutFormPage savedAddress={null} />);
+
+    expect(await screen.findByLabelText("Full name")).toHaveValue("");
+    expect(screen.getByLabelText("Street address")).toHaveValue("");
+    expect(screen.getByLabelText("City")).toHaveValue("");
+    expect(screen.getByLabelText("Postcode")).toHaveValue("");
+  });
+
+  it("defaults the save-address checkbox to checked", async () => {
+    render(<CheckoutFormPage />);
+    await screen.findByLabelText("Full name");
+
+    expect(
+      screen.getByLabelText("Save this address for future orders"),
+    ).toBeChecked();
+  });
+
+  it("sends saveAddress: false when the checkbox is unchecked", async () => {
+    const confirmCardPayment = vi.fn().mockResolvedValue({
+      paymentIntent: { id: "pi_123" },
+      error: undefined,
+    });
+    vi.mocked(useStripe).mockReturnValue({
+      confirmCardPayment,
+    } as unknown as Stripe);
+    vi.mocked(useElements).mockReturnValue({
+      getElement: vi.fn().mockReturnValue({}),
+    } as unknown as StripeElements);
+
+    let capturedBody: { saveAddress?: boolean } | null = null;
+    server.use(
+      http.post(`${API_URL}/checkout/payment-intent`, () =>
+        HttpResponse.json({ clientSecret: "secret_123", amount: 3798 }),
+      ),
+      http.post(`${API_URL}/order`, async ({ request }) => {
+        capturedBody = (await request.json()) as { saveAddress?: boolean };
+        return HttpResponse.json({
+          id: 42,
+          total_price: cart.total_price,
+          currency: "GBP",
+          status: "paid",
+          items: [],
+          address_details: {
+            name: "Ada Lovelace",
+            street: "12 Analytical Engine Ave",
+            city: "London",
+            postcode: "SW1A 2AA",
+          },
+          payment_details: { card_last_four_digits: "4242" },
+        });
+      }),
+    );
+
+    render(<CheckoutFormPage />);
+    await screen.findByLabelText("Full name");
+    fillAddress();
+    fireEvent.click(
+      screen.getByLabelText("Save this address for future orders"),
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Place Order" }));
+
+    await waitFor(() => expect(push).toHaveBeenCalled());
+    expect(capturedBody).toMatchObject({ saveAddress: false });
+  });
+
+  it("sends saveAddress: true when the checkbox is left checked", async () => {
+    const confirmCardPayment = vi.fn().mockResolvedValue({
+      paymentIntent: { id: "pi_123" },
+      error: undefined,
+    });
+    vi.mocked(useStripe).mockReturnValue({
+      confirmCardPayment,
+    } as unknown as Stripe);
+    vi.mocked(useElements).mockReturnValue({
+      getElement: vi.fn().mockReturnValue({}),
+    } as unknown as StripeElements);
+
+    let capturedBody: { saveAddress?: boolean } | null = null;
+    server.use(
+      http.post(`${API_URL}/checkout/payment-intent`, () =>
+        HttpResponse.json({ clientSecret: "secret_123", amount: 3798 }),
+      ),
+      http.post(`${API_URL}/order`, async ({ request }) => {
+        capturedBody = (await request.json()) as { saveAddress?: boolean };
+        return HttpResponse.json({
+          id: 42,
+          total_price: cart.total_price,
+          currency: "GBP",
+          status: "paid",
+          items: [],
+          address_details: {
+            name: "Ada Lovelace",
+            street: "12 Analytical Engine Ave",
+            city: "London",
+            postcode: "SW1A 2AA",
+          },
+          payment_details: { card_last_four_digits: "4242" },
+        });
+      }),
+    );
+
+    render(<CheckoutFormPage />);
+    await screen.findByLabelText("Full name");
+    fillAddress();
+
+    fireEvent.click(screen.getByRole("button", { name: "Place Order" }));
+
+    await waitFor(() => expect(push).toHaveBeenCalled());
+    expect(capturedBody).toMatchObject({ saveAddress: true });
   });
 });

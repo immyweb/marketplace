@@ -25,17 +25,17 @@ A `prisma.config.ts` file exists at the package root because Prisma 7 no longer 
 
 Nine models across eight tables (domain tables snake_cased via `@@map`; the four Better Auth tables use its own default naming — see [ADR 006](006-authentication.md)):
 
-| Model          | Table           | Notes                                                                                                        |
-| -------------- | --------------- | ------------------------------------------------------------------------------------------------------------ |
-| `Product`      | `products`      | Prices as `Decimal(10,2)`                                                                                    |
-| `Cart`         | `carts`         | Keyed to `session_id` (unique); tied to express-session                                                      |
-| `CartItem`     | `cart_items`    | Unique on `(cart_id, product_id)`; cascades delete from Cart                                                 |
-| `Order`        | `orders`        | Stores Stripe payment ID, card/address snapshot, and owning `User`                                           |
-| `OrderItem`    | `order_items`   | Captures price at time of order (not live product price)                                                     |
-| `User`         | `user`          | Better Auth account; owns `Order`s                                                                           |
-| `Session`      | `auth_sessions` | Better Auth login session (mapped off its `session` default to avoid colliding with express-session's table) |
-| `Account`      | `account`       | Better Auth credential (hashed password)                                                                     |
-| `Verification` | `verification`  | Better Auth email/token verification records                                                                 |
+| Model          | Table           | Notes                                                                                                                                               |
+| -------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Product`      | `products`      | Prices as `Decimal(10,2)`                                                                                                                           |
+| `Cart`         | `carts`         | Keyed to `session_id` (unique); tied to express-session                                                                                             |
+| `CartItem`     | `cart_items`    | Unique on `(cart_id, product_id)`; cascades delete from Cart                                                                                        |
+| `Order`        | `orders`        | Stores Stripe payment ID, card/address snapshot, and owning `User`                                                                                  |
+| `OrderItem`    | `order_items`   | Captures price at time of order (not live product price)                                                                                            |
+| `User`         | `user`          | Better Auth account; owns `Order`s; also carries four nullable `address*` columns for the checkout "save address" feature (not Better Auth–managed) |
+| `Session`      | `auth_sessions` | Better Auth login session (mapped off its `session` default to avoid colliding with express-session's table)                                        |
+| `Account`      | `account`       | Better Auth credential (hashed password)                                                                                                            |
+| `Verification` | `verification`  | Better Auth email/token verification records                                                                                                        |
 
 ### Migrations
 
@@ -54,3 +54,4 @@ Nine models across eight tables (domain tables snake_cased via `@@map`; the four
 - `prisma.config.ts` must be kept in sync with `.env` variable names; removing it or renaming `DATABASE_URL` will break CLI commands (`migrate`, `generate`, `seed`).
 - `OrderItem.price` is a snapshot, not a foreign-key reference to `Product.unit_price`. Changing a product's price does not affect existing orders.
 - `Order.user_id` (added when user accounts were introduced) is a required column with no default — any environment with pre-existing order rows must clear or backfill them before applying that migration. This project has no production deployment target today; if one is added later, this migration would need to become nullable → backfill → required instead of a single additive step.
+- `User` gained four nullable columns (`addressName`/`addressStreet`/`addressCity`/`addressPostcode`) for the checkout "save this address" feature — plain domain columns coexisting on Better Auth's `user` table, not managed by Better Auth itself, named camelCase to match that table's existing convention rather than the snake_case used elsewhere in this schema. See `docs/superpowers/specs/2026-07-09-save-address-checkout-design.md`.
