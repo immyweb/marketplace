@@ -2,6 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Big_Shoulders, IBM_Plex_Mono, Public_Sans } from "next/font/google";
 import { Nav } from "@/components/nav";
+import { Footer } from "@/components/footer";
 
 const display = Big_Shoulders({
   subsets: ["latin"],
@@ -49,6 +50,7 @@ export default function RootLayout({
         >
           {children}
         </main>
+        <Footer />
       </body>
     </html>
   );
