@@ -42,11 +42,11 @@ export default function RootLayout({
       lang="en"
       className={`${display.variable} ${body.variable} ${mono.variable}`}
     >
-      <body>
+      <body className="flex min-h-dvh flex-col">
         <Nav />
         <main
           id="main-content"
-          className="mx-auto max-w-6xl px-4 py-10 sm:px-6"
+          className="mx-auto w-full max-w-6xl flex-1 px-4 py-10 sm:px-6"
         >
           {children}
         </main>
