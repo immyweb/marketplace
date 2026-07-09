@@ -78,7 +78,7 @@ test.describe("Checkout flow", () => {
     await expect(
       page.getByRole("heading", { name: "Order Confirmed" }),
     ).toBeVisible();
-    await expect(page.getByText(/Jane Smith/)).toBeVisible();
+    await expect(page.locator("address")).toContainText("Jane Smith");
     await expect(page.getByText(/Card ending in/)).toBeVisible();
   });
 
