@@ -2,7 +2,7 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { fetchCart } from "@/lib/api";
 import { getServerSession } from "@/lib/get-server-session";
-import { SignOutButton } from "@/components/sign-out-button";
+import { AccountMenu } from "@/components/account-menu";
 
 export async function Nav() {
   let itemCount = 0;
@@ -32,15 +32,9 @@ export async function Nav() {
         >
           Marketplace <span className="text-accent">·</span> Goods
         </Link>
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-8">
           {session ? (
-            <div className="flex items-center gap-3 font-mono text-sm tracking-wide uppercase">
-              <span>{session.user.name}</span>
-              <Link href="/orders" className="hover:text-accent">
-                Orders
-              </Link>
-              <SignOutButton />
-            </div>
+            <AccountMenu name={session.user.name} />
           ) : (
             <Link
               href="/sign-in"
@@ -52,7 +46,7 @@ export async function Nav() {
           <Link
             href="/cart"
             aria-label={`Cart, ${itemCount} item${itemCount !== 1 ? "s" : ""}`}
-            className="font-mono text-sm tracking-wide uppercase hover:text-accent"
+            className="border-l border-primary-foreground/30 pl-6 font-mono text-sm tracking-wide uppercase hover:text-accent"
           >
             Cart
             <span

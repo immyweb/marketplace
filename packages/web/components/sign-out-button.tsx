@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
 export function SignOutButton() {
   const router = useRouter();
@@ -12,12 +13,8 @@ export function SignOutButton() {
   }
 
   return (
-    <button
-      type="button"
-      onClick={handleSignOut}
-      className="cursor-pointer font-mono text-sm tracking-wide uppercase hover:text-accent"
-    >
+    <DropdownMenuItem onSelect={handleSignOut} className="cursor-pointer">
       Sign out
-    </button>
+    </DropdownMenuItem>
   );
 }

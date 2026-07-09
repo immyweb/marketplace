@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { server } from "./setup";
 import { Nav } from "@/components/nav";
@@ -32,7 +33,7 @@ describe("Nav", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("shows the user's name and a sign-out control when logged in", async () => {
+  it("shows the user's name, and hovering the account menu reveals Orders and Sign out", async () => {
     server.use(
       http.get(`${API_URL}/api/auth/get-session`, () =>
         HttpResponse.json({
@@ -48,16 +49,27 @@ describe("Nav", () => {
 
     render(await Nav());
 
-    expect(screen.getByText("Ada")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Orders" })).toHaveAttribute(
+    expect(
+      screen.queryByRole("link", { name: "Sign in" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("menuitem", { name: "Orders" }),
+    ).not.toBeInTheDocument();
+
+    // The menu opens on hover, not click (mouse users have no click-based
+    // fallback here — see account-menu.tsx). userEvent.click() synthesizes a
+    // realistic hover-then-click gesture, and the click half would toggle
+    // straight back closed on top of the hover-open, so hover directly
+    // instead of clicking.
+    const user = userEvent.setup();
+    await user.hover(screen.getByRole("button", { name: /Ada/ }));
+
+    expect(screen.getByRole("menuitem", { name: "Orders" })).toHaveAttribute(
       "href",
       "/orders",
     );
     expect(
-      screen.getByRole("button", { name: "Sign out" }),
+      screen.getByRole("menuitem", { name: "Sign out" }),
     ).toBeInTheDocument();
-    expect(
-      screen.queryByRole("link", { name: "Sign in" }),
-    ).not.toBeInTheDocument();
   });
 });
