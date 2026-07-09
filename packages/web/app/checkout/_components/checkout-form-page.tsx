@@ -77,6 +77,7 @@ function CheckoutForm({
       });
 
       router.push(`/order-confirmation/${order.id}`);
+      router.refresh();
     } catch (err) {
       setFormError(err instanceof Error ? err.message : "Something went wrong");
     } finally {

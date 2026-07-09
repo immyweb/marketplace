@@ -80,6 +80,9 @@ test.describe("Checkout flow", () => {
     ).toBeVisible();
     await expect(page.locator("address")).toContainText("Jane Smith");
     await expect(page.getByText(/Card ending in/)).toBeVisible();
+
+    // The nav's cart badge must reset immediately, without a manual reload
+    await expect(page.getByLabel("Cart, 0 items")).toBeVisible();
   });
 
   test("shows a validation error when address fields are empty", async ({

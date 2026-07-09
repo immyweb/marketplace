@@ -9,11 +9,14 @@ import type { Stripe, StripeElements } from "@stripe/stripe-js";
 
 const API_URL = "http://localhost:3001";
 
-const { push } = vi.hoisted(() => ({ push: vi.fn() }));
+const { push, refresh } = vi.hoisted(() => ({
+  push: vi.fn(),
+  refresh: vi.fn(),
+}));
 
 vi.mock("next/navigation", async (importOriginal) => ({
   ...(await importOriginal<typeof import("next/navigation")>()),
-  useRouter: () => ({ push, refresh: vi.fn() }),
+  useRouter: () => ({ push, refresh }),
 }));
 
 // Stub Stripe Elements so tests don't need a real Stripe iframe: `Elements`
@@ -58,6 +61,7 @@ function fillAddress(
 describe("CheckoutFormPage", () => {
   beforeEach(() => {
     push.mockClear();
+    refresh.mockClear();
     // Only the members the checkout page actually calls are stubbed; cast
     // through `unknown` since a full Stripe/StripeElements mock isn't needed.
     vi.mocked(useStripe).mockReturnValue({
@@ -144,6 +148,7 @@ describe("CheckoutFormPage", () => {
       expect(push).toHaveBeenCalledWith("/order-confirmation/42"),
     );
     expect(confirmCardPayment).toHaveBeenCalled();
+    expect(refresh).toHaveBeenCalled();
   });
 
   it("prefills the address fields when a saved address is passed in", async () => {
