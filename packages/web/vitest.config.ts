@@ -8,7 +8,7 @@ export default defineConfig({
   },
   test: {
     environment: "jsdom",
-    setupFiles: ["./tests/component/setup.ts"],
-    include: ["tests/component/**/*.test.tsx"],
+    setupFiles: ["./test-support/setup.ts"],
+    include: ["app/**/*.test.tsx", "components/**/*.test.tsx"],
   },
 });

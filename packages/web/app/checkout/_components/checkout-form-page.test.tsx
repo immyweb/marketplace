@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
-import { server } from "./setup";
-import { cart, savedAddress } from "./msw-handlers";
+import { server } from "@/test-support/setup";
+import { cart, savedAddress } from "@/test-support/msw-handlers";
 import { CheckoutFormPage } from "@/app/checkout/_components";
 import { useStripe, useElements } from "@stripe/react-stripe-js";
 import type { Stripe, StripeElements } from "@stripe/stripe-js";

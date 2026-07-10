@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { server } from "./setup";
+import { server } from "@/test-support/setup";
 import { http, HttpResponse } from "msw";
-import { order } from "./msw-handlers";
+import { order } from "@/test-support/msw-handlers";
 import OrderConfirmationPage from "@/app/order-confirmation/[id]/page";
 
 vi.mock("next/headers", () => ({

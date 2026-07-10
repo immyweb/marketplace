@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
-import { server } from "./setup";
-import { order } from "./msw-handlers";
+import { server } from "@/test-support/setup";
+import { order } from "@/test-support/msw-handlers";
 import OrderDetailPage from "@/app/orders/[id]/page";
 
 const API_URL = "http://localhost:3001";

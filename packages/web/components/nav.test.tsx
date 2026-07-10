@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
-import { server } from "./setup";
+import { server } from "@/test-support/setup";
 import { Nav } from "@/components/nav";
 
 const API_URL = "http://localhost:3001";

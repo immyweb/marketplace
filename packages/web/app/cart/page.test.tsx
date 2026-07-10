@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
-import { server } from "./setup";
-import { cart, emptyCart } from "./msw-handlers";
+import { server } from "@/test-support/setup";
+import { cart, emptyCart } from "@/test-support/msw-handlers";
 import CartPage from "@/app/cart/page";
 
 // next/headers relies on Next's request-scoped AsyncLocalStorage, which

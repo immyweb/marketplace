@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { server } from "./setup";
+import { server } from "@/test-support/setup";
 import { http, HttpResponse } from "msw";
-import { product } from "./msw-handlers";
+import { product } from "@/test-support/msw-handlers";
 import ProductDetailPage from "@/app/products/[id]/page";
 
 const { push } = vi.hoisted(() => ({ push: vi.fn() }));

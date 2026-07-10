@@ -85,7 +85,7 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 - Use Typescript throughout.
 - Every feature must have unit tests.
 - Mocking is fine for most things. For critical features (checkout, cart, payment, auth), test against real implementations — if a dependency is hard to use in tests there, that's a design signal, fix the design, don't add a mock.
-- For UI: favour component tests (Vitest + React Testing Library, `packages/web/tests/component`) over end-to-end tests. Network calls are mocked with MSW in component tests, so they stay fast and isolated. See [ADR 001](docs/adr/001-testing-setup.md).
+- For UI: favour component tests (Vitest + React Testing Library, colocated as `*.test.tsx` next to the component/page they test in `packages/web`) over end-to-end tests. Network calls are mocked with MSW in component tests, so they stay fast and isolated. See [ADR 001](docs/adr/001-testing-setup.md).
 - Reserve E2E (Playwright) for critical flows only (checkout, cart, payment) — full cross-page journeys a component test can't cover. After any significant UI change or new feature: add or update a component test by default; only add/update an E2E test if the change affects a critical flow. Run the relevant tests and confirm they pass before considering the work done.
 - Use context7 MCP server to fetch up-to-date documentation when installing libraries or debugging.
 

@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
-import { server } from "./setup";
-import { productListing } from "./msw-handlers";
+import { server } from "@/test-support/setup";
+import { productListing } from "@/test-support/msw-handlers";
 import ProductListingPage from "@/app/page";
 
 vi.mock("next/navigation", async (importOriginal) => ({
