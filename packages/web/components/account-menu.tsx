@@ -11,8 +11,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SignOutButton } from "@/components/sign-out-button";
+import { cn } from "@/lib/utils";
 
 const CLOSE_DELAY_MS = 150;
+
+const menuItemClassName =
+  "cursor-pointer border-l-2 border-l-transparent font-mono text-xs tracking-widest uppercase transition-colors focus:border-l-accent focus:bg-accent/10 focus:text-primary";
 
 export function AccountMenu({ name }: { name: string }) {
   const [open, setOpen] = useState(false);
@@ -49,20 +53,26 @@ export function AccountMenu({ name }: { name: string }) {
           setOpen(true);
         }}
         onMouseLeave={scheduleClose}
-        className="flex cursor-pointer items-center gap-1 rounded-sm font-mono text-sm tracking-wide uppercase outline-none hover:text-accent focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+        className="flex cursor-pointer items-center gap-1.5 rounded-sm font-mono text-sm tracking-wide uppercase outline-none hover:text-accent focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
       >
         {name}
-        <ChevronDownIcon className="size-4" />
+        <ChevronDownIcon
+          className={cn(
+            "size-4 transition-transform duration-200",
+            open && "rotate-180",
+          )}
+        />
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
         onMouseEnter={cancelClose}
         onMouseLeave={scheduleClose}
+        className="min-w-40 rounded-sm p-1.5 shadow-[3px_3px_0_0_rgba(38,35,31,0.1),0_12px_28px_-16px_rgba(38,35,31,0.5)]"
       >
-        <DropdownMenuItem asChild>
+        <DropdownMenuItem asChild className={menuItemClassName}>
           <Link href="/orders">Orders</Link>
         </DropdownMenuItem>
-        <DropdownMenuSeparator />
+        <DropdownMenuSeparator className="-mx-1.5 my-1.5 h-px border-t border-dashed border-border bg-transparent" />
         <SignOutButton />
       </DropdownMenuContent>
     </DropdownMenu>
