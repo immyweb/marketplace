@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { fetchCart } from "@/lib/api";
 import { getServerSession } from "@/lib/get-server-session";
 import { AccountMenu } from "@/components/account-menu";
+import { MobileNavMenu } from "@/components/mobile-nav-menu";
 
 export async function Nav() {
   let itemCount = 0;
@@ -33,16 +34,21 @@ export async function Nav() {
           Marketplace <span className="text-accent">·</span> Goods
         </Link>
         <div className="flex items-center gap-8">
-          {session ? (
-            <AccountMenu name={session.user.name} />
-          ) : (
-            <Link
-              href="/sign-in"
-              className="font-mono text-sm tracking-wide uppercase hover:text-accent"
-            >
-              Sign in
-            </Link>
-          )}
+          <div className="hidden sm:block">
+            {session ? (
+              <AccountMenu name={session.user.name} />
+            ) : (
+              <Link
+                href="/sign-in"
+                className="font-mono text-sm tracking-wide uppercase hover:text-accent"
+              >
+                Sign in
+              </Link>
+            )}
+          </div>
+          <div className="sm:hidden">
+            <MobileNavMenu name={session?.user.name ?? null} />
+          </div>
           <Link
             href="/cart"
             aria-label={`Cart, ${itemCount} item${itemCount !== 1 ? "s" : ""}`}

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { server } from "@/test-support/setup";
@@ -70,6 +70,56 @@ describe("Nav", () => {
     );
     expect(
       screen.getByRole("menuitem", { name: "Sign out" }),
+    ).toBeInTheDocument();
+  });
+
+  it("mobile: shows a Sign in item after opening the menu when logged out", async () => {
+    server.use(
+      http.get(`${API_URL}/api/auth/get-session`, () =>
+        HttpResponse.json(null),
+      ),
+    );
+
+    render(await Nav());
+
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "Open menu" }));
+
+    expect(screen.getByRole("menuitem", { name: "Sign in" })).toHaveAttribute(
+      "href",
+      "/sign-in",
+    );
+  });
+
+  it("mobile: shows the account name, Orders, and Sign out after opening the menu when logged in", async () => {
+    server.use(
+      http.get(`${API_URL}/api/auth/get-session`, () =>
+        HttpResponse.json({
+          session: {
+            id: "s1",
+            userId: "u1",
+            expiresAt: new Date().toISOString(),
+          },
+          user: { id: "u1", name: "Ada", email: "ada@example.com" },
+        }),
+      ),
+    );
+
+    render(await Nav());
+
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "Open menu" }));
+
+    // Scoped to the open menu: the desktop AccountMenu trigger also renders
+    // "Ada" as its always-visible label (unrelated to whether its own
+    // dropdown is open), so an unscoped query would match both.
+    const menu = screen.getByRole("menu");
+    expect(within(menu).getByText("Ada")).toBeInTheDocument();
+    expect(
+      within(menu).getByRole("menuitem", { name: "Orders" }),
+    ).toHaveAttribute("href", "/orders");
+    expect(
+      within(menu).getByRole("menuitem", { name: "Sign out" }),
     ).toBeInTheDocument();
   });
 });

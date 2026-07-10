@@ -12,11 +12,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SignOutButton } from "@/components/sign-out-button";
 import { cn } from "@/lib/utils";
+import {
+  navDropdownContentClassName,
+  navDropdownSeparatorClassName,
+  navMenuItemClassName,
+} from "@/components/nav-menu-styles";
 
 const CLOSE_DELAY_MS = 150;
-
-const menuItemClassName =
-  "cursor-pointer border-l-2 border-l-transparent font-mono text-xs tracking-widest uppercase transition-colors focus:border-l-accent focus:bg-accent/10 focus:text-primary";
 
 export function AccountMenu({ name }: { name: string }) {
   const [open, setOpen] = useState(false);
@@ -67,12 +69,12 @@ export function AccountMenu({ name }: { name: string }) {
         align="end"
         onMouseEnter={cancelClose}
         onMouseLeave={scheduleClose}
-        className="min-w-40 rounded-sm p-1.5 shadow-[3px_3px_0_0_rgba(38,35,31,0.1),0_12px_28px_-16px_rgba(38,35,31,0.5)]"
+        className={navDropdownContentClassName}
       >
-        <DropdownMenuItem asChild className={menuItemClassName}>
+        <DropdownMenuItem asChild className={navMenuItemClassName}>
           <Link href="/orders">Orders</Link>
         </DropdownMenuItem>
-        <DropdownMenuSeparator className="-mx-1.5 my-1.5 h-px border-t border-dashed border-border bg-transparent" />
+        <DropdownMenuSeparator className={navDropdownSeparatorClassName} />
         <SignOutButton />
       </DropdownMenuContent>
     </DropdownMenu>
