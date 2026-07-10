@@ -95,3 +95,5 @@ Extend `components/nav.test.tsx` with mobile-menu cases, mirroring the existing 
 No new E2E coverage — nav is not a checkout/cart/payment/auth-critical flow per ADR 001; mocked-session component tests are sufficient, consistent with the precedent set by the desktop account-menu tests.
 
 Manual check in the dev server (narrow viewport via devtools device toolbar): burger opens/closes on tap, icon swaps, Escape closes it, both auth states render correctly, and the desktop cluster is confirmed hidden below 640px / the mobile trigger hidden at and above it.
+
+**Accessibility audit:** run `accesslint:diff` (uncommitted-changes mode) against `http://localhost:3000/` before this work is committed, covering both auth states with the burger menu open — the new trigger button, its `aria-label`/`aria-expanded` state, and the panel's focus trap/Escape/return-focus behavior are exactly the kind of thing a live-DOM audit catches that RTL assertions don't. Treat any new violation as a blocker, the same bar the account-menu redesign was held to.
