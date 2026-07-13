@@ -29,7 +29,7 @@ Backed by a new `saveAddress(userId: string, address: AddressInput): Promise<Add
 
 On submit, calls a new `saveAddress(body: AddressInput)` in `lib/api.ts` (`apiFetch<AddressDetails>("/account/address", { method: "PUT", body: JSON.stringify(body) })`, following the existing `apiFetch` pattern). Shows an inline "Address saved" success message near the form on success, and the same inline `role="alert"` error-message pattern `CheckoutForm` uses (`formError` state) on failure.
 
-**`components/account-menu.tsx`** — add a `DropdownMenuItem` (same `navMenuItemClassName` styling as the existing "Orders" item) linking to `/my-details`, labelled "My Details", placed above the existing "Orders" item.
+**`components/account-menu.tsx`** (desktop dropdown) **and `components/mobile-nav-menu.tsx`** (mobile burger menu) — both already duplicate an "Orders" item for signed-in users (the mobile menu was added after the desktop one, mirroring its items). Add a `DropdownMenuItem` to each (same `navMenuItemClassName` styling as the existing "Orders" item) linking to `/my-details`, labelled "My Details", placed above "Orders" — keeping the two menus consistent with each other.
 
 ### Error handling
 
@@ -52,6 +52,8 @@ On submit, calls a new `saveAddress(body: AddressInput)` in `lib/api.ts` (`apiFe
 - Prefills all four fields when the mocked response has a saved address.
 - Submitting calls `PUT /account/address` with the form values and shows the "Address saved" success message.
 - Shows the inline error message when the save request fails.
+
+**Web** (`nav.test.tsx`, extended): both the desktop hover menu and the mobile burger menu show a "My Details" item linking to `/my-details` when signed in, matching the existing assertions for "Orders" in that file.
 
 **E2E:** none. `/my-details` isn't checkout, cart, or payment, so it doesn't meet ADR 001's bar for a critical flow.
 
