@@ -1,5 +1,6 @@
 import type {
   AddressDetails,
+  AddressInput,
   Cart,
   Order,
   OrderSummary,
@@ -68,6 +69,13 @@ export function fetchCart(init?: RequestInit) {
 
 export function fetchSavedAddress(init?: RequestInit) {
   return apiFetch<AddressDetails | null>("/account/address", init);
+}
+
+export function saveAddress(body: AddressInput) {
+  return apiFetch<AddressDetails>("/account/address", {
+    method: "PUT",
+    body: JSON.stringify(body),
+  });
 }
 
 export function addToCart(productId: number, quantity: number) {

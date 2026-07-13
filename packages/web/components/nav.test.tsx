@@ -69,6 +69,9 @@ describe("Nav", () => {
       "/orders",
     );
     expect(
+      screen.getByRole("menuitem", { name: "My Details" }),
+    ).toHaveAttribute("href", "/my-details");
+    expect(
       screen.getByRole("menuitem", { name: "Sign out" }),
     ).toBeInTheDocument();
   });
@@ -118,6 +121,9 @@ describe("Nav", () => {
     expect(
       within(menu).getByRole("menuitem", { name: "Orders" }),
     ).toHaveAttribute("href", "/orders");
+    expect(
+      within(menu).getByRole("menuitem", { name: "My Details" }),
+    ).toHaveAttribute("href", "/my-details");
     expect(
       within(menu).getByRole("menuitem", { name: "Sign out" }),
     ).toBeInTheDocument();

@@ -72,6 +72,9 @@ export function AccountMenu({ name }: { name: string }) {
         className={navDropdownContentClassName}
       >
         <DropdownMenuItem asChild className={navMenuItemClassName}>
+          <Link href="/my-details">My Details</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild className={navMenuItemClassName}>
           <Link href="/orders">Orders</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator className={navDropdownSeparatorClassName} />

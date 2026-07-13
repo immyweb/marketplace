@@ -41,6 +41,9 @@ export function MobileNavMenu({ name }: { name: string | null }) {
             </DropdownMenuLabel>
             <DropdownMenuSeparator className={navDropdownSeparatorClassName} />
             <DropdownMenuItem asChild className={navMenuItemClassName}>
+              <Link href="/my-details">My Details</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild className={navMenuItemClassName}>
               <Link href="/orders">Orders</Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator className={navDropdownSeparatorClassName} />

@@ -72,6 +72,106 @@ describe("GET /account/address", () => {
   });
 });
 
+describe("PUT /account/address", () => {
+  it("saves a new address for a user with none", async () => {
+    const ag = agent(app);
+    await signUpAgent(ag);
+
+    const res = await ag
+      .put("/account/address")
+      .send({
+        name: "Jane Smith",
+        street: "10 Downing Street",
+        city: "London",
+        postcode: "SW1A 2AA",
+      })
+      .expect(200);
+
+    expect(res.body).toEqual({
+      name: "Jane Smith",
+      street: "10 Downing Street",
+      city: "London",
+      postcode: "SW1A 2AA",
+    });
+
+    const user = await prisma.user.findUniqueOrThrow({
+      where: { email: "jane@example.com" },
+    });
+    expect(user.addressName).toBe("Jane Smith");
+    expect(user.addressStreet).toBe("10 Downing Street");
+    expect(user.addressCity).toBe("London");
+    expect(user.addressPostcode).toBe("SW1A 2AA");
+  });
+
+  it("overwrites an existing saved address", async () => {
+    const ag = agent(app);
+    await signUpAgent(ag);
+    const user = await prisma.user.findUniqueOrThrow({
+      where: { email: "jane@example.com" },
+    });
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        addressName: "Old Name",
+        addressStreet: "Old Street",
+        addressCity: "Old City",
+        addressPostcode: "OL1 1AA",
+      },
+    });
+
+    const res = await ag
+      .put("/account/address")
+      .send({
+        name: "Jane Smith",
+        street: "10 Downing Street",
+        city: "London",
+        postcode: "SW1A 2AA",
+      })
+      .expect(200);
+
+    expect(res.body).toEqual({
+      name: "Jane Smith",
+      street: "10 Downing Street",
+      city: "London",
+      postcode: "SW1A 2AA",
+    });
+  });
+
+  it("returns 403 when signed out", async () => {
+    const res = await agent(app)
+      .put("/account/address")
+      .send({
+        name: "Jane Smith",
+        street: "10 Downing Street",
+        city: "London",
+        postcode: "SW1A 2AA",
+      })
+      .expect(403);
+
+    expect(res.body).toMatchObject({ error: expect.any(String) });
+  });
+
+  it("returns 400 for an invalid body", async () => {
+    const ag = agent(app);
+    await signUpAgent(ag);
+
+    const res = await ag
+      .put("/account/address")
+      .send({
+        name: "Jane Smith",
+        street: "10 Downing Street",
+        city: "London",
+        postcode: "not-a-postcode",
+      })
+      .expect(400);
+
+    expect(res.body).toMatchObject({
+      error: expect.any(String),
+      code: "INVALID_INPUT",
+    });
+  });
+});
+
 describe("welcome email on sign-up", () => {
   it("still creates the user when Resend returns an error", async () => {
     server.use(
