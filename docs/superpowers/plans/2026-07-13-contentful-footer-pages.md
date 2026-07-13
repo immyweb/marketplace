@@ -19,6 +19,7 @@
 - Any Contentful fetch failure (network error, non-2xx, no matching entry) must resolve to `null`, never throw — the page always falls back to its existing static placeholder text, never a crash or 404.
 - `CONTENTFUL_SPACE_ID` and `CONTENTFUL_ACCESS_TOKEN` are server-only env vars (no `NEXT_PUBLIC_` prefix) — never exposed to the client.
 - All `bun run test ...` commands in this plan are run with `packages/web` as the working directory (that package's `test` script is `vitest run`); e.g. `cd packages/web && bun run test lib/contentful.test.ts`.
+- **Never auto-commit (CLAUDE.md Rule 6):** implementers stage new files (`git add`) so they're visible in `git status`/`git diff --cached`, but do **not** run `git commit`. Every "Commit" step below means "stage and leave uncommitted for user review," not an actual commit.
 
 ## Prerequisite: Contentful space setup (manual, not an automated task)
 
@@ -175,12 +176,13 @@ export async function getFooterPage(slug: string): Promise<FooterPage | null> {
 Run: `bun run test lib/contentful.test.ts`
 Expected: PASS (4 tests)
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 6: Stage (do not commit)**
 
 ```bash
 git add packages/web/lib/contentful.ts packages/web/lib/contentful.test.ts packages/web/package.json packages/web/bun.lock
-git commit -m "Add getFooterPage to fetch Contentful footer-page entries with ISR"
 ```
+
+Per CLAUDE.md Rule 6, do not run `git commit` — leave staged for user review.
 
 ---
 
@@ -254,12 +256,13 @@ export function RichText({ document }: { document: Document }) {
 Run: `bun run test components/rich-text.test.tsx`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Stage (do not commit)**
 
 ```bash
 git add packages/web/components/rich-text.tsx packages/web/components/rich-text.test.tsx
-git commit -m "Add RichText component to render Contentful rich text documents"
 ```
+
+Per CLAUDE.md Rule 6, do not run `git commit` — leave staged for user review.
 
 ---
 
@@ -383,12 +386,13 @@ export default async function TermsPage() {
 Run: `bun run test app/terms/page.test.tsx`
 Expected: PASS (2 tests)
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Stage (do not commit)**
 
 ```bash
 git add packages/web/app/terms/page.tsx packages/web/app/terms/page.test.tsx
-git commit -m "Wire /terms up to Contentful with ISR"
 ```
+
+Per CLAUDE.md Rule 6, do not run `git commit` — leave staged for user review.
 
 ---
 
@@ -698,9 +702,10 @@ Expected: PASS (5 tests)
 Run: `bun run test`
 Expected: PASS (all tests, including Task 1–3's)
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 6: Stage (do not commit)**
 
 ```bash
 git add packages/web/app/privacy packages/web/app/cookies packages/web/app/sustainability packages/web/app/accessibility packages/web/app/reviews-policy
-git commit -m "Wire the remaining footer pages up to Contentful with ISR"
 ```
+
+Per CLAUDE.md Rule 6, do not run `git commit` — leave staged for user review.
