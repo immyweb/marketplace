@@ -44,6 +44,7 @@ describe("MyDetailsForm", () => {
     expect(screen.getByLabelText("Street address")).toHaveValue("");
     expect(screen.getByLabelText("City")).toHaveValue("");
     expect(screen.getByLabelText("Postcode")).toHaveValue("");
+    expect(screen.getByText("Not On File")).toBeInTheDocument();
   });
 
   it("prefills the address fields when a saved address is passed in", () => {
@@ -57,6 +58,7 @@ describe("MyDetailsForm", () => {
     expect(screen.getByLabelText("Postcode")).toHaveValue(
       savedAddress.postcode,
     );
+    expect(screen.getByText("On File")).toBeInTheDocument();
   });
 
   it("shows validation errors when submitting an empty form", async () => {
@@ -82,6 +84,7 @@ describe("MyDetailsForm", () => {
     );
 
     render(<MyDetailsForm savedAddress={null} />);
+    expect(screen.getByText("Not On File")).toBeInTheDocument();
     fillAddress();
 
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
@@ -93,6 +96,7 @@ describe("MyDetailsForm", () => {
       city: "London",
       postcode: "SW1A 2AA",
     });
+    expect(screen.getByText("On File")).toBeInTheDocument();
   });
 
   it("shows an inline error message when the save request fails", async () => {
