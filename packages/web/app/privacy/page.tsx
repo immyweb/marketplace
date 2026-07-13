@@ -1,12 +1,20 @@
 import type { Metadata } from "next";
+import { getFooterPage } from "@/lib/contentful";
+import { RichText } from "@/components/rich-text";
+import { FooterPageShell } from "@/components/footer-page-shell";
 
 export const metadata: Metadata = { title: "Privacy Notice" };
 
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  const page = await getFooterPage("privacy");
+
   return (
-    <>
-      <h1 className="text-2xl">Privacy Notice</h1>
-      <p className="mt-8 text-muted-foreground">Content coming soon.</p>
-    </>
+    <FooterPageShell slug="privacy" title={page?.title ?? "Privacy Notice"}>
+      {page ? (
+        <RichText document={page.body} />
+      ) : (
+        <p className="mt-8 text-muted-foreground">Content coming soon.</p>
+      )}
+    </FooterPageShell>
   );
 }

@@ -15,6 +15,8 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@contentful/rich-text-react-renderer": "^16.2.1",
+    "@contentful/rich-text-types": "^17.2.7",
     "@hookform/resolvers": "^5.4.0",
     "@marketplace/core": "*",
     "@stripe/react-stripe-js": "^6.6.0",
@@ -34,6 +36,7 @@
     "@playwright/test": "^1.61.1",
     "@storybook/nextjs-vite": "^10.4.6",
     "@tailwindcss/postcss": "^4.3.2",
+    "@tailwindcss/typography": "^0.5.20",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
