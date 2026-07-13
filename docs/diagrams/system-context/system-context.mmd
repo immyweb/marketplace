@@ -15,6 +15,7 @@ graph TD
     P[("PostgreSQL 16<br/>products · carts · orders<br/>sessions · auth")]
     S["Stripe<br/>card payments"]
     R["Resend<br/>order-confirmation email"]
+    CF["Contentful<br/>footer/policy page content"]
   end
 
   B -->|"HTTPS · SSR HTML + JSON"| W
@@ -22,12 +23,13 @@ graph TD
   A -->|"Prisma 7 + pg adapter"| P
   A -->|"payment intents"| S
   A -->|"send email"| R
+  W -->|"REST · fetch, ISR revalidate 60s"| CF
   B -.->|"Stripe Elements"| S
   W -.->|"imports types & schemas"| C
   A -.->|"imports types & schemas"| C
 
   %% Invisible links stack the data tier vertically for a portrait layout
-  P ~~~ S ~~~ R
+  P ~~~ S ~~~ R ~~~ CF
 
   %% Field Ledger palette (docs/adr/007-visual-identity.md)
   classDef package fill:#3c4a3a,stroke:#26231f,color:#ede6d6;
@@ -37,5 +39,5 @@ graph TD
 
   class W,A,C package;
   class P datastore;
-  class S,R external;
+  class S,R,CF external;
   class B client;
