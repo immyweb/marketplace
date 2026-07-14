@@ -1,5 +1,5 @@
 %% Data model — Prisma schema (packages/api/prisma/schema.prisma).
-%% Source of truth: packages/api/prisma/schema.prisma, docs/adr/002-database-and-orm.md.
+%% Source of truth: packages/api/prisma/schema.prisma, docs/adr/002-database-and-orm.md, docs/adr/010-semantic-search.md.
 %% Regenerate the SVG with: bun run diagrams
 erDiagram
   USER ||--o{ ORDER : places
@@ -47,6 +47,7 @@ erDiagram
     decimal unit_price
     string currency
     string category
+    vector embedding "nullable, 1536-dim — pgvector, see ADR 010"
   }
 
   CART {

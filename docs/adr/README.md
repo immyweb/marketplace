@@ -15,3 +15,4 @@ Decisions that are non-obvious, hard to reverse, or carry implicit constraints a
 | [007](007-visual-identity.md)       | Visual Identity — Field Ledger Design Language   | Accepted |
 | [008](008-core-package.md)          | Core Package — Per-Domain Types & Schemas        | Accepted |
 | [009](009-content-management.md)    | Content Management — Contentful for Footer Pages | Accepted |
+| [010](010-semantic-search.md)       | Semantic Search — pgvector + OpenAI Embeddings   | Accepted |

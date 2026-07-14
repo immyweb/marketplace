@@ -1,0 +1,34 @@
+%% Semantic search sequence - a natural-language product search request.
+%% Source of truth: packages/web/app/products/_components/product-search.tsx,
+%% packages/api/src/features/products/{products.routes.ts,products.service.ts},
+%% packages/api/src/shared/embeddings/embeddings.service.ts, docs/adr/010-semantic-search.md.
+%% Regenerate the SVG with: bun run diagrams
+%%{init: { "sequence": { "width": 260 } } }%%
+sequenceDiagram
+  autonumber
+  actor U as Browser
+  participant W as web<br/>Next.js Server Components
+  participant A as api<br/>Express
+  participant OAI as OpenAI<br/>text-embedding-3-small
+  participant DB as PostgreSQL<br/>pgvector
+
+  Note over U,DB: Products are embedded once<br/>at seed time (prisma/seed.ts) -<br/>see ADR 010. This sequence<br/>covers a live search request.
+
+  U->>U: types query, ProductSearch<br/>debounces 400ms
+  U->>W: client nav to /?q=...<br/>(drops page, sort, category)
+
+  W->>A: GET /products?q=...
+  A->>A: ProductListQuerySchema parses q,<br/>routes to searchProducts (not listProducts)
+  A->>OAI: embeddings.create(input: q)
+
+  alt embedding call fails
+    OAI-->>A: error
+    A-->>W: 500 (existing error middleware)
+    W-->>U: error page
+  else embedding succeeds
+    OAI-->>A: 1536-dim vector
+    A->>DB: ORDER BY embedding <=> vector<br/>WHERE embedding IS NOT NULL LIMIT 16
+    DB-->>A: top 16 ranked products
+    A-->>W: results, total, page 1, totalPages 1
+    W-->>U: renders ProductSearch + ranked cards<br/>(category filters, sort, pagination hidden)
+  end
