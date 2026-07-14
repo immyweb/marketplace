@@ -1,12 +1,19 @@
 # Marketplace
 
-A clothing and accessories storefront: product listing, cart, checkout, and order history.
+A clothing and accessories storefront: product listing, semantic product search, cart, checkout, order history, and auth.
+
+## Features
+
+- Product listing with category/sort filters plus natural-language semantic search
+- Cart and Stripe-powered checkout
+- Order history and account auth (Better Auth)
+- CMS-backed footer/policy pages (Contentful)
 
 ## Stack
 
 - **`packages/core`** — shared TypeScript types and Zod schemas
-- **`packages/api`** — Express + Prisma + PostgreSQL, Stripe payments, Better Auth
-- **`packages/web`** — Next.js 16 (App Router) + Tailwind CSS v4
+- **`packages/api`** — Express + Prisma + PostgreSQL (pgvector), Stripe payments, Better Auth, OpenAI embeddings, Resend email
+- **`packages/web`** — Next.js 16 (App Router) + Tailwind CSS v4, Contentful for footer/policy content
 
 Bun workspaces monorepo. See [`docs/adr/`](docs/adr/) for the reasoning behind these choices.
 
