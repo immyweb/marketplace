@@ -1,7 +1,12 @@
-import { describe, it, expect, beforeEach, afterAll } from "vitest";
+import { describe, it, expect, beforeEach, afterAll, vi } from "vitest";
 import request from "supertest";
 import { app } from "@/app";
 import { prisma } from "@/shared/db/prisma";
+import { embedText } from "@/shared/embeddings/embeddings.service";
+
+vi.mock("@/shared/embeddings/embeddings.service", () => ({
+  embedText: vi.fn(),
+}));
 
 async function resetProducts() {
   await prisma.orderItem.deleteMany();
@@ -102,6 +107,128 @@ describe("GET /products", () => {
   it("returns 400 for an invalid category value", async () => {
     const res = await request(app).get("/products?category=bogus").expect(400);
     expect(res.body).toMatchObject({ code: "INVALID_INPUT" });
+  });
+});
+
+describe("GET /products?q=", () => {
+  beforeEach(async () => {
+    await resetProducts();
+  });
+
+  function vector(activeIndex: number): number[] {
+    const values = new Array(1536).fill(0);
+    values[activeIndex] = 1;
+    return values;
+  }
+
+  it("ranks results by embedding similarity to the query", async () => {
+    const closeMatch = await prisma.product.create({
+      data: {
+        name: "Warm Jacket",
+        description: "A cozy winter jacket",
+        primary_image: "https://example.com/a.jpg",
+        image_urls: ["https://example.com/a.jpg"],
+        unit_price: 80,
+        currency: "GBP",
+        category: "Outerwear",
+      },
+    });
+    const farMatch = await prisma.product.create({
+      data: {
+        name: "Summer Shorts",
+        description: "Light cotton shorts",
+        primary_image: "https://example.com/b.jpg",
+        image_urls: ["https://example.com/b.jpg"],
+        unit_price: 20,
+        currency: "GBP",
+        category: "Trousers",
+      },
+    });
+
+    await prisma.$executeRaw`UPDATE products SET embedding = ${`[${vector(0).join(",")}]`}::vector WHERE id = ${closeMatch.id}`;
+    await prisma.$executeRaw`UPDATE products SET embedding = ${`[${vector(1).join(",")}]`}::vector WHERE id = ${farMatch.id}`;
+
+    vi.mocked(embedText).mockResolvedValue(vector(0));
+
+    const res = await request(app).get("/products?q=warm+jacket").expect(200);
+
+    expect(res.body.results).toHaveLength(2);
+    expect(res.body.results[0].id).toBe(closeMatch.id);
+    expect(res.body.results[1].id).toBe(farMatch.id);
+    expect(res.body.total).toBe(2);
+    expect(embedText).toHaveBeenCalledWith("warm jacket");
+  });
+
+  it("excludes products with no embedding", async () => {
+    const embedded = await prisma.product.create({
+      data: {
+        name: "Warm Jacket",
+        description: "A cozy winter jacket",
+        primary_image: "https://example.com/a.jpg",
+        image_urls: ["https://example.com/a.jpg"],
+        unit_price: 80,
+        currency: "GBP",
+        category: "Outerwear",
+      },
+    });
+    await prisma.product.create({
+      data: {
+        name: "Unembedded Product",
+        description: "Never got embedded",
+        primary_image: "https://example.com/c.jpg",
+        image_urls: ["https://example.com/c.jpg"],
+        unit_price: 10,
+        currency: "GBP",
+        category: "Accessories",
+      },
+    });
+
+    await prisma.$executeRaw`UPDATE products SET embedding = ${`[${vector(0).join(",")}]`}::vector WHERE id = ${embedded.id}`;
+
+    vi.mocked(embedText).mockResolvedValue(vector(0));
+
+    const res = await request(app).get("/products?q=jacket").expect(200);
+
+    expect(res.body.results).toHaveLength(1);
+    expect(res.body.results[0].id).toBe(embedded.id);
+    expect(res.body.total).toBe(1);
+  });
+
+  it("returns a 500 when the embedding call fails", async () => {
+    vi.mocked(embedText).mockRejectedValue(new Error("rate limited"));
+
+    await request(app).get("/products?q=jacket").expect(500);
+  });
+
+  it("always returns a single page, even with more embedded products than fit on one page", async () => {
+    const products = await Promise.all(
+      Array.from({ length: 20 }, (_, i) =>
+        prisma.product.create({
+          data: {
+            name: `Product ${i}`,
+            description: "A test product",
+            primary_image: `https://example.com/${i}.jpg`,
+            image_urls: [`https://example.com/${i}.jpg`],
+            unit_price: 10,
+            currency: "GBP",
+            category: "Accessories",
+          },
+        }),
+      ),
+    );
+
+    for (const product of products) {
+      await prisma.$executeRaw`UPDATE products SET embedding = ${`[${vector(0).join(",")}]`}::vector WHERE id = ${product.id}`;
+    }
+
+    vi.mocked(embedText).mockResolvedValue(vector(0));
+
+    const res = await request(app).get("/products?q=jacket&page=2").expect(200);
+
+    expect(res.body.results).toHaveLength(16);
+    expect(res.body.total).toBe(16);
+    expect(res.body.page).toBe(1);
+    expect(res.body.totalPages).toBe(1);
   });
 });
 

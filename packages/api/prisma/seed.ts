@@ -3,6 +3,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { config } from "dotenv";
 import { resolve } from "node:path";
 import { PRODUCT_CATEGORIES, type ProductCategory } from "@marketplace/core";
+import { embedText } from "../src/shared/embeddings/embeddings.service";
 
 config({ path: resolve(__dirname, "../.env") });
 
@@ -502,6 +503,20 @@ async function main() {
   });
 
   console.log(`Seeded ${existingProducts.length + generated.length} products`);
+
+  const insertedProducts = await prisma.product.findMany({
+    select: { id: true, name: true, description: true, category: true },
+  });
+
+  for (const product of insertedProducts) {
+    const embedding = await embedText(
+      `${product.name}. ${product.description}. Category: ${product.category}.`,
+    );
+    const vectorLiteral = `[${embedding.join(",")}]`;
+    await prisma.$executeRaw`UPDATE products SET embedding = ${vectorLiteral}::vector WHERE id = ${product.id}`;
+  }
+
+  console.log(`Embedded ${insertedProducts.length} products`);
 }
 
 main()

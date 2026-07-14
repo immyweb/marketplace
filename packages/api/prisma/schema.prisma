@@ -1,9 +1,11 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "postgresql"
+  provider   = "postgresql"
+  extensions = [vector]
 }
 
 model Product {
@@ -15,6 +17,7 @@ model Product {
   unit_price    Decimal     @db.Decimal(10, 2)
   currency      String      @default("GBP")
   category      String      @default("Accessories")
+  embedding     Unsupported("vector(1536)")?
   cart_items    CartItem[]
   order_items   OrderItem[]
 

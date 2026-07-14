@@ -44,11 +44,16 @@ export function fetchProducts(params?: {
   page?: number;
   sort?: string;
   category?: string;
+  q?: string;
 }) {
   const qs = new URLSearchParams();
-  if (params?.page) qs.set("page", String(params.page));
-  if (params?.sort) qs.set("sort", params.sort);
-  if (params?.category) qs.set("category", params.category);
+  if (params?.q) {
+    qs.set("q", params.q);
+  } else {
+    if (params?.page) qs.set("page", String(params.page));
+    if (params?.sort) qs.set("sort", params.sort);
+    if (params?.category) qs.set("category", params.category);
+  }
   const query = qs.toString();
 
   return apiFetch<{

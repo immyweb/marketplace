@@ -1,6 +1,10 @@
 import { Router } from "express";
 import { ProductListQuerySchema } from "@marketplace/core";
-import { listProducts, getProductById } from "./products.service";
+import {
+  listProducts,
+  getProductById,
+  searchProducts,
+} from "./products.service";
 
 const router = Router();
 
@@ -14,7 +18,9 @@ router.get("/", async (req, res, next) => {
       return;
     }
 
-    const result = await listProducts(parsed.data);
+    const result = parsed.data.q
+      ? await searchProducts(parsed.data.q)
+      : await listProducts(parsed.data);
     res.json(result);
   } catch (err) {
     next(err);

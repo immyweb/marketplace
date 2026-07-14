@@ -3,6 +3,7 @@ import { fetchProducts } from "@/lib/api";
 import {
   ProductCard,
   ProductFilters,
+  ProductSearch,
   Pagination,
 } from "@/app/products/_components";
 
@@ -16,16 +17,22 @@ export const metadata: Metadata = {
 };
 
 interface Props {
-  searchParams: Promise<{ page?: string; sort?: string; category?: string }>;
+  searchParams: Promise<{
+    page?: string;
+    sort?: string;
+    category?: string;
+    q?: string;
+  }>;
 }
 
 export default async function ProductListingPage({ searchParams }: Props) {
-  const { page, sort, category } = await searchParams;
+  const { page, sort, category, q } = await searchParams;
   const currentPage = page ? Number(page) : 1;
   const { results, total, totalPages } = await fetchProducts({
     page: currentPage,
     sort,
     category,
+    q,
   });
 
   return (
@@ -34,12 +41,15 @@ export default async function ProductListingPage({ searchParams }: Props) {
         Full Catalog · {total} Goods
       </p>
       <h1 className="mt-1 text-2xl">All Products</h1>
-      <ProductFilters activeCategory={category} sort={sort} />
+      <ProductSearch />
+      {q ? null : <ProductFilters activeCategory={category} sort={sort} />}
       {results.length === 0 ? (
         <p className="mt-8 text-muted-foreground">
-          {category
-            ? "No products in this category."
-            : "No products available."}
+          {q
+            ? `No results for "${q}".`
+            : category
+              ? "No products in this category."
+              : "No products available."}
         </p>
       ) : (
         <>

@@ -88,4 +88,63 @@ describe("ProductListingPage", () => {
     ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "2" })).toBeInTheDocument();
   });
+
+  it("hides the category filters and sort control when a search query is active", async () => {
+    render(
+      await ProductListingPage({ searchParams: searchParams({ q: "jacket" }) }),
+    );
+
+    expect(
+      screen.queryByRole("link", { name: "Tops" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /^Sort:/ }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows the category filters and sort control when there is no search query", async () => {
+    render(await ProductListingPage({ searchParams: searchParams() }));
+
+    expect(screen.getByRole("link", { name: "Tops" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^Sort:/ })).toBeInTheDocument();
+  });
+
+  it("shows a search-specific empty state when a query returns no results", async () => {
+    server.use(
+      http.get("http://localhost:3001/products", () =>
+        HttpResponse.json({ results: [], total: 0, page: 1, totalPages: 0 }),
+      ),
+    );
+
+    render(
+      await ProductListingPage({
+        searchParams: searchParams({ q: "nonexistent thing" }),
+      }),
+    );
+
+    expect(
+      screen.getByText('No results for "nonexistent thing".'),
+    ).toBeInTheDocument();
+  });
+
+  it("passes the search query through to the products request", async () => {
+    let requestedUrl = "";
+    server.use(
+      http.get("http://localhost:3001/products", ({ request }) => {
+        requestedUrl = request.url;
+        return HttpResponse.json({
+          results: [productListing],
+          total: 1,
+          page: 1,
+          totalPages: 1,
+        });
+      }),
+    );
+
+    render(
+      await ProductListingPage({ searchParams: searchParams({ q: "jacket" }) }),
+    );
+
+    expect(requestedUrl).toContain("q=jacket");
+  });
 });

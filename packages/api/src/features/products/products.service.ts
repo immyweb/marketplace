@@ -1,5 +1,6 @@
 import { prisma } from "@/shared/db/prisma";
 import { NotFoundError } from "@/shared/errors";
+import { embedText } from "@/shared/embeddings/embeddings.service";
 import type { ProductListQuery } from "@marketplace/core";
 
 export type ProductDTO = {
@@ -56,6 +57,43 @@ export async function listProducts(query: ProductListQuery): Promise<{
     total,
     page,
     totalPages: Math.ceil(total / PAGE_SIZE),
+  };
+}
+
+type SearchRow = {
+  id: number;
+  name: string;
+  primary_image: string;
+  unit_price: string;
+  currency: string;
+  category: string;
+};
+
+export async function searchProducts(q: string): Promise<{
+  results: ProductDTO[];
+  total: number;
+  page: number;
+  totalPages: number;
+}> {
+  const embedding = await embedText(q);
+  const vector = `[${embedding.join(",")}]`;
+
+  const rows = await prisma.$queryRaw<SearchRow[]>`
+    SELECT id, name, primary_image, unit_price, currency, category
+    FROM products
+    WHERE embedding IS NOT NULL
+    ORDER BY embedding <=> ${vector}::vector
+    LIMIT ${PAGE_SIZE}
+  `;
+
+  return {
+    results: rows.map((row) => ({
+      ...row,
+      unit_price: Number(row.unit_price),
+    })),
+    total: rows.length,
+    page: 1,
+    totalPages: 1,
   };
 }
 
