@@ -49,6 +49,10 @@ Components use Tailwind utility classes directly. Reusable UI primitives (`compo
 
 Covered by [ADR 001](001-testing-setup.md): component tests (Vitest + RTL, MSW-mocked network) are the default; Playwright e2e is reserved for the checkout/cart critical flows.
 
+### Component documentation: Storybook
+
+`*.stories.tsx` files are colocated next to the component they document — `components/ui/*.stories.tsx` for shared primitives, `app/products/_components/*.stories.tsx` for route-scoped ones — mirroring the test colocation convention above. `@storybook/addon-docs` (`tags: ["autodocs"]`) generates a props-table docs page per component from its TypeScript types, `eslint-plugin-storybook` lints story files for common authoring mistakes, and `@storybook/addon-mcp` exposes the running Storybook to AI coding agents over MCP.
+
 ## Consequences
 
 - Initial page data fetching has no client-side loading state by design (Server Components render already-fetched data); any page needing client-side fetching (`CheckoutPage`) must handle its own loading state manually, as it does today with a `cart === null` check.
