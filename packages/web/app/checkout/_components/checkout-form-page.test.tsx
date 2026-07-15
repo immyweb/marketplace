@@ -72,6 +72,33 @@ describe("CheckoutFormPage", () => {
     } as unknown as StripeElements);
   });
 
+  it("does not navigate after unmounting before the cart fetch resolves", async () => {
+    let resolveCart: () => void = () => {};
+    const cartRequested = new Promise<void>((resolve) => {
+      resolveCart = resolve;
+    });
+
+    server.use(
+      http.get(`${API_URL}/cart`, async () => {
+        await cartRequested;
+        return HttpResponse.json({
+          id: null,
+          items: [],
+          total_price: 0,
+          currency: "GBP",
+        });
+      }),
+    );
+
+    const { unmount } = render(<CheckoutFormPage />);
+    unmount();
+    resolveCart();
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(push).not.toHaveBeenCalled();
+  });
+
   it("renders the address form fields once the cart loads", async () => {
     render(<CheckoutFormPage />);
 

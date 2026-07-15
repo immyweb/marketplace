@@ -11,7 +11,10 @@ export const auth = betterAuth({
     user: {
       create: {
         after: async (user) => {
-          await sendWelcomeEmail(user.email, user.name);
+          // Fire-and-forget: sendWelcomeEmail catches and logs its own
+          // errors, so awaiting it would only block signup on a
+          // third-party API call for no correctness benefit.
+          void sendWelcomeEmail(user.email, user.name);
         },
       },
     },

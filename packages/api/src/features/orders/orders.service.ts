@@ -163,7 +163,10 @@ export async function placeOrder(params: {
   });
 
   const orderDTO = formatOrder(order);
-  await sendOrderConfirmationEmail(orderDTO, order.user.email, order.user.name);
+  // Fire-and-forget: the function already catches and logs its own errors,
+  // so awaiting it would only add third-party API latency to the checkout
+  // response with no correctness benefit.
+  void sendOrderConfirmationEmail(orderDTO, order.user.email, order.user.name);
 
   return orderDTO;
 }

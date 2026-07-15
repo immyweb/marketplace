@@ -141,13 +141,20 @@ export function CheckoutFormPage({
   const router = useRouter();
 
   useEffect(() => {
+    let cancelled = false;
+
     fetchCart().then((c) => {
+      if (cancelled) return;
       if (!c.id || c.items.length === 0) {
         router.push("/cart");
         return;
       }
       setCart(c);
     });
+
+    return () => {
+      cancelled = true;
+    };
   }, [router]);
 
   if (!cart) return <p aria-busy="true">Loading...</p>;

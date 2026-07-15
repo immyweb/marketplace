@@ -6,20 +6,20 @@ import { AccountMenu } from "@/components/account-menu";
 import { MobileNavMenu } from "@/components/mobile-nav-menu";
 
 export async function Nav() {
-  let itemCount = 0;
-  try {
-    // SSR fetches have no browser cookie jar — forward the incoming
-    // request's Cookie header so the API sees the visitor's session.
-    const cookie = (await headers()).get("cookie");
-    const cart = await fetchCart(
-      cookie ? { headers: { Cookie: cookie } } : undefined,
-    );
-    itemCount = cart.items.reduce((sum, item) => sum + item.quantity, 0);
-  } catch {
-    // cart fetch fails gracefully — show 0
-  }
+  // SSR fetches have no browser cookie jar — forward the incoming
+  // request's Cookie header so the API sees the visitor's session.
+  const cookie = (await headers()).get("cookie");
 
-  const session = await getServerSession();
+  const [cart, session] = await Promise.all([
+    fetchCart(cookie ? { headers: { Cookie: cookie } } : undefined).catch(
+      () => null, // cart fetch fails gracefully — show 0
+    ),
+    getServerSession(),
+  ]);
+
+  const itemCount = cart
+    ? cart.items.reduce((sum, item) => sum + item.quantity, 0)
+    : 0;
 
   return (
     <header className="bg-primary text-primary-foreground">
