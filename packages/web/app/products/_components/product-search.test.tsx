@@ -41,7 +41,7 @@ describe("ProductSearch", () => {
     render(<ProductSearch />);
 
     await user.type(
-      screen.getByRole("searchbox", { name: "Search products" }),
+      screen.getByRole("searchbox", { name: "Search by description" }),
       "warm jacket",
     );
     vi.advanceTimersByTime(400);
@@ -55,7 +55,7 @@ describe("ProductSearch", () => {
     render(<ProductSearch />);
 
     await user.clear(
-      screen.getByRole("searchbox", { name: "Search products" }),
+      screen.getByRole("searchbox", { name: "Search by description" }),
     );
     vi.advanceTimersByTime(400);
 
@@ -67,7 +67,7 @@ describe("ProductSearch", () => {
     render(<ProductSearch />);
 
     expect(
-      screen.getByRole("searchbox", { name: "Search products" }),
+      screen.getByRole("searchbox", { name: "Search by description" }),
     ).toHaveValue("warm jacket");
   });
 
@@ -76,7 +76,7 @@ describe("ProductSearch", () => {
     render(<ProductSearch />);
 
     await user.type(
-      screen.getByRole("searchbox", { name: "Search products" }),
+      screen.getByRole("searchbox", { name: "Search by description" }),
       "w",
     );
     vi.advanceTimersByTime(100);
