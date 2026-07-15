@@ -7,17 +7,23 @@ import { stripe } from "@/shared/stripe";
 import { logger } from "@/shared/logger";
 import { sendOrderConfirmationEmail } from "./order-confirmation.email";
 
-type OrderWithItems = Prisma.OrderGetPayload<{
-  include: {
-    items: { include: { product: true } };
-    user: { select: { email: true; name: true } };
-  };
-}>;
-
 const orderInclude = {
-  items: { include: { product: true } },
+  items: {
+    include: {
+      product: {
+        select: {
+          id: true,
+          name: true,
+          primary_image: true,
+          currency: true,
+        },
+      },
+    },
+  },
   user: { select: { email: true, name: true } },
 } satisfies Prisma.OrderInclude;
+
+type OrderWithItems = Prisma.OrderGetPayload<{ include: typeof orderInclude }>;
 
 function formatOrder(order: OrderWithItems) {
   return {
@@ -74,7 +80,9 @@ export async function placeOrder(params: {
 
   const cart = await prisma.cart.findUnique({
     where: { id: cartId },
-    include: { items: { include: { product: true } } },
+    include: {
+      items: { include: { product: { select: { unit_price: true } } } },
+    },
   });
 
   if (!cart || cart.items.length === 0) {
@@ -176,28 +184,48 @@ export async function getOrderById(
   return formatOrder(order);
 }
 
+const ORDERS_PAGE_SIZE = 10;
+
 export async function listOrdersByUser(
   userId: string,
-): Promise<OrderSummary[]> {
-  const orders = await prisma.order.findMany({
-    where: { user_id: userId },
-    orderBy: { created_at: "desc" },
-    select: {
-      id: true,
-      created_at: true,
-      status: true,
-      total_price: true,
-      currency: true,
-      _count: { select: { items: true } },
-    },
-  });
+  page: number,
+): Promise<{
+  results: OrderSummary[];
+  total: number;
+  page: number;
+  totalPages: number;
+}> {
+  const where = { user_id: userId };
 
-  return orders.map((order) => ({
-    id: order.id,
-    created_at: order.created_at.toISOString(),
-    status: order.status,
-    total_price: Number(order.total_price),
-    currency: order.currency,
-    item_count: order._count.items,
-  }));
+  const [orders, total] = await Promise.all([
+    prisma.order.findMany({
+      where,
+      orderBy: { created_at: "desc" },
+      skip: (page - 1) * ORDERS_PAGE_SIZE,
+      take: ORDERS_PAGE_SIZE,
+      select: {
+        id: true,
+        created_at: true,
+        status: true,
+        total_price: true,
+        currency: true,
+        _count: { select: { items: true } },
+      },
+    }),
+    prisma.order.count({ where }),
+  ]);
+
+  return {
+    results: orders.map((order) => ({
+      id: order.id,
+      created_at: order.created_at.toISOString(),
+      status: order.status,
+      total_price: Number(order.total_price),
+      currency: order.currency,
+      item_count: order._count.items,
+    })),
+    total,
+    page,
+    totalPages: Math.ceil(total / ORDERS_PAGE_SIZE),
+  };
 }

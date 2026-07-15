@@ -1,11 +1,9 @@
 import Link from "next/link";
-import { buildProductsHref } from "./product-href";
 
 interface Props {
   page: number;
   totalPages: number;
-  sort?: string;
-  category?: string;
+  buildHref: (page: number) => string;
 }
 
 const navLinkClasses =
@@ -14,7 +12,7 @@ const navLinkClasses =
 const pageLinkClasses =
   "flex size-11 items-center justify-center rounded-sm border border-border font-mono text-sm text-foreground outline-none transition-colors hover:border-primary hover:bg-primary hover:text-primary-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50";
 
-export function Pagination({ page, totalPages, sort, category }: Props) {
+export function Pagination({ page, totalPages, buildHref }: Props) {
   if (totalPages <= 1) return null;
 
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -26,7 +24,7 @@ export function Pagination({ page, totalPages, sort, category }: Props) {
     >
       {page > 1 && (
         <Link
-          href={buildProductsHref({ page: page - 1, sort, category })}
+          href={buildHref(page - 1)}
           aria-label="Previous page"
           className={navLinkClasses}
         >
@@ -44,18 +42,14 @@ export function Pagination({ page, totalPages, sort, category }: Props) {
             {p}
           </span>
         ) : (
-          <Link
-            key={p}
-            href={buildProductsHref({ page: p, sort, category })}
-            className={pageLinkClasses}
-          >
+          <Link key={p} href={buildHref(p)} className={pageLinkClasses}>
             {p}
           </Link>
         ),
       )}
       {page < totalPages && (
         <Link
-          href={buildProductsHref({ page: page + 1, sort, category })}
+          href={buildHref(page + 1)}
           aria-label="Next page"
           className={navLinkClasses}
         >

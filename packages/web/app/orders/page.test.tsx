@@ -45,16 +45,20 @@ describe("OrdersPage", () => {
       ),
     );
 
-    await expect(OrdersPage()).rejects.toThrow(
-      "REDIRECT:/sign-in?redirect=/orders",
-    );
+    await expect(
+      OrdersPage({ searchParams: Promise.resolve({}) }),
+    ).rejects.toThrow("REDIRECT:/sign-in?redirect=/orders");
   });
 
   it("shows an empty state when the user has no orders", async () => {
     mockSignedIn();
-    server.use(http.get(`${API_URL}/order`, () => HttpResponse.json([])));
+    server.use(
+      http.get(`${API_URL}/order`, () =>
+        HttpResponse.json({ results: [], total: 0, page: 1, totalPages: 1 }),
+      ),
+    );
 
-    render(await OrdersPage());
+    render(await OrdersPage({ searchParams: Promise.resolve({}) }));
 
     expect(
       screen.getByText("You haven't placed any orders yet."),
@@ -64,7 +68,7 @@ describe("OrdersPage", () => {
   it("lists the user's orders, linking each to its detail page", async () => {
     mockSignedIn();
 
-    render(await OrdersPage());
+    render(await OrdersPage({ searchParams: Promise.resolve({}) }));
 
     const list = screen.getByRole("list", { name: "Order history" });
     expect(list).toHaveTextContent(`#${orderSummaries[0].id}`);

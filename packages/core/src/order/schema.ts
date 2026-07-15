@@ -16,5 +16,10 @@ export const PlaceOrderSchema = z.object({
   saveAddress: z.boolean({ required_error: "saveAddress is required" }),
 });
 
+export const OrderListQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).optional().default(1),
+});
+
 export type AddressInput = z.infer<typeof AddressSchema>;
 export type PlaceOrderInput = z.infer<typeof PlaceOrderSchema>;
+export type OrderListQuery = z.infer<typeof OrderListQuerySchema>;

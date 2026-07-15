@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { fetchProducts } from "@/lib/api";
+import { Pagination } from "@/components/ui/pagination";
 import {
   ProductCard,
   ProductFilters,
   ProductSearch,
-  Pagination,
 } from "@/app/products/_components";
+import { buildProductsHref } from "@/app/products/_components/product-href";
 
 export const metadata: Metadata = {
   title: "Shop All Products",
@@ -66,8 +67,7 @@ export default async function ProductListingPage({ searchParams }: Props) {
           <Pagination
             page={currentPage}
             totalPages={totalPages}
-            sort={sort}
-            category={category}
+            buildHref={(p) => buildProductsHref({ page: p, sort, category })}
           />
         </>
       )}

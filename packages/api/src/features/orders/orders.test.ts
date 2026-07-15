@@ -607,7 +607,7 @@ describe("GET /order", () => {
 
     const res = await ag.get("/order").expect(200);
 
-    expect(res.body).toEqual([
+    expect(res.body.results).toEqual([
       {
         id: newer.id,
         created_at: newer.created_at.toISOString(),
@@ -625,6 +625,46 @@ describe("GET /order", () => {
         item_count: 1,
       },
     ]);
+    expect(res.body.total).toBe(2);
+    expect(res.body.page).toBe(1);
+    expect(res.body.totalPages).toBe(1);
+  });
+
+  it("paginates results, most recent orders first", async () => {
+    const ag = agent(app);
+    await signUpAgent(ag);
+    const user = await prisma.user.findUniqueOrThrow({
+      where: { email: "jane@example.com" },
+    });
+
+    for (let i = 0; i < 12; i++) {
+      await prisma.order.create({
+        data: {
+          total_price: 10,
+          stripe_payment_id: `pi_page_${i}`,
+          card_last_four: "4242",
+          address_name: "Jane",
+          address_street: "1 St",
+          address_city: "London",
+          address_postcode: "SW1A 1AA",
+          user_id: user.id,
+          created_at: new Date(2026, 0, i + 1),
+          items: {
+            create: [{ product_id: productId, quantity: 1, price: 10 }],
+          },
+        },
+      });
+    }
+
+    const page1 = await ag.get("/order").expect(200);
+    expect(page1.body.results).toHaveLength(10);
+    expect(page1.body.total).toBe(12);
+    expect(page1.body.page).toBe(1);
+    expect(page1.body.totalPages).toBe(2);
+
+    const page2 = await ag.get("/order?page=2").expect(200);
+    expect(page2.body.results).toHaveLength(2);
+    expect(page2.body.page).toBe(2);
   });
 
   it("does not include another user's orders", async () => {
@@ -655,7 +695,7 @@ describe("GET /order", () => {
 
     const res = await ag.get("/order").expect(200);
 
-    expect(res.body).toEqual([]);
+    expect(res.body.results).toEqual([]);
   });
 
   it("returns an empty array when the user has no orders", async () => {
@@ -664,7 +704,7 @@ describe("GET /order", () => {
 
     const res = await ag.get("/order").expect(200);
 
-    expect(res.body).toEqual([]);
+    expect(res.body.results).toEqual([]);
   });
 
   it("returns 403 when listing orders without signing in", async () => {

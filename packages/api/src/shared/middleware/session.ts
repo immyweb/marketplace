@@ -1,10 +1,8 @@
 import session from "express-session";
 import connectPg from "connect-pg-simple";
-import pg from "pg";
+import { pool } from "@/shared/db/prisma";
 
 const PgSession = connectPg(session);
-
-const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
 
 export const sessionMiddleware = session({
   store: new PgSession({

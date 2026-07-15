@@ -98,7 +98,19 @@ export async function searchProducts(q: string): Promise<{
 }
 
 export async function getProductById(id: number) {
-  const product = await prisma.product.findUnique({ where: { id } });
+  const product = await prisma.product.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      primary_image: true,
+      image_urls: true,
+      unit_price: true,
+      currency: true,
+      category: true,
+    },
+  });
 
   if (!product) {
     throw new NotFoundError("Product not found");

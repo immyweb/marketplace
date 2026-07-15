@@ -127,6 +127,15 @@ export function fetchOrder(id: number, init?: RequestInit) {
   return apiFetch<Order>(`/order/${id}`, init);
 }
 
-export function fetchOrders(init?: RequestInit) {
-  return apiFetch<OrderSummary[]>("/order", init);
+export function fetchOrders(params?: { page?: number }, init?: RequestInit) {
+  const qs = new URLSearchParams();
+  if (params?.page) qs.set("page", String(params.page));
+  const query = qs.toString();
+
+  return apiFetch<{
+    results: OrderSummary[];
+    total: number;
+    page: number;
+    totalPages: number;
+  }>(`/order${query ? `?${query}` : ""}`, init);
 }

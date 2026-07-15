@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { PlaceOrderSchema } from "@marketplace/core";
+import { PlaceOrderSchema, OrderListQuerySchema } from "@marketplace/core";
 import { ForbiddenError } from "@/shared/errors";
 import { requireAuth } from "@/shared/middleware/require-auth";
 import { placeOrder, getOrderById, listOrdersByUser } from "./orders.service";
@@ -8,7 +8,15 @@ const router = Router();
 
 router.get("/", requireAuth, async (req, res, next) => {
   try {
-    const orders = await listOrdersByUser(req.userId!);
+    const parsed = OrderListQuerySchema.safeParse(req.query);
+    if (!parsed.success) {
+      res
+        .status(400)
+        .json({ error: parsed.error.errors[0].message, code: "INVALID_INPUT" });
+      return;
+    }
+
+    const orders = await listOrdersByUser(req.userId!, parsed.data.page);
     res.json(orders);
   } catch (err) {
     next(err);

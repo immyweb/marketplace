@@ -126,6 +126,11 @@ export const handlers = [
     return HttpResponse.json(order);
   }),
   http.get(`${API_URL}/order`, () => {
-    return HttpResponse.json(orderSummaries);
+    return HttpResponse.json({
+      results: orderSummaries,
+      total: orderSummaries.length,
+      page: 1,
+      totalPages: 1,
+    });
   }),
 ];

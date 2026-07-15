@@ -3,12 +3,13 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Pagination } from "./pagination";
 
 const meta = {
-  title: "Products/Pagination",
+  title: "UI/Pagination",
   component: Pagination,
   tags: ["autodocs"],
   args: {
     page: 1,
     totalPages: 7,
+    buildHref: (page: number) => `?page=${page}`,
   },
 } satisfies Meta<typeof Pagination>;
 
@@ -33,7 +34,7 @@ export const SinglePage: Story = {
 export const WithFiltersApplied: Story = {
   args: {
     page: 2,
-    sort: "price_asc",
-    category: "Footwear",
+    buildHref: (page: number) =>
+      `?page=${page}&sort=price_asc&category=Footwear`,
   },
 };

@@ -2,13 +2,23 @@ import type { Prisma } from "@prisma/client";
 import { prisma } from "@/shared/db/prisma";
 import { NotFoundError } from "@/shared/errors";
 
-type CartWithItems = Prisma.CartGetPayload<{
-  include: { items: { include: { product: true } } };
-}>;
-
 const cartInclude = {
-  items: { include: { product: true } },
+  items: {
+    include: {
+      product: {
+        select: {
+          id: true,
+          name: true,
+          primary_image: true,
+          unit_price: true,
+          currency: true,
+        },
+      },
+    },
+  },
 } satisfies Prisma.CartInclude;
+
+type CartWithItems = Prisma.CartGetPayload<{ include: typeof cartInclude }>;
 
 function formatCart(cart: CartWithItems) {
   const items = cart.items.map((item) => ({
