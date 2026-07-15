@@ -1,4 +1,5 @@
 import tseslint from "typescript-eslint";
+import storybook from "eslint-plugin-storybook";
 
 export default tseslint.config(
   {
@@ -14,4 +15,5 @@ export default tseslint.config(
       "@typescript-eslint/no-explicit-any": "error",
     },
   },
+  storybook.configs["flat/recommended"],
 );

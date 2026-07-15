@@ -34,7 +34,9 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.61.1",
-    "@storybook/nextjs-vite": "^10.4.6",
+    "@storybook/addon-docs": "10.5.0",
+    "@storybook/addon-mcp": "0.7.0",
+    "@storybook/nextjs-vite": "^10.5.0",
     "@tailwindcss/postcss": "^4.3.2",
     "@tailwindcss/typography": "^0.5.20",
     "@testing-library/dom": "^10.4.1",
@@ -48,7 +50,7 @@
     "jsdom": "^29.1.1",
     "msw": "^2.14.6",
     "postcss": "^8.5.16",
-    "storybook": "^10.4.6",
+    "storybook": "^10.5.0",
     "tailwindcss": "^4.3.2",
     "typescript": "^6.0.3",
     "vitest": "^4.1.9"

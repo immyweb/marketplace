@@ -5,6 +5,7 @@ import { ProductSearch } from "./product-search";
 const meta = {
   title: "Products/ProductSearch",
   component: ProductSearch,
+  tags: ["autodocs"],
   parameters: {
     nextjs: {
       appDirectory: true,

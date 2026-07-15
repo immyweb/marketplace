@@ -5,6 +5,7 @@ import { ProductFilters } from "./product-filters";
 const meta = {
   title: "Products/ProductFilters",
   component: ProductFilters,
+  tags: ["autodocs"],
   parameters: {
     nextjs: {
       appDirectory: true,

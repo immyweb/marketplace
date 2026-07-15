@@ -16,6 +16,7 @@ import {
 const meta = {
   title: "UI/DropdownMenu",
   component: DropdownMenu,
+  tags: ["autodocs"],
 } satisfies Meta<typeof DropdownMenu>;
 
 export default meta;

@@ -6,4 +6,5 @@ export default defineMain({
     "../components/**/*.stories.@(ts|tsx)",
     "../app/**/*.stories.@(ts|tsx)",
   ],
+  addons: ["@storybook/addon-docs", "@storybook/addon-mcp"],
 });

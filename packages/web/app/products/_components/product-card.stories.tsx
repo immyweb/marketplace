@@ -5,6 +5,7 @@ import { ProductCard } from "./product-card";
 const meta = {
   title: "Products/ProductCard",
   component: ProductCard,
+  tags: ["autodocs"],
   args: {
     id: 1,
     name: "Classic White T-Shirt",

@@ -5,6 +5,7 @@ import { Pagination } from "./pagination";
 const meta = {
   title: "Products/Pagination",
   component: Pagination,
+  tags: ["autodocs"],
   args: {
     page: 1,
     totalPages: 7,
